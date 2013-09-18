@@ -1,0 +1,62 @@
+\documentclass[dvips, 12pt]{article}
+
+% Any percent sign marks a comment to the end of the line
+
+% Every latex document starts with a documentclass declaration like this
+% The option dvips allows for graphics, 12pt is the font size, and article
+%   is the style
+
+\usepackage{graphicx}
+\usepackage{url}
+
+
+% These are additional packages for "pdflatex", graphics, and to include
+% hyperlinks inside a document.
+
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+% These force using more of the margins that is the default style
+
+\begin{document}
+
+% Everything after this becomes content
+% Replace the text between curly brackets with your own
+
+\title{SMURF}
+\author{Richard Townsend, Lianne Lairmore, Lindsay Neubauer, Van Bui, Kuangya Zhai}
+\date{\today}
+
+% You can leave out "date" and it will be added automatically for today
+% You can change the "\today" date to any text you like
+
+
+\maketitle
+
+% This command causes the title to be created in the document
+
+\input{data/introduction}
+\input{data/motivation}
+\input{data/syntax}
+\input{data/examples}
+
+ 
+\begin{thebibliography}{99}
+
+\bibitem{gonzalez2012} Jonay I. Gonz\'{a}lez Hern\'{a}ndez, 
+Pilar Ruiz-Lapuente,	
+Hugo M. Tabernero,	
+David Montes,	
+Ramon Canal,	
+Javier M\'{e}ndez	
+and Luigi R. Bedin,
+{No surviving evolved companions of the progenitor of SN1006},
+Nature, {\bf 489}, 533-536 (2012).
+
+\end{thebibliography}
+
+
+
+\end{document}
