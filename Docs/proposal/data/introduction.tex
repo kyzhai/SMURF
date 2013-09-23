@@ -3,18 +3,25 @@
 In general, serialism is a musical composition technique where a set of values, chosen through some methodical process, 
 generates a sequence of musical elements. Its origins are often attributed to Arnold Schoenberg's twelve-tone technique, which
 he began to use in the 1920s. In this system, each note in the chromatic scale is assigned an integer value, giving us a set of twelve
-"pitch classes" (see fig. 1).
+"pitch classes" (Figure~\ref{fig:pc}).
 A composer utilizing this method then takes each of these integers, and orders them into a $twelve$ $tone$ $row$, where 
 each number appears exactly once. We refer to this row as the $prime form$ of a piece, and conventionally refer 
 to it as $P_0$. 
 
-\begin{figure}[h] % use float package if you want it here
+\begin{figure}
+\begin{minipage}{0.6\textwidth}
 	\centering
-		\includegraphics[width=8cm]{figures/serialismPianoImage}
+	\includegraphics[width=\textwidth]{figures/serialismPianoImage}
 	\caption{pitch classes}
-	\label{fig:xfig1}
+	\label{fig:pc}
+\end{minipage}\hfill
+\begin{minipage}{0.38\textwidth}
+	\centering
+		\includegraphics[width=\textwidth]{figures/12_tone}
+	\caption{twelve tone matrix}
+	\label{fig:12tone}
+\end{minipage}
 \end{figure}
-
 
 
 The composer can then generate other rows that are derived from $P_0$ through three types of transformations:
@@ -33,19 +40,9 @@ pitch classes of $I_x$ backwards.
 Once a composer chooses a $P_0$, the three transformations outlined above can be applied to varying degrees to generate a $twelve$ $tone$ $matrix$, which will contain each $P$ row as a row in the matrix and each $I$ row as a column.
 Furthermore, all of the $R$ and $RI$ rows are found by reading the rows in the matrix from right to left or the columns 
 from bottom to top, respectively. An example of a 
-twelve tone matrix from one of Shoenberg's pieces can be found below (fig. 2). Finally, using the twelve tone matrix as a guide,
+twelve tone matrix from one of Shoenberg's pieces can be found below (Figure ~\ref{fig:12tone}). Finally, using the twelve tone matrix as a guide,
 	   the composer picks various rows and columns to serve as melodic and harmonic elements in their composition, resulting in a piece
 	   of serial music.
 	   %Possible transformations
 	   %Notation
-
-\begin{figure}[h] % use float package if you want it here
-	\centering
-		\includegraphics[width=8cm]{figures/12_tone}
-	\caption{twelve tone matrix}
-	\label{fig:xfig1}
-\end{figure}
-
-
-
 
