@@ -1,26 +1,39 @@
 \section{Motivation}
 
-Identify the targets you want to study.  Define their observable characteristics
-by giving their identifiers (e.g. common name if any, NGC or HD or other catalog
-entry you can find with AstroCC and Simbad), celestial coordinates, optical
-magnitudes, and angular size if the object is extended, that is, non-stellar.
-Please select targets that we have a good likelihood of observing:
-\begin{itemize}
-\item Not fainter than magnitude 19 (18 is better)
-\item Not larger than $0.5^\circ$, but see below
-\item Above the horizon at either observatory for several hours this fall
-\end{itemize}
+Our group has decided to create a language that will assist a composer in creating music 
+using the twelve tone method described above. We plan on making this language 
+functional and compile into C. The compilation process will create a C program 
+that will use openGL to create an image representing the music created. 
 
-A single 100 second exposure with the 0.5 meter telescopes will reach magnitude
-18 on a clear night.  Accurate quantitative measurements require a little
-brighter, or longer total accumulated exposures.  The telescopes resolve 1
-arcsecond in two pixels and have a field of view of $0.6^\circ$.  Larger fields
-must be mosaics of several exposures. These factors will affect your
-choices.  
+Twelve tone serialism is a mathematically intensive method of creating music which 
+involves mapping notes to numbers. It is very natural to work with twelve tone rows 
+using a programming language since the method just treats notes like numbers that 
+can be added and subtracted from. We plan on our language making twelve tone compilation 
+easier using data types and functions specifically for the purpose of creating music in 
+this way. By simplifying the method of inverting and transposing rows composers can focus 
+more on how to exploit new ways to make music in this fashion and worry less about 
+creating matrices. 
 
-For planetary imaging the CDK20's can take exposures as short as 0.01 seconds. 
-The longest practical single exposure is about 300 seconds, but typically we
-take 100 second exposures and add them in order to make small guiding
-corrections between exposures. Use AstroCC with Stellarium to assure that the
-targets are observable this season.
+We chose to implement our language as a functional language because of the clear and 
+succinct programs that functional languages produce. It also makes sense for our language 
+to be functional because functional languages also are well known for their ability to 
+work on lists and most arithmetic done in twelve tone serialism is done on rows or 
+columns. As a group we are also very interested on how a functional language compiler 
+works. 
 
+Instead of compiling our language into byte code which can be interpreted and play the 
+notes we thought it would be more interesting to create a language that could be compiled 
+into a score. Scores are made up of just lines and dots and would be easy to create in 
+a graphics library like openGL. We decided to compile our language into C since it was a 
+significantly less abstract language which had access to openGL library calls. One benefit 
+of compiling into C and not a language to be interpreted as music is that programs in our 
+language could be created that do not actually output any music but instead create 
+functions that could be used in other programs to do the same transformation of rows. 
+That way our language is not just limited to functions defined in our libraries or 
+what is in the current file. 
+
+Overall we hope to use the simplicity of a functional language to help composers write 
+complex, new, and interesting music based on twelve tone serialism. These new compositions 
+would then be able to be printed and handed to musicians to play. This simplifies the 
+composers task of converting music in computer format to one which musicians will be 
+able to read easily. 
