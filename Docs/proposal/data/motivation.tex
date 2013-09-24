@@ -1,39 +1,36 @@
 \section{Motivation}
 
-Our group has decided to create a language that will assist a composer in creating music 
+Our group decided to create a language that assists a composer in creating music 
 using the twelve tone method described above. We plan on making this language 
 functional and compile into C. The compilation process will create a C program 
 that will use openGL to create an image representing the music created. 
 
 Twelve tone serialism is a mathematically intensive method of creating music which 
-involves mapping notes to numbers. It is very natural to work with twelve tone rows 
-using a programming language since the method just treats notes like numbers that 
-can be added and subtracted from. We plan on our language making twelve tone compilation 
+involves mapping notes to numbers. It is natural to work with twelve tone rows 
+using a programming language since the method treats notes like numbers that 
+can be added and subtracted. We plan on our language making twelve tone compilation 
 easier using data types and functions specifically for the purpose of creating music in 
 this way. By simplifying the method of inverting and transposing rows composers can focus 
 more on how to exploit new ways to make music in this fashion and worry less about 
 creating matrices. 
 
-We chose to implement our language as a functional language because of the clear and 
-succinct programs that functional languages produce. It also makes sense for our language 
-to be functional because functional languages also are well known for their ability to 
-work on lists and most arithmetic done in twelve tone serialism is done on rows or 
-columns. As a group we are also very interested on how a functional language compiler 
-works. 
+We chose to implement a functional language because of the clear and 
+succinct programs that functional languages produce. In addition, the well known ability
+of functional languages to work on lists is advantagous for twelve tone serialism because
+most arithematic for its compositions is done in rows and columns. As a group we are also 
+interested on how a functional language compiler works. 
 
-Instead of compiling our language into byte code which can be interpreted and play the 
-notes we thought it would be more interesting to create a language that could be compiled 
-into a score. Scores are made up of just lines and dots and would be easy to create in 
-a graphics library like openGL. We decided to compile our language into C since it was a 
-significantly less abstract language which had access to openGL library calls. One benefit 
-of compiling into C and not a language to be interpreted as music is that programs in our 
-language could be created that do not actually output any music but instead create 
-functions that could be used in other programs to do the same transformation of rows. 
-That way our language is not just limited to functions defined in our libraries or 
-what is in the current file. 
+Instead of compiling our language into byte code where notes are interpreted and 
+played, we think it is more interesting to create a language that is compiled 
+into a score. Scores are made up of lines and dots, which are easy to create in 
+a graphics library like openGL. We decided to compile our language into C since it is a 
+significantly less abstract language that has access to openGL library calls. One benefit 
+of compiling into C instead of a language to be interpreted as music is that programs in our 
+language can create functions that can be used in other programs to do the same 
+transformation of rows. That way our language is not limited to functions defined in 
+our libraries or what is in the current file. 
 
 Overall we hope to use the simplicity of a functional language to help composers write 
 complex, new, and interesting music based on twelve tone serialism. These new compositions 
-would then be able to be printed and handed to musicians to play. This simplifies the 
-composers task of converting music in computer format to one which musicians will be 
-able to read easily. 
+can then be printed and used by musicians to play. This simplifies the composer's task of 
+converting computer generated music to one in which musicians can easily read. 
