@@ -15,6 +15,9 @@ SMURF is a functional programming language loosely modeled off of Haskell. It ha
 \subsubsection{Note (pc: int, beat: int, register: int)}
 \begin{itemize}
 \item pc (pitch class): represented by integers 0-11
+  \begin{itemize}
+  \item Note with pc = -1 represents a rest, used in Measure type
+  \end{itemize}
 \item beat: represented by powers of 2 up to 32 (assuming \Takt{4}{4} time)
 \item register: represented by integers -2 to 2
   \begin{itemize}
@@ -28,7 +31,12 @@ SMURF is a functional programming language loosely modeled off of Haskell. It ha
 \item Type checks that all notes have same beat count
 \end{itemize}
 
-\subsubsection{Figure ([Chord])}
+\subsubsection{Measure ([Chord])}
+\begin{itemize}
+\item Type check that measure has exactly 4 beats
+\end{itemize}
+
+\subsubsection{Score ([Measure])}
 
 \subsubsection{Functions}
 A function is a type whose value can be defined with an expression
@@ -53,14 +61,18 @@ A function is a type whose value can be defined with an expression
       + & Integer arithmetic: plus  \\ \hline
       - & Integer arithmetic: minus  \\ \hline 
       \% & Integer arithmetic: modulus, ignores negatives  \\ \hline
+      = & Assignment operator \\ \hline
       \textless  & Comparison \\ \hline
       \textgreater  & Comparison \\ \hline
       \textless=  & Comparison \\ \hline
       \textgreater= & Comparison \\ \hline
-       == & Structural comparison  \\ \hline
+       == & Boolean operator: Structural comparison  \\ \hline
        not & Boolean operator \\ \hline
        \&\& & Boolean operator \\ \hline
        \textbar\textbar & Boolean operator \\ \hline
+       \textbar & Boolean operator, used with guards\\ \hline
+       :: & Type specification \\ \hline
+       \textendash\textgreater & Argument and function return type specification  \\ \hline
       ++ & Concatenation: concat \\ \hline
       : & Construction: cons \\ \hline
       /* */ & Multiline comments, nesting allowed \\ \hline
@@ -75,16 +87,9 @@ A function is a type whose value can be defined with an expression
     Keywords & \\ 
     \hline\hline
       let & Specify values and functions  \\ \hline
-      \textendash\textgreater & Specify arguments and return type of functions  \\ \hline
-      :: & Specify types \\ \hline
+      in & Allow local variable binding in expression \\ \hline
       if, then, else & Specify conditional expression, else compulsory  \\ \hline
-      \textbar & Specify boolean expression, used with guards\\ \hline
+      gen\_score & Generate musical score given Score as argument  \\ \hline
     \end{tabular}
 \end{table}
-
-
-
-
-
- 
 
