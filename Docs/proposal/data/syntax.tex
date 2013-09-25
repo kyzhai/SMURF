@@ -28,7 +28,7 @@ Structured types hold groups of elements
 \subsubsection{Beat}
 A Beat represents a length of musical time. It has a Time tag and integer type. 
 \begin{itemize}
-  \item Must have the string "Time" followed by an integer that is a power of 2 and \textless\space 32 in declaration
+  \item Must have the string ``Time" followed by an integer that is a power of 2 and \textless\space 32 in declaration
   \begin{itemize}
     \item whole note: Time 1
     \item half note: Time 2
@@ -40,11 +40,12 @@ A Beat represents a length of musical time. It has a Time tag and integer type.
   \item Uses + operator to combine Time but only adds two operands that contain the same integer; recursively 
   checks for Time operands that contain the same integers until only unequal Time integers are left
   \begin{itemize}
-    \item Time
-    \item half note: Time 2
+    \item Time 4 + Time 16 + Time 16 + Time 16 + Time 16
+    \item Time 4 + Time 8 + Time 16 + Time 16
+    \item Time 4 + Time 8 + Time 8 
+    \item Time 4 + Time 4 = Time 2 (quarter note + quarter note = half note)
   \end{itemize}
 \end{itemize}
-
 
 \subsubsection{Note}
 A Note is a tuple of three integers and is declared as (pc: int, beat: Beat, register: int)
@@ -74,7 +75,7 @@ A Note is a tuple of three integers and is declared as (pc: int, beat: Beat, reg
 A Chord is a list of notes and is declared as [Note]. The compiler will check that all notes in the list have 
 the same beat count.
 
-\subsubsection{Measure ([Chord])}
+\subsubsection{Measure}
 A Measure is a list of chords and is declared as [Chord]. The compiler will check that every 
 measure is composed of 4 beats, where a quarter note constitutes one beat
 (we are assuming that musical scores will be in \Takt{4}{4} time). A list of measures is passed to the 
@@ -239,4 +240,8 @@ Given a list of elements, return the list with the first element removed. If not
 
 \subsubsection{fillMeasure}
 Given a list of chords, return a boolean whether the beats of each chord in the list add up to a measure.
-
+  \begin{itemize}
+    \item Time 1 + Time 32 evaluates to False (cannot have more than a whole note in a measure)
+    \item Time 4 + Time 16 evaluates to False (quarter note and sixteenth note do not contain enough beats for a measure)
+    \item Time 4 + Time 4 + Time 4 + Time 4 evaluates to True (4 quarter notes in one measure)
+  \end{itemize}
