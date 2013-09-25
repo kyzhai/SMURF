@@ -1,49 +1,80 @@
 \section{Syntax}
 
-SMURF is a functional programming language loosely modeled off of Haskell. It has immutable memory, no global variables and no I/O.
+SMURF is a functional programming language loosely modeled off of Haskell. Functions are the main building 
+blocks of SMURF. It has immutable memory, no global variables and no I/O. A typical program consists of
+constant definitions and functions, each separated by new line characters.
 
 \subsection{Types}
 
-\subsubsection{Standard Types}
+\subsubsection{Atomic Types}
 \begin{itemize}
 \item Integer: int
 \item Boolean: bool
-\item Tuples: elements can have different types
-\item Lists: elements must have same type
 \end{itemize}
 
-\subsubsection{Note (pc: int, beat: int, register: int)}
+\subsubsection{Structured Types}
+Structured types hold groups of elements
+\begin{itemize}
+\item Tuples: (a, ..., n), where items a - n are elements in the tuple
+  \begin{itemize}
+  \item Elements can have different types 
+  \end{itemize}
+\item Lists:  [a, ..., n], where items a - n are elements in the list 
+  \begin{itemize}
+  \item Elements must have same type
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Note}
+A Note is a tuple of three integers and is declared as (pc: int, beat: int, register: int)
 \begin{itemize}
 \item pc (pitch class): represented by integers 0-11
   \begin{itemize}
-  \item Note with pc = -1 represents a rest, used in Measure type
+  \item Note with pc = -1 represents a rest. In this special case, the register for the Note only matters in relation
+  to whether the rest lies on the treble or bass clef (i.e. whether the register is positive or negative)
   \end{itemize}
-\item beat: represented by powers of 2 up to 32 (assuming \Takt{4}{4} time)
-\item register: represented by integers -2 to 2
+\item beat: represented by powers of 2 up to 32
   \begin{itemize}
-  \item \begin{music}  \trebleclef  \end{music}  Treble Clef: notes middle C and higher represented by 0-2  
-  \item \begin{music} \bassclef  \end{music}  Bass Clef: notes lower than middle C represented by negative numbers
+  \item whole note: 1
+  \item half note: 2
+  \item quarter note: 4
+  \item eighth note: 8
+  \item sixteenth note: 16
+  \item thirty-second note: 32
+  \end{itemize}
+\item register: represented by integers -2 to 1
+  \begin{itemize}
+  \item \begin{music}  \trebleclef  \end{music}  Treble Clef: notes middle C and higher represented by 0 and 1  
+    \begin{itemize}
+    \item middle C to the first B above middle C: 0
+    \item first C above middle C to next highest B: 1
+    \end{itemize}
+  \item \begin{music} \bassclef  \end{music}  Bass Clef: notes lower than middle C represented by -1 and -2
+    \begin{itemize}
+    \item B directly below middle C to first C below middle C: -1
+    \item next lowest B to next lowest C: -2
+    \end{itemize}
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Chord ([Note])}
-\begin{itemize}
-\item Type checks that all notes have same beat count
-\end{itemize}
+\subsubsection{Chord}
+A Chord is a list of notes and is declared as [Note]. The compiler will check that all notes in the list have 
+the same beat count.
 
 \subsubsection{Measure ([Chord])}
-\begin{itemize}
-\item Type check that measure has exactly 4 beats
-\end{itemize}
+A Measure is a list of chords and is declared as [Chord]. The compiler will check that all the beats add up to exactly 4 (we are assuming that musical scores will be in \Takt{4}{4} time)
 
 \subsubsection{Score ([Measure])}
+A Score is a list of measures and is declared as [Measure]. An expression of type score will be passed to the 
+keyword genScore, which generates and outputs an image of the musical score.
 
-\subsubsection{Functions}
-A function is a type whose value can be defined with an expression
+\subsection{Functions}
+Functions are the main building blocks of the language.
 \begin{itemize}
 \item Function declarations must declare type (can declare general type)
 \item Function declarations must be on own line
-\item No explicit return
+\item All functions are first order
+\item No explicit return statement
 \item Pattern matching, guards, and if-then-else clauses used
   \begin{itemize}
   \item Each pattern matching pattern must be on own line
@@ -51,45 +82,125 @@ A function is a type whose value can be defined with an expression
   \end{itemize}
 \end{itemize}
 
-\begin{table} [h]
-	\centering
-    \begin{tabular}{ll}
-    \hline\hline
-    Operators & \\
-    \hline\hline
-       \textbackslash n & End of line: Terminates phrases \\ \hline
-      + & Integer arithmetic: plus  \\ \hline
-      - & Integer arithmetic: minus  \\ \hline 
-      \% & Integer arithmetic: modulus, ignores negatives  \\ \hline
-      = & Assignment operator \\ \hline
-      \textless  & Comparison \\ \hline
-      \textgreater  & Comparison \\ \hline
-      \textless=  & Comparison \\ \hline
-      \textgreater= & Comparison \\ \hline
-       == & Boolean operator: Structural comparison  \\ \hline
-       not & Boolean operator \\ \hline
-       \&\& & Boolean operator \\ \hline
-       \textbar\textbar & Boolean operator \\ \hline
-       \textbar & Boolean operator, used with guards\\ \hline
-       :: & Type specification \\ \hline
-       \textendash\textgreater & Argument and function return type specification  \\ \hline
-      ++ & Concatenation: concat \\ \hline
-      : & Construction: cons \\ \hline
-      /* */ & Multiline comments, nesting allowed \\ \hline
-      // & Single-line comment \\ \hline
-    \end{tabular}
-\end{table}
+\subsection{Variables}
+Variables are constant (i.e. immutable) and their declarations are separated by a new line character.
 
+\subsection{Operators}
+Operators use infix notation.
+
+  \subsubsection{Comment Operators}
+  SMURF allows nested, multiline comments in addition to single line comments.
+    \begin{table} [h]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+      /* */ & Multiline comments, nesting allowed & /* This /* is all */ commented */ \\ \hline
+      // & Single-line comment & // This is a comment \\ \hline
+    \end{tabular}
+  \end{table}
+
+  \subsubsection{Arithmetic Operators}
+  SMURF allows assignment and integer addition, subtraction, and modulus that ignored negatives.
+  \begin{table} [h]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+      = & Assignment operator & a = 4 \\ \hline
+      + & Integer arithmetic: plus  & a + 2 \\ \hline
+      - & Integer arithmetic: minus  & 5 - a \\ \hline 
+      \% & Integer arithmetic: modulus, ignores negatives  & 14 mod 12 \\ \hline
+    \end{tabular}
+  \end{table}
+
+  \subsubsection{Comparison Operators}
+  SMURF allows comparison operations between integers.
+    \begin{table} [h]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+      \textless  & Less than & if a \textless\space  5 then a = 5 else a = 10 \\ \hline
+      \textgreater  & Greater than & if a \textgreater\space  5 then a = 10 else a = 5  \\ \hline
+      \textless=  & Less than or equal to & if a \textless= 5 then a = 0 else a = 20 \\ \hline
+      \textgreater= & Greater than or equal to & if a \textgreater= 5 then a = 20 else a = 0 \\ \hline
+    \end{tabular}
+  \end{table}
+  
+  \subsubsection{Boolean Operators}
+  SMURF allows logical negation, conjunction, and disjunction, in addition to structural comparison and boolean 
+  notation for use with guards.
+  notation.
+    \begin{table} [h]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+       == & Structural comparison & if a == 5 then a = a + 2 else a = a - 2 \\ \hline
+       not & Logical negation & if a not 5 then a = 5 else a = 10 \\ \hline
+       \&\& & Logical conjunction & if b \&\& c  then a = b else a = a \\ \hline
+       \textbar\textbar & Logical disjunction & if b \textbar\textbar\space   c  then a = c else a = a \\ \hline
+       \textbar & Boolean operator used with guards & isLowOrSeven num \\ 
+         && \textbar\space (num \textless 5 \textbar\textbar\space num == 7) = true \\
+         && \textbar\space otherwise = false\\ \hline
+     \end{tabular}
+  \end{table}
+  
+  \subsubsection{Function Operators}
+  SMURF allows type, argument, and function return type specification in addition to concatenation and construction 
+  operations
+    \begin{table} [h]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+       :: & Type specification & returnIntFunc :: Int \\ \hline
+       \textendash\textgreater & Argument and function return type specification
+         & isPositiveNum :: Int \textendash\textgreater\space Bool  \\ \hline
+       ++ & Concatenation: concat & (list tail) ++ head \\ \hline
+       : & Construction: cons & retro [ ] = [ ] \\
+      		&& retro (x : rest ) = (retro rest) ++ x \\ \hline
+    \end{tabular}
+  \end{table}
+
+\subsection{Keywords}
 \begin{table} [h]
 	\centering
     \begin{tabular}{ll}
     \hline\hline
     Keywords & \\ 
     \hline\hline
-      let & Specify values and functions  \\ \hline
+      let & Specify variables and functions  \\ \hline
       in & Allow local variable binding in expression \\ \hline
       if, then, else & Specify conditional expression, else compulsory  \\ \hline
+      true, false & Specify boolean logic \\ \hline
       genScore & Generate musical score given Score as argument  \\ \hline
     \end{tabular}
 \end{table}
+
+\subsection{Library Functions}
+There are currently five library functions that can be used in SMURF: trans, inver, rev, head, tail.
+
+\subsubsection{trans}
+Given an integer and a list (row), create a list that adds the integer to each element in the original list and 
+computes mod 12 on the result of each addition. If not given an integer and then a list return an error.
+
+\subsubsection{inver}
+Given a list (row), create a list that has the original list elements inverted. If not given a list return error.
+
+\subsubsection{rev}
+Given a list (row), create a list that has the original list elements reversed. If not given a list return error.
+
+\subsubsection{head}
+Given a list of elements, create the first element in the list. If not given a list return error.
+
+\subsubsection{tail}
+Given a list of elements, create a list with the first element removed. If not given a list return error.
+
 
