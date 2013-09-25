@@ -25,23 +25,36 @@ Structured types hold groups of elements
   \end{itemize}
 \end{itemize}
 
+\subsubsection{Beat}
+A Beat represents a length of musical time. It has a Time tag and integer type. 
+\begin{itemize}
+  \item Must have the string "Time" followed by an integer that is a power of 2 and \textless\space 32 in declaration
+  \begin{itemize}
+    \item whole note: Time 1
+    \item half note: Time 2
+    \item quarter note: Time 4
+    \item eighth note: Time 8
+    \item sixteenth note: Time 16
+    \item thirty-second note: Time 32
+  \end{itemize}
+  \item Uses + operator to combine Time but only adds two operands that contain the same integer; recursively 
+  checks for Time operands that contain the same integers until only unequal Time integers are left
+  \begin{itemize}
+    \item Time
+    \item half note: Time 2
+  \end{itemize}
+\end{itemize}
+
+
 \subsubsection{Note}
-A Note is a tuple of three integers and is declared as (pc: int, beat: int, register: int)
+A Note is a tuple of three integers and is declared as (pc: int, beat: Beat, register: int)
 \begin{itemize}
 \item pc (pitch class): represented by integers 0-11
   \begin{itemize}
   \item A Note with pc = -1 represents a rest. In this special case, the register for the Note only matters in relation
   to whether the rest lies on the treble or bass clef (i.e. whether the register is positive or negative)
   \end{itemize}
-\item beat: represented by powers of 2 up to 32
-  \begin{itemize}
-  \item whole note: 1
-  \item half note: 2
-  \item quarter note: 4
-  \item eighth note: 8
-  \item sixteenth note: 16
-  \item thirty-second note: 32
-  \end{itemize}
+\item beat: has type Beat
 \item register: represented by integers -2 to 1
   \begin{itemize}
   \item \begin{music}  \trebleclef  \end{music}  Treble Clef: notes middle C and higher represented by 0 and 1  
@@ -64,10 +77,7 @@ the same beat count.
 \subsubsection{Measure ([Chord])}
 A Measure is a list of chords and is declared as [Chord]. The compiler will check that every 
 measure is composed of 4 beats, where a quarter note constitutes one beat
-(we are assuming that musical scores will be in \Takt{4}{4} time).
-
-\subsubsection{Score ([Measure])}
-A Score is a list of measures and is declared as [Measure]. An expression of type score will be passed to the 
+(we are assuming that musical scores will be in \Takt{4}{4} time). A list of measures is passed to the 
 keyword genScore, which generates and outputs an image of the musical score.
 
 \subsection{Functions}
@@ -161,6 +171,19 @@ in x + y
      \end{tabular}
   \end{table}
   
+  \subsubsection{List Operators}
+  SMURF allows concatenation and construction of lists.
+    \begin{table} [h]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+       ++ & Concatenation: concat & [1,2,3] ++ [4,5,6] (result is [1,2,3,4,5,6]) \\ \hline
+       : & Construction: cons & 1 : [2,3,4] (result is [1,2,3,4]) \\ \hline
+    \end{tabular}
+  \end{table}
+  
   \subsubsection{Function Operators}
   SMURF allows type, argument, and function return type specification in addition to concatenation and construction 
   operations
@@ -173,8 +196,6 @@ in x + y
        :: & Type specification & returnIntFunc :: Int \\ \hline
        \textendash\textgreater & Argument and function return type specification
          & isPositiveNum :: Int \textendash\textgreater\space Bool  \\ \hline
-       ++ & Concatenation: concat & [1,2,3] ++ [4,5,6] (result is [1,2,3,4,5,6]) \\ \hline
-       : & Construction: cons & 1 : [2,3,4] (result is [1,2,3,4]) \\ \hline
        \textbar & Boolean operator used with guards & isLowOrSeven num :: [Int] \textendash\textgreater\space Bool\\ 
          && \textbar\space (num \textless 5 \textbar\textbar\space num == 7) = True \\
          && \textbar\space otherwise = False\\ \hline
@@ -192,12 +213,13 @@ in x + y
       in & Allow local variable binding in expression \\ \hline
       if, then, else & Specify conditional expression, else compulsory  \\ \hline
       True, False & Specify boolean logic \\ \hline
-      genScore & Generate musical score given Score as argument  \\ \hline
+      otherwise & Specify conditional expression used with guards \\ \hline 
+      genScore & Generate musical score given list of measures as argument  \\ \hline
     \end{tabular}
 \end{table}
 
 \subsection{Library Functions}
-There are currently five library functions that can be used in SMURF: trans, inver, rev, head, tail.
+There are currently six library functions that can be used in SMURF: trans, inver, rev, head, tail, fillMeasure.
 
 \subsubsection{trans}
 Given an integer and a list (row), return a list that adds the integer to each element in the original list and 
@@ -215,4 +237,6 @@ Given a list of elements, return the first element in the list. If not given a l
 \subsubsection{tail}
 Given a list of elements, return the list with the first element removed. If not given a list return error.
 
+\subsubsection{fillMeasure}
+Given a list of chords, return a boolean whether the beats of each chord in the list add up to a measure.
 
