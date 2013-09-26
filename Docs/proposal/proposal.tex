@@ -6,57 +6,58 @@
 % The option dvips allows for graphics, 12pt is the font size, and article
 %   is the style
 
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage{float}
+\restylefloat{table}
+
 \usepackage{graphicx}
 \usepackage{url}
-
+\usepackage{harmony}
+\usepackage{musixtex}
+\usepackage{subfigure}
+\usepackage{caption}
+%\usepackage{biblatex}
+%\usepackage{subcaption}
 
 % These are additional packages for "pdflatex", graphics, and to include
 % hyperlinks inside a document.
 
-\setlength{\oddsidemargin}{0.25in}
-\setlength{\textwidth}{6.5in}
-\setlength{\topmargin}{0in}
-\setlength{\textheight}{8.5in}
 
 % These force using more of the margins that is the default style
 
-\begin{document}
 
 % Everything after this becomes content
 % Replace the text between curly brackets with your own
 
-\title{SMURF}
-\author{Richard Townsend, Lianne Lairmore, Lindsay Neubauer, Van Bui, Kuangya Zhai}
-\date{\today}
+\title{{\Huge \bfseries SMURF} \\ \Large \it Serial MUsic Represented as Functions \vspace{0.6cm}}
+
+\author{\normalsize Richard Townsend, Lianne Lairmore, Lindsay Neubauer, Van Bui, Kuangya Zhai
+	\\ \small \{rt2515, lel2143, lan2135, vb2363, kz2219\}@columbia.edu \vspace{0.6cm}}
+
+\date{\today \vspace{2cm}}
 
 % You can leave out "date" and it will be added automatically for today
 % You can change the "\today" date to any text you like
 
-
+\begin{document}
 \maketitle
+
 
 % This command causes the title to be created in the document
 
+\input{data/summary}
 \input{data/introduction}
 \input{data/motivation}
+\input{data/pipeline}
 \input{data/syntax}
 \input{data/examples}
+\clearpage
 
- 
-\begin{thebibliography}{99}
-
-\bibitem{gonzalez2012} Jonay I. Gonz\'{a}lez Hern\'{a}ndez, 
-Pilar Ruiz-Lapuente,	
-Hugo M. Tabernero,	
-David Montes,	
-Ramon Canal,	
-Javier M\'{e}ndez	
-and Luigi R. Bedin,
-{No surviving evolved companions of the progenitor of SN1006},
-Nature, {\bf 489}, 533-536 (2012).
-
-\end{thebibliography}
-
+% citations begin here
+\bibliographystyle{ieeetr}
+\bibliography{ref/refs}
 
 
 \end{document}
