@@ -1,0 +1,60 @@
+\documentclass[dvips, 12pt]{article}
+
+% Any percent sign marks a comment to the end of the line
+
+% Every latex document starts with a documentclass declaration like this
+% The option dvips allows for graphics, 12pt is the font size, and article
+%   is the style
+
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage{float}
+\restylefloat{table}
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{harmony}
+\usepackage{musixtex}
+\usepackage{subfigure}
+\usepackage{caption}
+%\usepackage{biblatex}
+%\usepackage{subcaption}
+
+% These are additional packages for "pdflatex", graphics, and to include
+% hyperlinks inside a document.
+
+
+% These force using more of the margins that is the default style
+
+
+% Everything after this becomes content
+% Replace the text between curly brackets with your own
+
+\title{{\Huge \bfseries SMURF Language Reference Manual} \\ \Large \it Serial MUsic Represented as Functions \vspace{0.6cm}}
+
+\author{\normalsize Richard Townsend, Lianne Lairmore, Lindsay Neubauer, Van Bui, Kuangya Zhai
+	\\ \small \{rt2515, lel2143, lan2135, vb2363, kz2219\}@columbia.edu \vspace{0.6cm}}
+
+\date{\today \vspace{2cm}}
+
+% You can leave out "date" and it will be added automatically for today
+% You can change the "\today" date to any text you like
+
+\begin{document}
+\maketitle
+\clearpage
+
+
+% This command causes the title to be created in the document
+\tableofcontents
+
+%\input{data/examples}
+\clearpage
+
+% citations begin here
+\bibliographystyle{ieeetr}
+\bibliography{ref/refs}
+
+
+\end{document}

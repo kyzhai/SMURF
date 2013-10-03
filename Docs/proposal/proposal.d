@@ -1,0 +1,1 @@
+proposal.dvi proposal.d : proposal.tex data/summary.tex data/introduction.tex data/motivation.tex data/pipeline.tex data/syntax.tex data/examples.tex  ref/refs.bib  figures/serialismPianoImage.eps figures/12_tone.eps figures/pipeline.eps figures/example1.eps  
