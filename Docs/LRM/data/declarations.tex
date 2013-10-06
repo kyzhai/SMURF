@@ -1,2 +1,28 @@
 \section{Declarations and Bindings}
 
+This section of the LRM describes the syntax and informal semantics of
+declarations in SMURF. A program in SMURF, at its top-most level, is a
+series of declarations. However, declarations may also occur inside of
+\texttt{let} expressions. The scoping of such declarations is described 
+in this sections. There are three types of declarations in SMURF: 
+type signatures, pattern declarations, and function declarations.
+
+\subsection{Type Signatures}
+
+\begin{grammar}
+
+<type-sig> $\rightarrow$ <identifier> :: <type-list>
+
+<type-list> $\rightarrow$ <type> | <type> -$\rangle$ <type-list>
+
+<type> $\rightarrow$ Int | Bool | Note | [<type>] | 
+										( <type>, $\vdots$, <type> )
+										
+
+\end{grammar}
+
+\subsection{Pattern Declarations}
+
+\subsection{Function Declarations}
+
+\subsection{\texttt{main} Declaration}
