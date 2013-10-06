@@ -1,26 +1,247 @@
 \section{Syntax}
 
-Assuming that the best telescope for your work is one of the two 0.5 meters
-(CDK20N at Moore Observatory, CDK20S at Mt. Kent), you will have a choice of
-filters:  Sloan filter set (g, r, i, or z),  Johnson-Cousins (U, B, V, R, or I),
-color imaging (B, G, R, or clear), and narrow band (S $[II]$, red continuum,
-H$\alpha$,  O$[III]$.  Identify which filters are of interest.
+SMURF is a functional programming language loosely modeled off of Haskell. Functions are the main building 
+blocks of SMURF. It has immutable memory, no global variables and no I/O. A typical program consists of
+constant definitions and functions, each separated by new line characters.
 
-A typical exposure time for a magnitude 12 star to about half saturation is 100
-seconds, but it depends on the filter choice.  Based on this, estimate how many
-exposures you will need, and what total time you require.  In some cases, for
-example studying an eclipsing or variable star, or an exoplanet transit, you
-would use only one filter and make many measurements over a night.  In others,
-you may make only a few exposures in each filter, and try many different
-filters.   Changing filter sets takes an operator and several minutes, but
-changing filters within one set (e.g. a different Sloan filter) takes only a few
-seconds.
+\subsection{Types}
 
-We have other telescopes that may be available at Moore Observatory this season.
-There is a wide field astrograph that has a field of view of $4^\circ$ and is a
-fast $f/4$,  especially good for large nebula, comets, or surveys.  A 14-inch
-(0.36 meter) Celestron  telescope can be equipped with a fast camera for
-planetary imaging.  A 27-inch (0.7 meter)  corrected Dall-Kirkham is scheduled
-to be be delivered to Australia this fall, although we are unsure of the actual
-date it could see light yet.  
+\subsubsection{Atomic Types}
+\begin{itemize}
+\item Integer: int
+\item Boolean: bool
+\end{itemize}
 
+\subsubsection{Structured Types}
+Structured types hold groups of elements
+\begin{itemize}
+\item Tuples: (a, ..., n), where items a - n are elements in the tuple
+  \begin{itemize}
+  \item Elements can have different types 
+  \end{itemize}
+\item Lists:  [a, ..., n], where items a - n are elements in the list 
+  \begin{itemize}
+  \item Elements must have same type
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Beat}
+A Beat represents a length of musical time. It has a Time tag and integer type. 
+\begin{itemize}
+  \item Must have the string ``Time" followed by an integer that is a power of 2 and \textless\space 32 in declaration
+  \begin{itemize}
+    \item whole note: Time 1
+    \item half note: Time 2
+    \item quarter note: Time 4
+    \item eighth note: Time 8
+    \item sixteenth note: Time 16
+    \item thirty-second note: Time 32
+  \end{itemize}
+  \item Uses + operator to combine Time but only adds two operands that contain the same integer; recursively 
+  checks for Time operands that contain the same integers until only unequal Time integers are left
+  \begin{itemize}
+    \item Time 4 + Time 16 + Time 16 + Time 16 + Time 16
+    \item Time 4 + Time 8 + Time 16 + Time 16
+    \item Time 4 + Time 8 + Time 8 
+    \item Time 4 + Time 4 = Time 2 (quarter note + quarter note = half note)
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Note}
+A Note is a tuple of three integers and is declared as (pc: int, beat: Beat, register: int)
+\begin{itemize}
+\item pc (pitch class): represented by integers 0-11
+  \begin{itemize}
+  \item A Note with pc = -1 represents a rest. In this special case, the register for the Note only matters in relation
+  to whether the rest lies on the treble or bass clef (i.e. whether the register is positive or negative)
+  \end{itemize}
+\item beat: has type Beat
+\item register: represented by integers -2 to 1
+  \begin{itemize}
+  \item \begin{music}  \trebleclef  \end{music}  Treble Clef: notes middle C and higher represented by 0 and 1  
+    \begin{itemize}
+    \item middle C to the first B above middle C: 0
+    \item first C above middle C to next highest B: 1
+    \end{itemize}
+  \item \begin{music} \bassclef  \end{music}  Bass Clef: notes lower than middle C represented by -1 and -2
+    \begin{itemize}
+    \item B directly below middle C to first C below middle C: -1
+    \item next lowest B to next lowest C: -2
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Chord}
+A Chord is a list of notes and is declared as [Note]. The compiler will check that all notes in the list have 
+the same beat count.
+
+\subsubsection{Measure}
+A Measure is a list of chords and is declared as [Chord]. The compiler will check that every 
+measure is composed of 4 beats, where a quarter note constitutes one beat
+(we are assuming that musical scores will be in \Takt{4}{4} time). A list of measures is passed to the 
+keyword genScore, which generates and outputs an image of the musical score.
+
+\subsection{Functions}
+Functions are the main building blocks of the language.
+\begin{itemize}
+\item Function declarations must declare type (can declare general type)
+\item Function declarations must be on own line
+\item All functions are first order
+\item No explicit return statement
+\item Pattern matching, guards, and if-then-else clauses used
+  \begin{itemize}
+  \item Each pattern matching pattern must be on own line
+  \item Guards and if-then-else clauses do not have newline restrictions
+  \end{itemize}
+\end{itemize}
+
+\subsection{Variables}
+Variables can be declared globally or locally. A global variable is declared with an assignment
+operator and acts as a constant e.g. x = 4. A local variable is declared with a let ... in ...
+expression. Multiple bindings may be declared in the let expression, and the bindings are
+mutually recursive. The bindings only exist in the expression following the let expression. In the
+example that follows, x is bound to 3 and y is bound to 4, and these bindings only exist in
+the expression following the let ... in ... expression.
+
+\begin{verbatim}
+let x = 3
+    y = 4
+in x + y
+\end{verbatim}
+
+\subsection{Operators}
+
+  \subsubsection{Comment Operators}
+  SMURF allows nested, multiline comments in addition to single line comments.
+    \begin{table} [H]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+      /* */ & Multiline comments, nesting allowed & /* This /* is all */ commented */ \\ \hline
+      // & Single-line comment & // This is a comment \\ \hline
+    \end{tabular}
+  \end{table}
+
+  \subsubsection{Arithmetic Operators}
+  SMURF allows assignment and addition, subtraction, and modulus on expressions that evaluate
+	to integers. These operators are all infix. The modulus operator
+	ignores negatives e.g. \begin{verbatim} 13 % 12 is equal to -13 % 12 \end{verbatim}.
+  \begin{table} [H]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+      = & Assignment operator & a = 4 \\ \hline
+      + & Integer arithmetic: plus  & a + 2 \\ \hline
+      $-$ & Integer arithmetic: minus  & 5 $-$ a \\ \hline 
+      \% & Integer arithmetic: modulus, ignores negatives  & 14 mod 12 \\ \hline
+    \end{tabular}
+  \end{table}
+
+  \subsubsection{Comparison Operators}
+  SMURF allows comparison operations between expressions that evaluate to integers.
+    \begin{table} [H]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+      \textless  & Less than & if a \textless\space  5 then True else False \\ \hline
+      \textgreater  & Greater than & if a \textgreater\space  5 then True else False  \\ \hline
+      \textless=  & Less than or equal to & if a \textless= 5 then True else False \\ \hline
+      \textgreater= & Greater than or equal to & if a \textgreater= 5 then True else False \\ \hline
+    \end{tabular}
+  \end{table}
+  
+  \subsubsection{Boolean Operators}
+  SMURF allows logical negation, conjunction, and disjunction, in addition to structural comparison and boolean 
+  notation for use with guards.
+    \begin{table} [H]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+       == & Structural comparison & if a == 5 then a = True else a = False \\ \hline
+       not & Logical negation & if not a == 5 then True else False \\ \hline
+       \&\& & Logical conjunction & if b \&\& c  then True else False \\ \hline
+       \textbar\textbar & Logical disjunction & if b \textbar\textbar\space   c  then True else False \\ \hline
+     \end{tabular}
+  \end{table}
+  
+  \subsubsection{List Operators}
+  SMURF allows concatenation and construction of lists.
+    \begin{table} [H]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+       ++ & Concatenation: concat & [1,2,3] ++ [4,5,6] (result is [1,2,3,4,5,6]) \\ \hline
+       : & Construction: cons & 1 : [2,3,4] (result is [1,2,3,4]) \\ \hline
+    \end{tabular}
+  \end{table}
+  
+  \subsubsection{Function Operators}
+  SMURF allows type, argument, and function return type specification in addition to concatenation and construction 
+  operations
+    \begin{table} [H]
+	\centering
+    \begin{tabular}{lll}
+    \hline\hline
+    Operator & Description & Example \\
+    \hline\hline
+       :: & Type specification & returnIntFunc :: Int \\ \hline
+       \textendash\textgreater & Argument and function return type specification
+         & isPositiveNum :: Int \textendash\textgreater\space Bool  \\ \hline
+       \textbar & Boolean operator used with guards & isLowOrSeven num :: [Int] \textendash\textgreater\space Bool\\ 
+         && \textbar\space (num \textless 5 \textbar\textbar\space num == 7) = True \\
+         && \textbar\space otherwise = False\\ \hline
+    \end{tabular}
+  \end{table}
+
+\subsection{Keywords}
+\begin{table} [H]
+	\centering
+    \begin{tabular}{ll}
+    \hline\hline
+    Keywords & \\ 
+    \hline\hline
+      let & Specify variables and functions  \\ \hline
+      in & Allow local variable binding in expression \\ \hline
+      if, then, else & Specify conditional expression, else compulsory  \\ \hline
+      True, False & Specify boolean logic \\ \hline
+      otherwise & Specify conditional expression used with guards \\ \hline 
+      genScore & Generate musical score given list of measures as argument  \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Library Functions}
+There are currently six library functions that can be used in SMURF: trans, inver, rev, head, tail, fillMeasure.
+
+\subsubsection{trans}
+Given an integer and a list (row), return a list that adds the integer to each element in the original list and 
+computes mod 12 on the result of each addition. If not given an integer and then a list return an error.
+
+\subsubsection{inver}
+Given a list (row), return a list that has the original list elements inverted. If not given a list return error.
+
+\subsubsection{rev}
+Given a list (row), return a list that has the original list elements reversed. If not given a list return error.
+
+\subsubsection{head}
+Given a list of elements, return the first element in the list. If not given a list return error.
+
+\subsubsection{tail}
+Given a list of elements, return the list with the first element removed. If not given a list return error.
+
+\subsubsection{fillMeasure}
+Given a list of chords, return a boolean whether the beats of each chord in the list add up to a measure.
+  \begin{itemize}
+    \item Time 1 + Time 32 evaluates to False (cannot have more than a whole note in a measure)
+    \item Time 4 + Time 16 evaluates to False (quarter note and sixteenth note do not contain enough beats for a measure)
+    \item Time 4 + Time 4 + Time 4 + Time 4 evaluates to True (4 quarter notes in one measure)
+  \end{itemize}
