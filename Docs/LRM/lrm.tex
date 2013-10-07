@@ -12,12 +12,21 @@
 \usepackage{float}
 \restylefloat{table}
 
+\usepackage{color}
+\usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{url}
 \usepackage{harmony}
 \usepackage{musixtex}
 \usepackage{subfigure}
 \usepackage{caption}
+\usepackage{listings}
+\lstset{language=Haskell}
+
+
+\newcolumntype{L}{>{\centering\arraybackslash}m{3cm}}
+\newcolumntype{S}{>{\hsize=5cm}X}
+
 %\usepackage{biblatex}
 %\usepackage{subcaption}
 
@@ -49,7 +58,10 @@
 % This command causes the title to be created in the document
 \tableofcontents
 
+\input{data/notations}
 \input{data/lexical}
+\input{data/identifiers}
+\input{data/expressions}
 \clearpage
 
 % citations begin here
