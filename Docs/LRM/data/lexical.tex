@@ -16,14 +16,15 @@ SMURF has 5 kinds of tokens: identifiers, keywords, constants, operators and whi
 An identifier consists of a letter followed by other letters and
 digits. The letters are the ascii characters a-z, A-Z and \_. Digits are ascii
 characters 0-9. SMURF is case sensitive.
-\begin{lstlisting}[frame=single][mathescape]
+\begin{verbatim}
 letter -> [`a'-`z' `A'-`Z']
 digit -> [`0'-`9']
-
 identifiers -> letter (letter | digit | `_')*
-\end{lstlisting}
+\end{verbatim}
 
 \subsubsection{Keywords}
+This is a list of reserved keywords in SMURF. The keywords are used by the
+language, thus are not avaliable for re-definition or overloading.
 \begin{table} [H]
 	\centering
     \begin{tabular}{ll}
@@ -45,12 +46,11 @@ identifiers -> letter (letter | digit | `_')*
 In SMURF, constants are expressions with a fixed value. Integer literials and
 boolean keywords are the constants of SMURF. 
 
-\begin{lstlisting}[frame=single][mathescape]
+\begin{verbatim}
 letter -> [`a'-`z' `A'-`Z']
 digit -> [`0'-`9']
-
 constants -> [`1'-`9'] digit* | True | False
-\end{lstlisting}
+\end{verbatim}
 
 
 \subsubsection{Operators}
@@ -73,7 +73,7 @@ SMURF allows assignment and addition, subtraction, and modulus on expressions th
 \begin{verbatim} 13 % 12 is equal to -13 % 12 \end{verbatim}
 \begin{table} [H]
 \centering
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{lXX}
 \hline\hline
 Arithmetic Operator & Description & Example \\
 \hline\hline
@@ -81,7 +81,9 @@ Arithmetic Operator & Description & Example \\
   + & Integer arithmetic: plus  & a + 2 \\ \hline
   $-$ & Integer arithmetic: minus  & 5 $-$ a \\ \hline 
   \% & Integer arithmetic: modulus, ignores negatives  & 14 \% 12 \\ \hline
-\end{tabular}
+  $\wedge+$ & Beat add operator & 2 $\wedge+$ 2 = 1 (The add of two half notes evaluates one whole note) \\ \hline
+  $\wedge-$ & Beat substract operator & 1 $\wedge-$ 2 = 2 (One whole note substracts one half note evaluates one half note) \\ \hline
+\end{tabularx}
 \end{table}
 
 SMURF allows comparison operations between expressions that evaluate to integers.
@@ -122,7 +124,7 @@ List Operator & Description & Example \\
 \hline\hline
    ++ & Concatenation: concat & [1,2,3] ++ [4,5,6] (result is [1,2,3,4,5,6]) \\ \hline
    : & Construction: cons & 1 : [2,3,4] (result is [1,2,3,4]) \\ \hline
-   [] & List constructor & [] (result is an empty list) \\ \hline
+   $[]$ & List constructor & $[]$ (result is an empty list) \\ \hline
 \end{tabular}
 \end{table}
 
@@ -155,7 +157,7 @@ Tone Row Operator & Description & Example \\
    $\sim$ & Inversion & $\sim$ {\it row} (returns the inversion of {\it row})\\ \hline
    \textless\textgreater & Retrograde & \textless\textgreater~{\it row} (returns the
            retrograde of {\it row})\\ \hline
-   \^{}\^{} & Transposition & \^{}\^{} {\it row} 3 (transpose {\it row} by 3
+   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\it row} 3 (transpose {\it row} by 3
            semitones)\\ \hline
 \end{tabularx}
 \end{table}

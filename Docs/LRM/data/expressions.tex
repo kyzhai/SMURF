@@ -15,5 +15,97 @@ A constant expression is an expression that involves only constants. Constants
 in SMURF are defined in section~\ref{sec:constants}.
 
 \subsubsection{(Expression)}
-An expression surrended by parentheses is a new expression.
+An expression surrounded by parentheses is a new expression.
 
+
+\subsection{Curried Applications}
+
+    \subsubsection{Function declaration}
+    The syntax of a function declaration is as follows: 
+    \begin{verbatim} 
+    function-expression :: argument-type-list -> result-type 
+    \end{verbatim} 
+    where
+    \begin{verbatim}
+    argument-type-list:     argument-type
+                            argument-type-list  argument-type
+    \end{verbatim} 
+A function declaration must be on its own line and must declare a type. Declaring a general type is allowed. There are no explicit return statements.
+  
+    \subsubsection{Function application}
+    The syntax of a function application is as follows: 
+    \begin{verbatim}
+    function-expression  argument-expression-list \end{verbatim} 
+    where
+    \begin{verbatim}
+    argument-expression-list:     argument-expression
+                                  argument-expression-list  argument-expression
+    \end{verbatim} 
+A function application associates from left to right, so parentheses are optional: 
+    \begin{verbatim}
+    funct a b
+    \end{verbatim}
+    is equivalent to
+    \begin{verbatim}
+    ((funct a) b) 
+    \end{verbatim}
+    Parentheses are used to change the precedence from the default. The following evaluates funct1 with argument b then evaluates funct2 with argument a:
+    \begin{verbatim}
+    funct2 a (funct1 b)
+    \end{verbatim}   
+
+  \subsubsection{**PARTIAL APPLICATION**}
+  
+
+\subsection{Operator Application}
+  The syntax for applying a binary operator to two expressions is infix:
+    \begin{verbatim}
+    expression  operator  expression \end{verbatim} 
+    where
+    \begin{verbatim}
+    operator:     arithmetic-operator
+                  comparison-operator
+                  boolean-operator
+                  list-operator
+                  function-operator \end{verbatim} 
+
+\subsection{Conditionals}
+  The syntax for conditional expressions is as follows:
+  \begin{verbatim}
+  if  expression  then expression-true  else expression-false \end{verbatim} 
+  When the value of expression evaluates to true, expression-true is evaluated, otherwise expression-false is evaluated. Conditional expressions do not have newline restrictions.
+
+\subsection{Lists}
+Lists are written as:
+  \begin{verbatim}
+  [expression-list]\end{verbatim}
+  where
+  \begin{verbatim}
+  expression-list:     <empty>
+                       expression
+                       expression-list,  expression \end{verbatim}
+[expression$_{1}$, ..., expression$_{k}$]  =  expression$_{1}$ : ( expression$_{2}$ : (... (expression$_{k}$ : [ ] )) \\ \\
+where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor : and empty list [ ] are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
+
+\subsection{Tuples}
+Tuples are written as:
+  \begin{verbatim}
+  (expression-list)\end{verbatim}
+  where
+  \begin{verbatim}
+  expression-list:     expression, expression
+                       expression-list,  expression \end{verbatim}
+The expressions in a tuple may be of different types. The constructor of an n-tuple is denoted by (\textunderscore
+, ..., \textunderscore) where there are \textit{n-1} commas.
+
+\subsection{Parenthesized Expressions}
+Parenthesized expressions has the form:
+  \begin{verbatim}
+  (expression)\end{verbatim}
+  where expression is evaluated as a primary expression.
+
+\subsection{Expression Type-Signature}
+Expression type-signatures have the form:
+  \begin{verbatim}
+  expression :: type \end{verbatim}
+  where expression is an expression and type is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
