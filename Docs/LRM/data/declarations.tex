@@ -5,7 +5,7 @@ declarations in SMURF. A program in SMURF, at its top-most level, is a
 series of declarations. However, declarations may also occur inside of
 \texttt{let} expressions. The scoping of such declarations is described 
 in this sections. There are three types of declarations in SMURF: 
-type signatures, pattern declarations, and function declarations.
+type signatures, definitions, and function declarations.
 
 \subsection{Type Signatures}
 
@@ -61,16 +61,63 @@ The \texttt[Chord] type is equivalent to the \texttt[$[$Note$]$] type.
 
 The \texttt[System] type is equivalent to the \texttt[$[$Chord$]$] type.
 
-\subsection{Pattern Declarations}
+\subsection{Definitions}
 
 \begin{grammar}
 
-<identifier> $\rightarrow$ <expr> | <guards>
+<definition> $\rightarrow$ <identifier> $=$ <expression>
 
-<guards> $\rightarrow$ $|$ <bool-expr> $=$ <expr> $\\n$ <guards> |
-											 $|$	otherwise $=$ <expr>
 \end{grammar}
 
+A definition binds an identifier to an expression. All definitions at a given
+scope must be unique and can be mutually recursive. For example, the following
+is legal in SMURF:
+
+\begin{verbatim}
+x = 4
+z = if y = 7 then x else y
+y = let x = 5 in x + 3
+\end{verbatim}
+
+The $x$ in the let statement is in a different scope than the global $x$, so
+the two definitions do not conflict. $z$ is able to refer to $y$ even though
+$y$ is defined after $z$ in the program. In this example, the three global 
+identifiers $x, y, $ and $z$ will evaluate to values 4, 8, and 8, respectively,
+while the local identifier $x$ after the let statement will evaluate to 5.
+
+A type signature may be given for a definition but is not required.
+
 \subsection{Function Declarations}
+
+\begin{grammar}
+
+<func-dec> $\rightarrow$ <identifier> <args> $=$ <expression> |
+												 <func-dec> $\\n$ <func-dec>
+
+<args> $\rightarrow$ <pattern> | <pattern> <args>
+\end{grammar}
+
+A function declaration defines an identifier as a function that takes
+some number of patterns as arguments and, based on which patterns are matched
+when the function is called, returns the result
+of a given expression. Essentially, a function declaration can be seen as a 
+sequence of one or more assignment expressions, where each assignment defines
+the value bound to the function identifier, and the value is dependent on the
+patterns matched in the function call. There must be at least one pattern listed
+as an argument in a function declaration. All assignment expressions defining
+a function must be contiguous and searated by new lines, and the number of
+patterns as arguments in each assignment expression must be the same.
+
+As with definitions, only one declaration of a given function name can exist
+in a given scope. However, the same function name can be declared multiple
+times if each instance is in a different scope.
+
+If a function declaration for some identifier $x$ occurs in scope $n$, then
+a type signature for $x$ in scope $k>n$ is required. That is if a function has
+been declared but its type has not been explicitly stated in the same or a higher
+scope, a compile-time error will be generated. The type of the arguments
+passed to a function are checked at compile-time as well, and an error
+is issued if they don't match the types specified in that function's 
+type signature.
 
 \subsection{\texttt{main} Declaration}
