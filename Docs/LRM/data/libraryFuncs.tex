@@ -1,0 +1,47 @@
+\section{Library Functions}
+
+\textcolor{red}{Since we moved the previous library functions to operations and removed measures not sure what to put here. I will brain storm and 
+think of any library functions we might need.} 
+
+
+Below are the library functions that can be used in the SMURF language. 
+These functions are implemented in SMURF but are available to all users 
+for their convenience. Each library function will include a description 
+and its SMURF definition. \newline
+
+\noindent\textbf{Head}
+
+The function \texttt{head} takes a list and returns the first element. 
+This function is commonly used when working with lists. 
+
+\begin{verbatim}
+head :: [a] -> a
+head (h:tl) = h
+\end{verbatim} 
+
+
+\noindent\textbf{Tail}
+
+The function \texttt{tail} takes a list and returns the end of the list.
+This function is commmonly used when working with lists. 
+
+\begin{verbatim}
+tail :: [a] -> [a]
+tail (h:tl) = tl
+\end{verbatim}
+
+\noindent\textbf{MakeNotes}
+
+The function \texttt{makeNotes} takes in three lists and returns a list 
+of notes. The first list corresponds to \texttt{integer}s representing 
+pitches or rests. The second list corresponds to \texttt{integer}s representing the register that the pitch will be played in. The third list is a list 
+of \texttt{Beat}s representing the duration of the note. It is common in 
+12 tone serialism to use lists of notes. This function allows the user 
+to easily turn their modified rows and columns into a list of notes to add 
+to their system. 
+
+\begin{verbatim}
+makeNotes :: [a] [a] [b] -> [Note]
+makeNotes [] = []
+makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)^h3:(makeNotes tl1 tl2 tl3)
+\end{verbatim}

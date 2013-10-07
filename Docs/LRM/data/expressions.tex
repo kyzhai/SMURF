@@ -1,5 +1,33 @@
 \section{Expressions}
 
+This section describes the syntax and semantics of \emph{expressions} in 
+SMURF. Expressions can have either infix or prefix operators. All 
+infix operators are built in operators. Unless otherwise stated infix 
+operators are left associated. All prefix operators (function calls) 
+are left associated. Prefix operators will always evaluate with a 
+higher precedence than infix operators.  
+
+
+\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		Expression & Association \\
+		\hline
+		\texttt{f x + g y} & \texttt{(f x) + (g y)} \\
+		\texttt{f g x} & \texttt{(f (g x))} \\
+		\texttt{ let \{ ... \} in x + y} & \texttt{let \{ ... \} in (x + y)} \\
+		type declaration example & order of precedence \\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+\subsection{Errors}
+
+Errors can occur during runtime of a SMURF program. These erros cannot be 
+caught by a programmer nor can a programmer produce an error artificially. 
+Errors that occur during runtime are out of bounds errors in \texttt{Note} 
+and \texttt{Beat} creation.
 
 \subsection{Curried Applications}
 
