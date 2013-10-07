@@ -4,22 +4,24 @@ This section of the LRM describes the syntax and informal semantics of
 declarations in SMURF. A program in SMURF, at its top-most level, is a
 series of declarations. However, declarations may also occur inside of
 \texttt{let} expressions. The scoping of such declarations is described 
-in this sections. There are three types of declarations in SMURF: 
+in this section. There are three types of declarations in SMURF: 
 type signatures, definitions, and function declarations.
 
 \subsection{Type Signatures}
 
 \begin{grammar}
 
-<type-sig> $\rightarrow$ <identifier> :: <type>
+<type-sig> $\rightarrow$ <identifier> \texttt{::} <type>
 
-<type> $\rightarrow$ Int | Bool | Note | [<type>] | 
-										( <type>, $\ldots$, <type> ) | <type> -> <type> | ( <type> )
+<type> $\rightarrow$ \texttt{Int} \alt \texttt{Bool} \alt \texttt{Beat} \alt \texttt{Note} \alt
+											\texttt{[} <type> \texttt{]} \alt \texttt{(} <type>\texttt{,} 
+											$\ldots$\texttt{,} <type> \texttt{)} \alt <type> \texttt{->} <type>
+											 \alt \texttt{(} <type> \texttt{)}
 										
 
 \end{grammar}
 
-A type signature explicitly defines a type for a given identifier. The
+A type signature explicitly defines the type for a given identifier. The
 \texttt{::} operator can be read as ``has type of." Only one type signature
 for a given identifier can exist in a given scope. That is, two different
 type signatures for a given identifier can exist, but they must be declared
@@ -29,37 +31,42 @@ names are identifiers starting with an uppercase letter.
 
 \subsubsection{Primitive Types}
 
-The three types \texttt{Int}, \texttt{Bool}, and \texttt{Note} are
-the fundamental building blocks of the type system in SMURF. 
+The four types \texttt{Int}, \texttt{Bool}, \texttt{Beat}, and \texttt{Note} are
+the fundamental building blocks of the type system in SMURF. \texttt{Int} and \texttt{Bool}
+are the traditional integer and boolean types. The \texttt{Beat} type is a subset of 
+\texttt{Int}, in that a value of type \texttt{Int} can be specified as type \texttt{Beat} if
+it is a power of two between 1 and 16. 
+The note type is written as \texttt{(Int, Int)\string^Beat}. The first expression of type
+\texttt{Int} is a pitch class, the next is a register, and the expression of type \texttt{Beat}
+is the durational value of the note.
 
 \subsubsection{Structured Types}
 
-SMURF has three structured types: lists, tuples, and functions. Each
+SMURF has four structured types: lists, tuples, functions, and notes. Each
 type is represented by a special syntactic construct that operates on
 other types to generate a concrete structured result.
 
-The list type is written as \texttt{[t]} which specifies the type of lists
-containing elements of type t.
+The list type is written as \texttt{[} $t$ \texttt{]} which specifies the type of lists
+containing elements of type $t$.
 
-The tuple type is written as \texttt{$(t_1, t_2, \ldots, t_n)$} where $t_i$
-can be any type. THis specifies the type of tuples of size $n$ whose first
-element has type $t_1$ second element has type $t_2$, and so on. A tuple
+The tuple type is written as \texttt{($t_1$, $t_2$, \ldots, $t_n$)} where $t_i$
+can be any type. This specifies the type of tuples of size $n$ whose first
+element has type $t_1$, second element has type $t_2$, and so on. A tuple
 type must have at least two elements.
 
-The function type is written as \texttt[$t_1 -> t_2$] and specifies the type
+The function type is written as $t_1$ \texttt{->} $t_2$ and specifies the type
 of functions that take an argument of type $t_1$ and return a value of type
 $t_2$. As with tuple types, $t_1$ and $t_2$ do not have to be the same.
-The function arrow is right-associative, so \texttt[Int -> Bool -> Bool] is
-equivalent semantically to \texttt[Int -> (Bool -> Int)]
+The function arrow is right-associative, so \texttt{Int -> Bool -> Bool} is
+equivalent semantically to \texttt{Int -> (Bool -> Int)}
+
 
 \subsubsection{Type Synonyms}
 
 Type synonyms give different names to specific types, making our language
 more readable and less verbose.
-
-The \texttt[Chord] type is equivalent to the \texttt[$[$Note$]$] type.
-
-The \texttt[System] type is equivalent to the \texttt[$[$Chord$]$] type.
+The \texttt{Chord} type is equivalent to the \texttt{[Note]} type.
+The \texttt{System} type is equivalent to the \texttt{[Chord]} type.
 
 \subsection{Definitions}
 
@@ -75,7 +82,7 @@ is legal in SMURF:
 
 \begin{verbatim}
 x = 4
-z = if y = 7 then x else y
+z = if y == 7 then x else y
 y = let x = 5 in x + 3
 \end{verbatim}
 
@@ -91,10 +98,10 @@ A type signature may be given for a definition but is not required.
 
 \begin{grammar}
 
-<func-dec> $\rightarrow$ <identifier> <args> $=$ <expression> |
-												 <func-dec> $\\n$ <func-dec>
+<func-dec> $\rightarrow$ <identifier> <args> $=$ <expression> \alt
+												 <func-dec> <new-line> <func-dec>
 
-<args> $\rightarrow$ <pattern> | <pattern> <args>
+<args> $\rightarrow$ <pattern> \alt <pattern> <args>
 \end{grammar}
 
 A function declaration defines an identifier as a function that takes
@@ -102,10 +109,10 @@ some number of patterns as arguments and, based on which patterns are matched
 when the function is called, returns the result
 of a given expression. Essentially, a function declaration can be seen as a 
 sequence of one or more assignment expressions, where each assignment defines
-the value bound to the function identifier, and the value is dependent on the
-patterns matched in the function call. There must be at least one pattern listed
+a value bound to the function identifier. The actual value returned by the function
+is dependent on the patterns matched in the function call. There must be at least one pattern listed
 as an argument in a function declaration. All assignment expressions defining
-a function must be contiguous and searated by new lines, and the number of
+a function must be contiguous and separated by new lines, and the number of
 patterns as arguments in each assignment expression must be the same.
 
 As with definitions, only one declaration of a given function name can exist
@@ -121,3 +128,10 @@ is issued if they don't match the types specified in that function's
 type signature.
 
 \subsection{\texttt{main} Declaration}
+
+Every SMURF program must contain a definition for the reserved identifier \texttt{main}. This
+identifier may only be used as the left-hand side of a top-level definition. The expression
+bound to \texttt{main} is evaluated and its value is the value of the SMURF program itself.
+That is, when a SMURF program is compiled and run, the expression bound to \texttt{main} is
+evaluated and the result is returned to the user on the command-line. If a definition for
+\texttt{main} is not included in a SMURF program, it will return a compile-time error.
