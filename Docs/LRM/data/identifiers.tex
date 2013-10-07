@@ -3,13 +3,9 @@ In SMURF, identifiers refer to functions and variables.
 
 \subsection{What Are They Need For}
 \subsubsection{Functions}
-There are two library functions that can be used in SMURF: head and tail.
-\begin{itemize}
-\item head: given a list of elements, return the first element in the list. If
-not given a list or given an empty list, return error.
-\item tail: given a list of elements, return the list with the first element
-removed. If not given a list or given an empty list, return error.
-\end{itemize}
+Functions in SMURF enable us to structure our programs in a more modular way. 
+A function is a group of statements that is executed when it is called from some
+point of the program. 
 
 \subsubsection{variables}
 In SMURF, a variable is an abstraction of a computer memory cell or a collection
@@ -19,8 +15,8 @@ be changed once declared. Each variable has a static type which is automatically
 deduced by the SMURF compiler. The variables in SMURF are immutable.
 
 \subsection{Scope and Lifetime}
-In SMURF, a variable is bound in its scope to a value using constructs like let or list
-comprehensions. A variable is visible within its scope.
+In SMURF, a variable is bound in its scope to a value using constructs like
+\texttt{let} or list comprehensions. A variable is visible within its scope.
 There is no global variables in SMURF. A variable becomes invalid after the 
 ending of its scope.
 
@@ -32,23 +28,47 @@ There are two fundamental types in SMURF: int and bool.
 \end{itemize}
 
 \subsection{Structured Types}
-Structured types hold groups of elements. There are two structured types in
-SMURF: tuple and list.
-\begin{itemize}
-\item Tuples: (a, ..., n), where items a - n are elements in the tuple
-  \begin{itemize}
-  \item Elements can have different types 
-  \end{itemize}
-\item Lists:  [a, ..., n], where items a - n are elements in the list 
-  \begin{itemize}
-  \item Elements must have same type
-  \end{itemize}
-\end{itemize}
+Structured types hold groups of elements. There are three structured types in
+SMURF: tuples, lists and functions.
 
+Tuples have the format of 
+\begin{verbatim}
+(a, ..., n)
+\end{verbatim}
+where items \texttt{a - n} are elements in the tuple. Elements
+of tuples can have different types 
 
-%\subsubsection{Function}
+Lists have the format of 
+\begin{verbatim}
+[a, ..., n]
+\end{verbatim}
+where items \texttt{a - n} are elements in the list. Elements
+of lists must have the same type
+
+Functions have the format of 
+\begin{verbatim}
+arg1 -> arg2 -> ... -> argk -> return-value
+\end{verbatim}
+where \texttt{arg1 - argk} are the types of arguments of function
+
 
 \subsection{Derived Types}
+SMURF has a derived type of \texttt{note}, which has the format of 
+\begin{verbatim}
+(pc, reg)^k[.]*
+\end{verbatim}
+where \texttt{pc} is an integer in the range from -1 to 11. When \texttt{pc} 
+has a value of -1, the note is a rest, other it represents the pitch class of 
+the note. 
+\texttt{reg} is an integer in the range of 0-3, representing the register of the 
+note. The register of the note is Bass 1, Bass 2, Treble 1 and Treble 2 for the
+\texttt{reg} value from 0 to 3 repectively.
+\texttt{k} is an integer of the power of 2, ranging from 1 to 16. 
+Periods following k are optional. Users can add dots until the added duration
+gets down to 16th note.
+
+\begin{comment}
+
 \subsubsection{Pitch}
 pc (pitch classes) are represented by integers ranging from 0 to 11.
 \begin{itemize}
@@ -104,6 +124,7 @@ A Note is a tuple of three integers and is declared as
 \subsubsection{Chord}
 A Chord is a list of notes and is declared as [Note]. The compiler will check that all notes in the list have 
 the same beat count.
+\end{comment}
 
 % \subsubsection{Measure} 
 % Measure are abandoned in lrm

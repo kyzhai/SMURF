@@ -1,21 +1,60 @@
 \section{Expressions}
 
+This section describes the syntax and semantics of \emph{expressions} in 
+SMURF. Expressions can have either infix or prefix operators. All 
+infix operators are built in operators. Unless otherwise stated infix 
+operators are left associated. All prefix operators (function calls) 
+are left associated. Prefix operators will always evaluate with a 
+higher precedence than infix operators.  
+
+
+%TODO: check the correct position for this table
+\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		Expression & Association \\
+		\hline
+		\texttt{f x + g y} & \texttt{(f x) + (g y)} \\
+		\texttt{f g x} & \texttt{(f (g x))} \\
+		\texttt{ let \{ ... \} in x + y} & \texttt{let \{ ... \} in (x + y)} \\
+		type declaration example & order of precedence \\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+\subsection{Errors}
+
+Errors can occur during runtime of a SMURF program. These erros cannot be 
+caught by a programmer nor can a programmer produce an error artificially. 
+Errors that occur during runtime are out of bounds errors in \texttt{Note} 
+and \texttt{Beat} creation.
+
 \subsection{Description of Precedence}
 
 
 \subsection{Primary Expressions}
 
 \subsubsection{Identifiers}
-An identifier expression is an expression that involves only identifiers. Its 
-type is specified at definition. Identifiers in SMURF are defined in 
-section~\ref{sec:identifiers}.
+An identifier expression is an expression that involves only identifiers. 
+\begin{verbatim}
+identifier-expression :: identifiers
+\end{verbatim}
+where \texttt{identifiers} are defined in section~\ref{sec:identifiers}.
+
 
 \subsubsection{Constants}
-A constant expression is an expression that involves only constants. Constants 
-in SMURF are defined in section~\ref{sec:constants}.
+A constant expression is an expression that involves only constants. 
+\begin{verbatim}
+constant-expression :: constants
+\end{verbatim}
+where \texttt{constants} are defined in section~\ref{sec:constants}.
 
 \subsubsection{(Expression)}
 An expression surrounded by parentheses is a new expression.
+\begin{verbatim}
+paren-expression :: ( expression )
+\end{verbatim}
 
 
 \subsection{Curried Applications}
@@ -109,3 +148,23 @@ Expression type-signatures have the form:
   \begin{verbatim}
   expression :: type \end{verbatim}
   where expression is an expression and type is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
+
+\subsection{Let Expressions}
+\begin{grammar}
+<let-exp> $\rightarrow$ let <decls> in <expression>
+\end{grammar}
+Let expressions have the form \emph{let \{} $d_1;...;d_n$ \} \emph{in e}, where $d_n$ is the nth declaration and \emph{e} is an expression. Note that the scope of $d_n$ is in \emph{e}.
+
+% are pattern bindings matched lazily?
+
+\subsection{Pattern Matching}
+
+Patterns can be found in function definitions, pattern bindings, and list operations. Patterns are matched with values. Matching a pattern can either be successful or it can fail. A successful match will return  a binding for the variables in the pattern. 
+
+\subsection{Guards}
+\begin{grammar}
+<guard> $\rightarrow$  let <decls> | <infixexp>          
+\end{grammar}
+
+There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
+

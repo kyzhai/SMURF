@@ -27,7 +27,7 @@ This is a list of reserved keywords in SMURF. The keywords are used by the
 language, thus are not avaliable for re-definition or overloading.
 \begin{table} [H]
 	\centering
-    \begin{tabular}{ll}
+    \begin{tabularx}{0.9\textwidth}{l@{\hskip 3cm}l}
     \hline\hline
     Keywords & \\ 
     \hline\hline
@@ -37,7 +37,7 @@ language, thus are not avaliable for re-definition or overloading.
       True, False & Specify boolean logic \\ \hline
       otherwise & Specify conditional expression used with guards \\ \hline 
       %genScore & Generate musical score given list of measures as argument  \\ \hline
-    \end{tabular}
+    \end{tabularx}
 \end{table}
 
 
@@ -49,7 +49,7 @@ boolean keywords are the constants of SMURF.
 \begin{verbatim}
 letter -> [`a'-`z' `A'-`Z']
 digit -> [`0'-`9']
-constants -> [`1'-`9'] digit* | True | False
+constants -> -? [`1'-`9'] digit* | True | False
 \end{verbatim}
 
 
@@ -157,7 +157,7 @@ Tone Row Operator & Description & Example \\
    $\sim$ & Inversion & $\sim$ {\it row} (returns the inversion of {\it row})\\ \hline
    \textless\textgreater & Retrograde & \textless\textgreater~{\it row} (returns the
            retrograde of {\it row})\\ \hline
-   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\it row} 3 (transpose {\it row} by 3
+   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\it row} 3 (transposes {\it row} by 3
            semitones)\\ \hline
 \end{tabularx}
 \end{table}
@@ -165,7 +165,7 @@ Tone Row Operator & Description & Example \\
 
 \subsubsection{Whitespace}
 Blanks, tabs and newlines are referred to as whitespaces in SMURF. SMURF treats
-newlines as tokens and ignores others whitespaces. 
+\texttt{newlines} as tokens and ignores others whitespaces. 
 
 
 \subsection{Separators}

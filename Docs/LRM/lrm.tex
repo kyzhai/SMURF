@@ -12,7 +12,6 @@
 \usepackage{float}
 \restylefloat{table}
 
-\usepackage{color}
 \usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{url}
@@ -23,11 +22,10 @@
 \usepackage{listings}
 \lstset{language=Haskell}
 \usepackage{syntax}
+\usepackage{comment}
 
 
-\newcolumntype{L}{>{\centering\arraybackslash}m{3cm}}
-\newcolumntype{S}{>{\hsize=5cm}X}
-
+\usepackage{color}
 %\usepackage{biblatex}
 %\usepackage{subcaption}
 
@@ -59,11 +57,24 @@
 % This command causes the title to be created in the document
 \tableofcontents
 
-\input{data/notations}
+\section{Syntax Notation}
+The syntax notation used in this manual are as follows. Syntactic 
+categories are indicated by \emph{italic} type. Literal words and 
+characters will be displayed in \texttt{typeset}. Alternatives are listed 
+on separate lines. Optional terminal and non-terminals are indicated by the
+subscript_{opt}. 
+
+Regular expression notations are used to specigy grammar patterns in this manual.
+r* means the pattern r may appear zero or more time, r+ means the r may appear one or more 
+times, r? means r may appear zero or once. r1 | r2 denotes an option between two patterns, r1 r2 denotes 
+r1 followed by r2. 
+
+
 \input{data/lexical}
 \input{data/identifiers}
 \input{data/declarations}
 \input{data/expressions}
+\input{data/libraryFuncs}
 \clearpage
 
 % citations begin here
