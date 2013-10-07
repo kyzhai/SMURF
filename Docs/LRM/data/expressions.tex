@@ -92,3 +92,23 @@ Expression type-signatures have the form:
   \begin{verbatim}
   expression :: type \end{verbatim}
   where expression is an expression and type is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
+
+\subsection{Let Expressions}
+\begin{grammar}
+<let-exp> $\rightarrow$ let <decls> in <expression>
+\end{grammar}
+Let expressions have the form \emph{let \{} $d_1;...;d_n$ \} \emph{in e}, where $d_n$ is the nth declaration and \emph{e} is an expression. Note that the scope of $d_n$ is in \emph{e}.
+
+% are pattern bindings matched lazily?
+
+\subsection{Pattern Matching}
+
+Patterns can be found in function definitions, pattern bindings, and list operations. Patterns are matched with values. Matching a pattern can either be successful or it can fail. A successful match will return  a binding for the variables in the pattern. 
+
+\subsection{Guards}
+\begin{grammar}
+<guard> $\rightarrow$  let <decls> | <infixexp>          
+\end{grammar}
+
+There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
+
