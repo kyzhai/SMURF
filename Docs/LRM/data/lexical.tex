@@ -1,12 +1,12 @@
 \section{Lexical Conventions}
 \subsection{A High Level Description of SMURF Programs}
-SMURF is a function language that allows a composer to create serialist music
+SMURF is a functional language that allows a composer to create serialist music
 based on twelve-tone composition. In general, serialism is a musical composition
 technique where a set of values, chosen through some methodical progress,
-          generates a sequence of musical elements. SMURF is based on the
-          functional syntax and semantics set forth by Haskell. The backend of
-          SMURF generates MIDIs corresponding to the uses's initial program in
-          SMURF. 
+generates a sequence of musical elements. SMURF is based on the
+functional syntax and semantics set forth by Haskell. The backend of
+SMURF generates MIDIs corresponding to the uses's initial program in
+SMURF. 
 
 \subsection{Tokens}
 SMURF has 5 kinds of tokens: identifiers, keywords, constants, operators and whitespaces.
@@ -14,8 +14,8 @@ SMURF has 5 kinds of tokens: identifiers, keywords, constants, operators and whi
 \subsubsection{Identifiers}
 \label{sec:identifiers}
 An identifier consists of a letter followed by other letters and
-digits. The letters are the ascii characters a-z, A-Z and \_. Digits are ascii
-characters 0-9. SMURF is case sensitive.
+digits. The letters are the ascii characters \texttt{a-z, A-Z} and \texttt{\_}. Digits are ascii
+characters \texttt{0-9}. SMURF is case sensitive.
 \begin{verbatim}
 letter -> [`a'-`z' `A'-`Z']
 digit -> [`0'-`9']
@@ -29,13 +29,13 @@ language, thus are not avaliable for re-definition or overloading.
 	\centering
     \begin{tabularx}{0.9\textwidth}{l@{\hskip 3cm}l}
     \hline\hline
-    Keywords & \\ 
+    Keywords & Descriptions \\ 
     \hline\hline
-      let & Specify variables and functions  \\ \hline
-      in & Allow local variable binding in expression \\ \hline
-      if, then, else & Specify conditional expression, else compulsory  \\ \hline
-      True, False & Specify boolean logic \\ \hline
-      otherwise & Specify conditional expression used with guards \\ \hline 
+      \texttt{let} & Specify variables and functions  \\ \hline
+      \texttt{in} & Allow local variable binding in expression \\ \hline
+      \texttt{if, then, else} & Specify conditional expression, else compulsory  \\ \hline
+      \texttt{True, False} & Specify boolean logic \\ \hline
+      \texttt{otherwise} & Specify conditional expression used with guards \\ \hline 
       %genScore & Generate musical score given list of measures as argument  \\ \hline
     \end{tabularx}
 \end{table}
@@ -64,8 +64,8 @@ SMURF allows nested, multiline comments in addition to single line comments.
 \hline\hline
 Comment Operator & Description & Example \\
 \hline\hline
-  /* */ & Multiline comments, nesting allowed & /* This /* is all */ commented */ \\ \hline
-  // & Single-line comment & // This is a comment \\ \hline
+  \texttt{/* */} & Multiline comments, nesting allowed & /* This /* is all */ commented */ \\ \hline
+  \texttt{//} & Single-line comment & // This is a comment \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -154,10 +154,10 @@ transposition.
 \hline\hline
 Tone Row Operator & Description & Example \\
 \hline\hline
-   $\sim$ & Inversion & $\sim$ {\it row} (returns the inversion of {\it row})\\ \hline
-   \textless\textgreater & Retrograde & \textless\textgreater~{\it row} (returns the
-           retrograde of {\it row})\\ \hline
-   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\it row} 3 (transposes {\it row} by 3
+   $\sim$ & Inversion & $\sim$ \texttt{row} (returns the inversion of \texttt{row})\\ \hline
+   \textless\textgreater & Retrograde & \textless\textgreater~\texttt{row} (returns the
+           retrograde of \texttt{row})\\ \hline
+   $\wedge\wedge$ & Transposition & $\wedge\wedge$ \texttt{row} 3 (transposes \texttt{row} by 3
            semitones)\\ \hline
 \end{tabularx}
 \end{table}

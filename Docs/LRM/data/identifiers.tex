@@ -23,8 +23,8 @@ ending of its scope.
 \subsection{Basic Types}
 There are two fundamental types in SMURF: int and bool. 
 \begin{itemize}
-\item Integer: int, used to represent integers.
-\item Boolean: bool, used to represent boolean values.
+\item Integer: \texttt{int}, used to represent integers.
+\item Boolean: \texttt{bool}, used to represent boolean values.
 \end{itemize}
 
 \subsection{Structured Types}
@@ -36,20 +36,20 @@ Tuples have the format of
 (a, ..., n)
 \end{verbatim}
 where items \texttt{a - n} are elements in the tuple. Elements
-of tuples can have different types 
+of tuples can have different types.
 
 Lists have the format of 
 \begin{verbatim}
 [a, ..., n]
 \end{verbatim}
 where items \texttt{a - n} are elements in the list. Elements
-of lists must have the same type
+of lists must have the same type.
 
 Functions have the format of 
 \begin{verbatim}
 arg1 -> arg2 -> ... -> argk -> return-value
 \end{verbatim}
-where \texttt{arg1 - argk} are the types of arguments of function
+where \texttt{arg1 - argk} are the types of arguments of function.
 
 
 \subsection{Derived Types}
@@ -64,7 +64,7 @@ the note.
 note. The register of the note is Bass 1, Bass 2, Treble 1 and Treble 2 for the
 \texttt{reg} value from 0 to 3 repectively.
 \texttt{k} is an integer of the power of 2, ranging from 1 to 16. 
-Periods following k are optional. Users can add dots until the added duration
+Periods following \texttt{k} are optional. Users can add dots until the added duration
 gets down to 16th note.
 
 \begin{comment}
