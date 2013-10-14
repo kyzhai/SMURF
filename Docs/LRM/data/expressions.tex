@@ -60,94 +60,80 @@ paren-expression :: ( expression )
 \subsection{Curried Applications}
 
     \subsubsection{Function declaration}
-    The syntax of a function declaration is as follows: 
-    \begin{verbatim} 
-    function-expression :: argument-type-list -> result-type 
-    \end{verbatim} 
-    where
-    \begin{verbatim}
-    argument-type-list:     argument-type
-                            argument-type-list  argument-type
-    \end{verbatim} 
-A function declaration must be on its own line and must declare a type. Declaring a general type is allowed. There are no explicit return statements.
+    The syntax of a function declaration is as follows: \\
+    
+    \emph{function-expression} \texttt{::}  \emph{argument-type-list} \texttt{$\rightarrow$} \emph{result-type} \\ \\
+    where\\
+    
+    \emph{argument-type-list} $\rightarrow$ \emph{argument-type}$+$ \\ \\
+    A function declaration must be on its own line and must declare a type. Declaring a general type is allowed. There are no explicit return statements.
   
     \subsubsection{Function application}
-    The syntax of a function application is as follows: 
-    \begin{verbatim}
-    function-expression  argument-expression-list \end{verbatim} 
-    where
-    \begin{verbatim}
-    argument-expression-list:     argument-expression
-                                  argument-expression-list  argument-expression
-    \end{verbatim} 
-A function application associates from left to right, so parentheses are optional: 
-    \begin{verbatim}
-    funct a b
-    \end{verbatim}
-    is equivalent to
-    \begin{verbatim}
-    ((funct a) b) 
-    \end{verbatim}
-    Parentheses are used to change the precedence from the default. The following evaluates funct1 with argument b then evaluates funct2 with argument a:
-    \begin{verbatim}
-    funct2 a (funct1 b)
-    \end{verbatim}   
+    The syntax of a function application is as follows: \\
+        
+    \emph{function-expression} \emph{argument-expression-list} \\ \\
+    where\\
+    
+    \emph{argument-expression-list} $\rightarrow$ \emph{argument-expression}$+$ \\ \\ 
+    A function application associates from left to right, so parentheses are optional: \\
+    
+    \emph{funct a b}  is equivalent to \emph{((funct a) b)} \\ \\
+    Parentheses are used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
+    evaluates function \emph{funct2} with argument \emph{a}: \\
+    
+    \emph{funct2 a (funct1 b)}
 
   \subsubsection{**PARTIAL APPLICATION**}
   
 
 \subsection{Operator Application}
-  The syntax for applying a binary operator to two expressions is infix:
-    \begin{verbatim}
-    expression  operator  expression \end{verbatim} 
-    where
-    \begin{verbatim}
-    operator:     arithmetic-operator
-                  comparison-operator
-                  boolean-operator
-                  list-operator
-                  function-operator \end{verbatim} 
+  The syntax for applying a binary operator to two expressions is infix:\\
 
+    \emph{expression  operator  expression}\\ \\
+    where\\
+    
+    \emph{operator} $\rightarrow$ \emph{arithmetic-operator} $ | $  \emph{comparison-operator} $ | $ \emph{boolean-operator} $ | $ 
+    
+    \emph{list-operator} $ | $ \emph{function-operator}
+    
 \subsection{Conditionals}
-  The syntax for conditional expressions is as follows:
-  \begin{verbatim}
-  if  expression  then expression-true  else expression-false \end{verbatim} 
-  When the value of expression evaluates to true, expression-true is evaluated, otherwise expression-false is evaluated. Conditional expressions do not have newline restrictions.
+  The syntax for conditional expressions is as follows: \\
+  
+  \texttt{if}  \emph{expression}  \texttt{then}  \emph{expression-true}  \texttt{else}  \emph{expression-false} \\ \\
+  When the value of expression evaluates to true,  \emph{expression-true} is evaluated, otherwise  \emph{expression-false} is evaluated. Conditional expressions do not have newline restrictions.
 
 \subsection{Lists}
-Lists are written as:
-  \begin{verbatim}
-  [expression-list]\end{verbatim}
-  where
-  \begin{verbatim}
-  expression-list:     <empty>
-                       expression
-                       expression-list,  expression \end{verbatim}
-[expression$_{1}$, ..., expression$_{k}$]  =  expression$_{1}$ : ( expression$_{2}$ : (... (expression$_{k}$ : [ ] )) \\ \\
-where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor : and empty list [ ] are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
+Lists are written as: \\
+
+  \texttt{[} \emph{expression-list} \texttt{]} \\ \\
+  where \\
+  
+  \emph{expression-list} $\rightarrow$  \emph{expression}$*$ \\ \\
+\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} = 
+  \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[ ]))} \\ 
+where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor \texttt{:} and empty list \texttt{[ ]} are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
 
 \subsection{Tuples}
-Tuples are written as:
-  \begin{verbatim}
-  (expression-list)\end{verbatim}
-  where
-  \begin{verbatim}
-  expression-list:     expression, expression
-                       expression-list,  expression \end{verbatim}
+Tuples are written as: \\
+
+  \texttt{(} \emph{expression-list} \texttt{)} \\ \\
+  where \\
+  
+  \emph{expression-list} $\rightarrow$  \emph{expression} (\texttt{,} \emph{expression})$*$  \texttt{,} \emph{expression} \\ \\
 The expressions in a tuple may be of different types. The constructor of an n-tuple is denoted by (\textunderscore
 , ..., \textunderscore) where there are \textit{n-1} commas.
 
 \subsection{Parenthesized Expressions}
-Parenthesized expressions has the form:
-  \begin{verbatim}
-  (expression)\end{verbatim}
+Parenthesized expressions has the form: \\
+
+  \texttt{(} \emph{expression} \texttt{)} \\ \\
   where expression is evaluated as a primary expression.
 
 \subsection{Expression Type-Signature}
-Expression type-signatures have the form:
-  \begin{verbatim}
-  expression :: type \end{verbatim}
-  where expression is an expression and type is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
+Expression type-signatures have the form: \\
+
+  \emph{expression} \texttt{::} \emph{type} \\ \\
+  where \emph{expression} is an expression and \emph{type} is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
 
 \subsection{Let Expressions}
 \begin{grammar}
