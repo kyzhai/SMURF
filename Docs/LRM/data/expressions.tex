@@ -98,7 +98,9 @@ paren-expression :: ( expression )
   \texttt{[} \emph{expression-list} \texttt{]} \\ \\
   where \\
   
-  \emph{expression-list} $\rightarrow$  \emph{expression}$*$ \\ \\
+  \emph{expression-list} $\rightarrow$  \emph{expression}$?$ (\texttt{,} \emph{expression})$*$
+  
+  \emph{expression}$*$ \\ \\
 \texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} = 
   \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[ ]))} \\ 
 where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor \texttt{:} and empty list \texttt{[ ]} are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
