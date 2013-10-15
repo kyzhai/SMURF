@@ -1,30 +1,56 @@
 \section{Meaning of Identifiers}
-In SMURF, identifiers refer to functions and variables.
+In SMURF, an identifier is a name for a variable or function. The naming rule of
+identifier is defined in section~\ref{sec:identifiers}. Keywords defined in
+section~\ref{sec:keywords} are not available for the use of identifiers.
 
-\subsection{What Are They Need For}
+
+\subsection{Purpose}
 \subsubsection{Functions}
-Functions in SMURF enable us to structure our programs in a more modular way. 
-A function is a group of statements that is executed when it is called from some
-point of the program. 
+Functions in SMURF enable users to structure programs in a more modular way. 
+Each function has input and output, whose types need to be explicitly defined by
+users. The function describles how to produce the output from its input.
+SMURF is a side effect free language, which means
+that if provided with the same input, a function is guaranteed to give the same
+output. 
+
 
 \subsubsection{variables}
-In SMURF, a variable is an abstraction of a computer memory cell or a collection
+In SMURF, a variable is an identifier that is linked to a value stored in the
+system's memory or an expression that can be evaluated.
+A variable is an abstraction of a computer memory cell or a collection
 of memory cells. 
 SMURF is a strongly typed programming language, which means the type of a variable can't
-be changed once declared. Each variable has a static type which is automatically
-deduced by the SMURF compiler. The variables in SMURF are immutable.
+be changed once declared. Each variable has a static type which can be automatically
+deduced by the SMURF compiler, or explicitly defined by users. The variables in SMURF are immutable.
+
 
 \subsection{Scope and Lifetime}
 In SMURF, a variable is bound in its scope to a value using constructs like
-\texttt{let} or list comprehensions. A variable is visible within its scope.
+\texttt{let}. A variable is visible within its scope.
 There is no global variables in SMURF. A variable becomes invalid after the 
-ending of its scope.
+ending of its scope. E.g.
+
+\begin{lstlisting}
+let prime = [2,0,4,6,8,10,1,3,5,7,9,11] 
+in let prime = [0,2,4,6,8,10,1,3,5,7,9,11]
+       p3 = trans 3 prime 
+   in print (head p3)
+\end{lstlisting}
+
+where {\texttt prime} and {\texttt p3} are bound by the {\texttt let}
+expression. 
+In line 2, {\texttt prime} is
+redefined in a inner {\texttt let} expression. In line 3, the {\texttt
+trans} function sees the newly defined {\texttt prime}. So the result
+to be printed in line 4 should be 3 (0+3). After the finishing of line
+4, all the variables defined in this example will be invalid and can't be
+accessed anymore.
 
 \subsection{Basic Types}
-There are two fundamental types in SMURF: int and bool. 
+There are two fundamental types in SMURF: {\texttt int} and {\texttt bool}. 
 \begin{itemize}
-\item Integer: \texttt{int}, used to represent integers.
-\item Boolean: \texttt{bool}, used to represent boolean values.
+\item {\it Integer}: \texttt{int}, used to represent integers.
+\item {\it Boolean}: \texttt{bool}, used to represent boolean values.
 \end{itemize}
 
 \subsection{Structured Types}
@@ -32,39 +58,42 @@ Structured types hold groups of elements. There are three structured types in
 SMURF: tuples, lists and functions.
 
 Tuples have the format of 
-\begin{verbatim}
-(a, ..., n)
-\end{verbatim}
-where items \texttt{a - n} are elements in the tuple. Elements
+\begin{grammar}
+<tuple> $\rightarrow$ ({\it a, ..., n})
+\end{grammar}
+where items {\it a - n} are elements in the tuple. Elements
 of tuples can have different types.
 
 Lists have the format of 
-\begin{verbatim}
-[a, ..., n]
-\end{verbatim}
-where items \texttt{a - n} are elements in the list. Elements
+\begin{grammar}
+<list> $\rightarrow$ [{\it a, ..., n}]
+\end{grammar}
+where items {\it a - n} are elements in the list. Elements
 of lists must have the same type.
 
 Functions have the format of 
-\begin{verbatim}
-arg1 -> arg2 -> ... -> argk -> return-value
-\end{verbatim}
-where \texttt{arg1 - argk} are the types of arguments of function.
+\begin{grammar}
+<function> $\rightarrow$ {\it arg1} {\texttt -\textgreater} ... {\texttt
+    -\textgreater} {\it argk}
+{\texttt -\textgreater} {\it return-value}
+\end{grammar}
+where {\it arg1 - argk} are the input of function and {\it return-value} is the
+output of the function.
 
 
 \subsection{Derived Types}
-SMURF has a derived type of \texttt{note}, which has the format of 
-\begin{verbatim}
-(pc, reg)^k[.]*
-\end{verbatim}
-where \texttt{pc} is an integer in the range from -1 to 11. When \texttt{pc} 
-has a value of -1, the note is a rest, other it represents the pitch class of 
+SMURF has a derived type of {\it note}, which has the format of 
+\begin{grammar}
+<note> $\rightarrow$ ({\it pc}, {\it reg})\^{\it k}[.]*
+\end{grammar}
+where {\it pc} is an integer in the range from -1 to 11. When {\it pc} 
+has a value of -1, the note is a rest, otherwise it represents the pitch class of 
 the note. 
-\texttt{reg} is an integer in the range of 0-3, representing the register of the 
+{\it reg} is an integer in the range of 0-3, representing the register of the 
 note. The register of the note is Bass 1, Bass 2, Treble 1 and Treble 2 for the
-\texttt{reg} value from 0 to 3 repectively.
-\texttt{k} is an integer of the power of 2, ranging from 1 to 16. 
-Periods following \texttt{k} are optional. Users can add dots until the added duration
+{\it reg} value from 0 to 3 repectively.
+{\it k} is an integer of the power of 2, ranging from 1 to 16. 
+Periods following {\it k} are optional. Users can add dots until the added duration
 gets down to 16th note.
 
 \begin{comment}

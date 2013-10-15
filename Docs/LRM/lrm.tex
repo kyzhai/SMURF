@@ -20,16 +20,20 @@
 \usepackage{subfigure}
 \usepackage{caption}
 \usepackage{listings}
-\lstset{language=Haskell}
 \usepackage{syntax}
 \usepackage{comment}
-
-
 \usepackage{color}
 
-
+\lstset{ %
+	    basicstyle=\small\ttfamily, 
+		language={Haskell},
+		stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+		numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+		numberstyle=\tiny\color{black}  % the style that is used for the line-numbers
+}
 \renewcommand{\syntleft}{\normalfont\itshape}
 \renewcommand{\syntright}{}
+
 %\usepackage{biblatex}
 %\usepackage{subcaption}
 
@@ -61,6 +65,15 @@
 % This command causes the title to be created in the document
 \tableofcontents
 
+\section{Introduction}
+SMURF is a function language that allows a composer to create serialist music
+based on twelve-tone composition. In general, serialism is a musical composition
+technique where a set of values, chosen through some methodical progress,
+generates a sequence of musical elements. SMURF is based on the
+functional syntax and semantics set forth by Haskell. The backend of
+SMURF generates MIDIs corresponding to the uses's initial program in
+SMURF. 
+
 \section{Syntax Notation}
 The syntax notation used in this manual is as follows. Syntactic 
 categories are indicated by \emph{italic} type. Literal words and 
@@ -69,11 +82,11 @@ on separate lines. Optional terminal and non-terminals are indicated by the
 subscript\_{opt}. 
 
 Regular expression notations are used to specify grammar patterns in this
-manual.  \emph{r}$*$ means the pattern \emph{r} may appear zero or more time,
-\emph{r}$+$ means the \emph{r} may appear one or more times, \emph{r}$?$
-means \emph{r} may appear zero or once. \emph{r1}$|$\emph{r2} denotes an option
-between two patterns, \emph{r1 r2} denotes \emph{r1} followed by
-\emph{r2}. 
+manual.  {\it r}$*$ means the pattern {\it r} may appear zero or more time,
+{\it r}$+$ means the {\it r} may appear one or more times, {\it r}$?$
+means {\it r} may appear zero or once. {\it r1}$|${\it r2} denotes an option
+between two patterns, {\it r1 r2} denotes {\it r1} followed by
+{\it r2}. 
 
 
 \input{data/lexical}
@@ -83,7 +96,7 @@ between two patterns, \emph{r1 r2} denotes \emph{r1} followed by
 \input{data/libraryFuncs}
 \clearpage
 
-% citations begin here
+{% citations begin here
 \bibliographystyle{ieeetr}
 \bibliography{ref/refs}
 

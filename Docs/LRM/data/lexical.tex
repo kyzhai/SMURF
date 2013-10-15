@@ -1,42 +1,46 @@
 \section{Lexical Conventions}
 \subsection{A High Level Description of SMURF Programs}
-SMURF is a function language that allows a composer to create serialist music
-based on twelve-tone composition. In general, serialism is a musical composition
-technique where a set of values, chosen through some methodical progress,
-          generates a sequence of musical elements. SMURF is based on the
-          functional syntax and semantics set forth by Haskell. The backend of
-          SMURF generates MIDIs corresponding to the uses's initial program in
-          SMURF. 
+A program in SMURF, at its top-most level, is a series of declarations. The declarations in SMURF include type signatures, definitions, and function declarations.
 
 \subsection{Tokens}
-SMURF has 5 kinds of tokens: identifiers, keywords, constants, operators and separators.
+In SMURF, a token is a string of one or more characters that is significant as a group.
+SMURF has 6 kinds of tokens: {\it identifiers}, {\it keywords}, {\it constants},
+      {\it operators},
+{\it separators} and {\it newlines}.
 
 \subsubsection{Identifiers}
 \label{sec:identifiers}
-An identifier consists of a letter followed by other letters and
-digits. The letters are the ascii characters a-z, A-Z and \_. Digits are ascii
-characters 0-9. SMURF is case sensitive.
-\begin{verbatim}
-letter -> [`a'-`z' `A'-`Z']
-digit -> [`0'-`9']
-identifiers -> letter (letter | digit | `_')*
-\end{verbatim}
+An identifier consists of a letter followed by other letters, 
+digits and underscores. The letters are the ascii characters {\texttt a-z}, {\texttt A-Z} and \texttt{\_}. Digits are ascii
+characters {\texttt 0-9}. SMURF is case sensitive.
+
+\begin{grammar}
+<letter> $\rightarrow$ [`a'-`z' `A'-`Z'] 
+
+<digit> $\rightarrow$ [`0'-`9'] 
+
+<underscore> $\rightarrow$ {`_'} 
+
+<identifier> $\rightarrow$ <letter> (<letter> | <digit> | <underscore>)*
+\end{grammar}
 
 \subsubsection{Keywords}
-This is a list of reserved keywords in SMURF. The keywords are used by the
-language, thus are not avaliable for re-definition or overloading.
+\label{sec:keywords}
+Keywords in SMURF are words reserved by the language. Keywords in SMURF are not avaliable for
+re-definition or overloading by users. Following is a list of reserved keywords in SMURF. 
+
 \begin{table} [H]
 	\centering
     \begin{tabular}{ll}
     \hline\hline
-    Keywords & \\ 
+    Keywords & Descriptions \\ 
     \hline\hline
-      let & Specify variables and functions  \\ \hline
-      in & Allow local variable binding in expression \\ \hline
-      if, then, else & Specify conditional expression, else compulsory  \\ \hline
-      True, False & Specify boolean logic \\ \hline
-      otherwise & Specify conditional expression used with guards \\ \hline 
-      %genScore & Generate musical score given list of measures as argument  \\ \hline
+      {\texttt let, in} & Allow local bindlings in expressions  \\ \hline
+      {\texttt if, then, else} & Specify conditional expression, else compulsory  \\ \hline
+      {\texttt True, False} & Specify boolean logic \\ \hline
+      {\texttt otherwise} & Specify conditional expression used with guards \\ \hline 
+      {\texttt random} & Generate random numbers \\ \hline
+      {\texttt print} & Print information to the screen \\ \hline
     \end{tabular}
 \end{table}
 
@@ -46,12 +50,13 @@ language, thus are not avaliable for re-definition or overloading.
 In SMURF, constants are expressions with a fixed value. Integer literals and
 boolean keywords are the constants of SMURF. 
 
-\begin{verbatim}
-letter -> [`a'-`z' `A'-`Z']
-digit -> [`0'-`9']
-constants -> [`1'-`9'] digit* | True | False
-\end{verbatim}
+\begin{grammar}
+<letter> $\rightarrow$ [`a'-`z' `A'-`Z'] 
 
+<digit> $\rightarrow$ [`0'-`9'] 
+
+<constant> $\rightarrow$ \texttt{-}? [`1'-`9'] <digit>* | {\texttt True} | {\texttt False}
+\end{grammar}
 
 \subsubsection{Operators}
 Operators in SMURF can be classified into comment operators, arithmetic operators, comparision
@@ -145,8 +150,8 @@ Declaration Operator & Description & Example \\
 \hline\hline
    \texttt{::} & Type specification & \texttt{number :: Int} \\ \hline
    \texttt{->} & Argument and function return type specification
-     & \texttt{isPositiveNum :: Int \textendash\textgreater\space Bool}  \\ \hline
-   \texttt{\textbar} & Gaurd indicator & \texttt{isSeven :: [Int] \textendash\textgreater\space Bool}\\ 
+     & \texttt{isPositiveNum :: Int -> Bool}  \\ \hline
+   \texttt{\textbar} & Gaurd indicator & \texttt{isSeven :: [Int] -> Bool}\\ 
 	 	 && \texttt{isSeven num} \\
      && \texttt{\textbar\space (num == 7) = True} \\
      && \texttt{\textbar\space otherwise = False}\\ \hline
@@ -161,23 +166,49 @@ transposition.
 \hline\hline
 Tone Row Operator & Description & Example \\
 \hline\hline
-   $\sim$ & Inversion & $\sim$ {\it row} (returns the inversion of {\it row})\\ \hline
-   \textless\textgreater & Retrograde & \textless\textgreater~{\it row} (returns the
-           retrograde of {\it row})\\ \hline
-   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\it row} 3 (transpose {\it row} by 3
+   $\sim$ & Inversion & $\sim$ {\texttt row} (returns the inversion of {\texttt row})\\ \hline
+   \textless\textgreater & Retrograde & \textless\textgreater~{\texttt row} (returns the
+           retrograde of {\texttt row})\\ \hline
+   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\texttt row} 3 (transpose {\texttt row} by 3
            semitones)\\ \hline
 \end{tabularx}
 \end{table}
 
+\subsubsection{Separators}
+Separators in SMURF are used to separate tokens. The definition os separators in
+SMURF is 
 
-\subsubsection{Whitespace}
-Blanks, tabs and newlines are referred to as whitespaces in SMURF. SMURF treats
-newlines as tokens and ignores others whitespaces. 
+\begin{grammar}
+<separator> $\rightarrow$ \texttt{,} | \texttt{;} | \it{whitespace}
+\end{grammar}
+
+where {\it comma} is used to separate elementes in list definitions.
+{\it semicolon} is used to separate declarations in let bindings. The definition of
+{\it whitespace} is in section~\ref{sec:whitespaces}
 
 
-\subsection{Separators}
-SMURF uses separators to seperate tokens. The separators of SMURF include:
-\begin{verbatim} 
-    ,   :   ;   {   }   whitespaces
-\end{verbatim}
+\subsubsection{Newlines}
+SMURF uses {\it newline} to signify the end of a line of text. {\it Newlines}
+are treated as a tokens in SMURF. They can change the semantic meaning of programs.
 
+
+\subsection{Whitespaces}
+\label{sec:whitespaces}
+{\it Blank} and {\it tab} are referred to as {\it whitespaces} in SMURF. 
+{\it Whitespaces} are used to
+separating tokens as well as formatting programs. They are ignored in
+SMURF programs. As a result, indentations are not significant in SMURF.
+
+
+\subsection{Backslash Line Splicing}
+In SMURF, you can use a \textbackslash\textless{\it newline}\textgreater~{}symbol to splice two lines. The symbol
+will be ignored by compiler. E.g.
+\begin{lstlisting}
+genAltChords (x:y:ys) = [(x,Time 4,1)]   \
+                        :[(y,Time 4,-1)]:genAltChords ys
+\end{lstlisting}
+will be treated as 
+\begin{lstlisting}
+genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:genAltChords ys
+\end{lstlisting}
+in SMURF.
