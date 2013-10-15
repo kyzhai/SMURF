@@ -1,7 +1,9 @@
 %{ open Ast %}
 
 %token LPAREN RPAREN COMMA
-%token PLUS MINUS TIMES DIVIDE MOD BPLUS BMINUS PCPLUS PCMINUS
+%token LLIST RLIST
+%token TYPE FUNC GUARD
+%token PLUS MINUS BTIMES BDIV MOD BPLUS BMINUS PCPLUS PCMINUS
 %token BEQ NOT AND OR LT GT LE GE BLT BGT BLE BGE PLT PGT PLE PGE
 %token CONCAT CONS BIND TYPESPEC ARGTYPESPEC
 %token INV RET TRANS
@@ -26,8 +28,8 @@
 expr:
   expr PLUS expr      { Binop($1, Add, $3) }
 | expr MINUS expr     { Binop($1, Sub, $3) }
-| expr TIMES expr     { Binop($1, Mul, $3) }
-| expr DIVIDE expr    { Binop($1, Div, $3) }
+| expr BTIMES expr    { Binop($1, Mul, $3) }
+| expr BDIV expr    	{ Binop($1, Div, $3) }
 | expr MOD expr       { Binop($1, Mod, $3) }
 | expr BPLUS expr     { BinopB($1, BeatAdd, $3) }
 | expr BMINUS expr    { BinopB($1, BeatSub, $3) }

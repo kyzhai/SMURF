@@ -1,9 +1,4 @@
-{ (* Eventually move these to Parser *) 
-	type token =  PLUS | MINUS | MOD | BPLUS | BMINUS | BTIMES | BDIV
-								| LT | GT | LE | GE | BLT | BGT | BLE | BGE
-								| BEQ | NOT | AND | OR | CONCAT | CONS | LLIST | RLIST
-								| TYPE | FUNC | GUARD | BIND | TRANS | INV | RET }
-
+{ open Parser }																					(* Get the Token types *)
 (* Optional Definitions *)
 
 (* Rules *)
@@ -24,5 +19,7 @@ rule token = parse
 | "->"					{ FUNC }			| '|'						{ GUARD }
 | '='						{ BIND }			| "^^"					{ TRANS }
 | '~'						{ INV }				| "<>"					{ RET }
+| '('						{ LPAREN }		| ')'						{ RPAREN }	(* Punctuation *)
+| ','						{ COMMA }									
 
 
