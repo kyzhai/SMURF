@@ -3,7 +3,7 @@
 %token LPAREN RPAREN COMMA
 %token LLIST RLIST
 %token TYPE FUNC GUARD
-%token PLUS MINUS BTIMES BDIV MOD BPLUS BMINUS PCPLUS PCMINUS
+%token PLUS MINUS TIMES DIV MOD BTIMES BDIV BPLUS BMINUS PCPLUS PCMINUS
 %token BEQ NOT AND OR LT GT LE GE BLT BGT BLE BGE PLT PGT PLE PGE
 %token CONCAT CONS BIND TYPESPEC ARGTYPESPEC
 %token INV RET TRANS
@@ -17,8 +17,8 @@
 %nonassoc NOT
 %left BEQ LT LE GT GE BLT BGT BLE BGE PLT PGT PLE PGE
 %right CONS CONCAT
-%left PLUS MINUS BPLUS BMINUS PMINUS PCPLUS PCMINUS
-%left BTIMES BDIV MOD
+%left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
+%left TIMES DIV BTIMES BDIV MOD
 %nonassoc INV RET TRANS
 
 %start expr
@@ -29,12 +29,14 @@
 expr:
   expr PLUS expr      { Binop($1, Add, $3) }
 | expr MINUS expr     { Binop($1, Sub, $3) }
-| expr BTIMES expr    { Binop($1, Mul, $3) }
-| expr BDIV expr    	{ Binop($1, Div, $3) }
+| expr TIMES expr     { Binop($1, Mul, $3) }
+| expr DIV expr    	  { Binop($1, Div, $3) }
 | expr MOD expr       { Binop($1, Mod, $3) }
+| expr BDIV expr    	{ Binop($1, BeatDiv, $3) }
+| expr BTIMES expr    { Binop($1, BeatMul, $3) }
 | expr BPLUS expr     { BinopB($1, BeatAdd, $3) }
 | expr BMINUS expr    { BinopB($1, BeatSub, $3) }
-| expr PCPLUS expr    { BinopPC($1, PCAdd, $3) }		/* Do we need special PC ops? */
+| expr PCPLUS expr    { BinopPC($1, PCAdd, $3) }
 | expr PCMINUS expr   { BinopPC($1, PCSub, $3) }
 | expr LT expr        { Binop($1, Less, $3) }
 | expr GT expr        { Binop($1, Greater, $3) }
@@ -51,9 +53,10 @@ expr:
 | expr CONCAT expr    { Binop($1, Concat, $3) }
 | expr CONS expr      { Binop($1, Cons, $3) }
 | expr BEQ expr       { Binop($1, BoolEq, $3) }
-| expr NOT expr       { Binop($1, Not, $3) } 				/* So this is !=...what about ! ?*/
 | expr AND expr       { Binop($1, And, $3) }
 | expr OR expr        { Binop($1, Or, $3) }
+
+| NOT expr            { Unop(Not, $2) }
 
 | INV expr            { Rowop(Inv, $2) } 
 | RET expr           	{ Rowop(Retro, $2) } 
@@ -63,7 +66,6 @@ expr:
 | LITERAL             { Literal($1) }
 | VARIABLE            { Variable($1) }
 | LPAREN expr RPAREN  { $2 }
-
 
 expr_list:
   /* Nothing */  { [] }
