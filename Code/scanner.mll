@@ -1,7 +1,7 @@
 { (* Eventually move these to Parser *) 
 	type token =  PLUS | MINUS | MOD | BPLUS | BMINUS | BTIMES | BDIV
-								| LT | GT | LTE | GTE | BLT | BGT | BLTE | BGTE
-								| EQ | NOT | AND | OR | CONCAT | CONS | LLIST | RLIST
+								| LT | GT | LE | GE | BLT | BGT | BLE | BGE
+								| BEQ | NOT | AND | OR | CONCAT | CONS | LLIST | RLIST
 								| TYPE | FUNC | GUARD | BIND | TRANS | INV | RET }
 
 (* Optional Definitions *)
@@ -12,12 +12,12 @@ rule token = parse
 | '['						{ LLIST }			| ']'						{ RLIST } (* List punctuation *)
 | '+'						{ PLUS }			| '<'						{ LT }		(* Operators *)
 | '-'						{ MINUS }			| '>'						{ GT }
-| '%'						{ MOD }				| "<="					{ LTE }
-| "$+"					{ BPLUS }			| ">="					{ GTE }
+| '%'						{ MOD }				| "<="					{ LE }
+| "$+"					{ BPLUS }			| ">="					{ GE }
 | "$-"					{ BMINUS }		| "$<"					{ BLT }
 | "$*"					{ BTIMES }		| "$>"					{ BGT }
-| "$/"					{ BDIV }			| "$<="					{ BLTE }
-| "=="					{ EQ }				| "$>="					{ BGTE }
+| "$/"					{ BDIV }			| "$<="					{ BLE }
+| "=="					{ BEQ }				| "$>="					{ BGE }
 | '!'						{ NOT }				| "&&"					{ AND }
 | "||"					{ OR }				| "++"					{ CONCAT }
 | ':'						{ CONS }			| "::"					{ TYPE }
