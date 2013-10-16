@@ -1,25 +1,97 @@
-{ open Parser }																					(* Get the Token types *)
+{ open Parser
+	let cc = [|0|]
+ }																					(* Get the Token types *)
 (* Optional Definitions *)
 
 (* Rules *)
 
-rule token = parse
-| '['						{ LLIST }			| ']'						{ RLIST } (* List punctuation *)
-| '+'						{ PLUS }			| '<'						{ LT }		(* Operators *)
-| '-'						{ MINUS }			| '>'						{ GT }
-| '%'						{ MOD }				| "<="					{ LE }
-| "$+"					{ BPLUS }			| ">="					{ GE }
-| "$-"					{ BMINUS }		| "$<"					{ BLT }
-| "$*"					{ BTIMES }		| "$>"					{ BGT }
-| "$/"					{ BDIV }			| "$<="					{ BLE }
-| "=="					{ BEQ }				| "$>="					{ BGE }
-| '!'						{ NOT }				| "&&"					{ AND }
-| "||"					{ OR }				| "++"					{ CONCAT }
-| ':'						{ CONS }			| "::"					{ TYPE }
-| "->"					{ FUNC }			| '|'						{ GUARD }
-| '='						{ BIND }			| "^^"					{ TRANS }
-| '~'						{ INV }				| "<>"					{ RET }
-| '('						{ LPAREN }		| ')'						{ RPAREN }	(* Punctuation *)
-| ','						{ COMMA }									
+let letter = ['a'-'z' 'A'-'Z']
+let digit = ['0'-'9']
+let identifier = letter (letter | digit | '_')*
+
+let whitespace = [ ' ' '\t' '\r']
+
+rule token = parse 
+whitespace					{ token lexbuf } (* White space *)
+| "//" 						{ nlcomment lexbuf }
+| "/*" 						{ cc.(0)<-cc.(0)+1; nc1 lexbuf }
+| '\\' 						{ continue lexbuf } 
+| '\n'						{ NL }
+| '&'						{ NL } 
+| '['						{ LLIST }			
+| ']'						{ RLIST } (* List punctuation *)
+| '+'						{ PLUS }			
+| '<'						{ LT }		(* Operators *)
+| '-'						{ MINUS }			
+| '>'						{ GT }
+| '%'						{ MOD }				
+| "<="						{ LE }
+| "$+"						{ BPLUS }			
+| ">="						{ GE }
+| "$-"						{ BMINUS }		
+| "$<"						{ BLT }
+| "$*"						{ BTIMES }		
+| "$>"						{ BGT }
+| "$/"						{ BDIV }			
+| "$<="						{ BLE }
+| "=="						{ BEQ }				
+| "$>="						{ BGE }
+| '!'						{ NOT }				
+| "&&"						{ AND }
+| "||"						{ OR }				
+| "++"						{ CONCAT }
+| ':'						{ CONS }			
+| "::"						{ TYPE }
+| "->"						{ FUNC }			
+| '|'						{ GUARD }
+| '='						{ BIND }			
+| "^^"						{ TRANS }
+| '~'						{ INV }				
+| "<>"						{ RET }
+| '('						{ LPAREN }		
+| ')'						{ RPAREN }	(* Punctuation *)
+| ','						{ COMMA }	
+| '*'						{ STAR } 			
+| "let"						{ LET }
+| "in"						{ IN }
+| "if"						{ IF }
+| "then"					{ THEN }
+| "else"					{ ELSE }
+| "True"					{ BOOLEAN(1) } (* Boolean Literal? *)
+| "False"					{ BOOLEAN(0) } (* Boolean Literal? *)
+| "otherwise"				{ OTHERWISE } 
+| "int" 					{ INT }
+| "bool"					{ BOOL }
+| identifier as id			{ VARIABLE(id) }
+| '-'?(digit)+ as num			{ LITERAL(int_of_string num) } 
+		(* converted to Int because I could *)
+| (digit)+ '.'+ as beat		{ BEATLIT(beat) } (* stays string *) 
+		(* can't convert to num unless we make . an operator *)
+| eof						{ EOF } 
+| _ as char { raise (Failure("Illegal character: " ^ Char.escaped char)) }
+
+and nlcomment = parse
+'\n' 			{ token lexbuf }
+| _  			{ nlcomment lexbuf }	
 
 
+and continue = parse
+'\n' 			{ token lexbuf }
+| whitespace 	{ continue lexbuf }
+
+and nc1 = parse
+'/' 			{ nc2 lexbuf }
+| '*' 			{ nc3 lexbuf }
+| _ 			{ nc1 lexbuf }
+
+and nc2 = parse
+'*'				{cc.(0)<-cc.(0)+1; nc1 lexbuf}
+| _ 			{nc1 lexbuf}
+
+and nc3 = parse 
+'/'				{ if(cc.(0) = 1) 
+					then (cc.(0) <- cc.(0)-1;token lexbuf) 
+					else (cc.(0)<-cc.(0)-1; nc1 lexbuf) 
+				}
+| '*'			{ nc3 lexbuf }
+| _ 			{ nc1 lexbuf } 

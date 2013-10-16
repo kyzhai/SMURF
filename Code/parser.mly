@@ -1,5 +1,9 @@
 %{ open Ast %}
 
+%token NL STAR LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
+%token <int> BOOLEAN
+%token <string> BEATLIT
+
 %token LPAREN RPAREN COMMA
 %token LLIST RLIST
 %token TYPE FUNC GUARD
