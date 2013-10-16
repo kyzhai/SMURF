@@ -51,7 +51,9 @@ whitespace					{ token lexbuf } (* White space *)
 | '('						{ LPAREN }		
 | ')'						{ RPAREN }	(* Punctuation *)
 | ','						{ COMMA }	
-| '*'						{ STAR } 			
+| '*'						{ MULT }
+| '/' 		                { DIV }
+| '.'                       { PERIOD }	
 | "let"						{ LET }
 | "in"						{ IN }
 | "if"						{ IF }
@@ -60,13 +62,17 @@ whitespace					{ token lexbuf } (* White space *)
 | "True"					{ BOOLEAN(1) } (* Boolean Literal? *)
 | "False"					{ BOOLEAN(0) } (* Boolean Literal? *)
 | "otherwise"				{ OTHERWISE } 
-| "int" 					{ INT }
-| "bool"					{ BOOL }
+| "Int" 					{ INT }
+| "Bool"					{ BOOL }
+| "Beat"					{ BEAT }
+| "Note"					{ NOTE }
+| "Chord"					{ CHORD }
+| "System"					{ SYSTEM }
+| "main"                    { MAIN }
+| "print"                   { PRINT }
+| "random"                  { RANDOM }
 | identifier as id			{ VARIABLE(id) }
-| '-'?(digit)+ as num			{ LITERAL(int_of_string num) } 
-		(* converted to Int because I could *)
-| (digit)+ '.'+ as beat		{ BEATLIT(beat) } (* stays string *) 
-		(* can't convert to num unless we make . an operator *)
+| '-'?(digit)+ as num		{ LITERAL(int_of_string num) } 
 | eof						{ EOF } 
 | _ as char { raise (Failure("Illegal character: " ^ Char.escaped char)) }
 
