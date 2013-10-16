@@ -34,7 +34,7 @@ whitespace					{ token lexbuf } (* White space *)
 | "$>"						{ BGT }
 | "$/"						{ BDIV }			
 | "$<="						{ BLE }
-| "=="						{ BEQ }				
+| "=="						{ EQ }				
 | "$>="						{ BGE }
 | '!'						{ NOT }				
 | "&&"						{ AND }
