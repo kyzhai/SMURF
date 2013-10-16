@@ -8,8 +8,8 @@
 %token LLIST RLIST
 %token TYPE FUNC GUARD
 %token PLUS MINUS TIMES DIV MOD BTIMES BDIV BPLUS BMINUS PCPLUS PCMINUS
-%token BEQ NOT AND OR LT GT LE GE BLT BGT BLE BGE PLT PGT PLE PGE
-%token CONCAT CONS BIND TYPESPEC ARGTYPESPEC
+%token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE PLT PGT PLE PGE
+%token CONCAT CONS BIND
 %token INV RET TRANS
 %token <int> LITERAL
 %token <string> VARIABLE
@@ -19,7 +19,7 @@
 %left OR 
 %left AND
 %nonassoc NOT
-%left BEQ LT LE GT GE BLT BGT BLE BGE PLT PGT PLE PGE
+%left EQ LT LE GT GE BLT BGT BLE BGE PLT PGT PLE PGE
 %right CONS CONCAT
 %left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
 %left TIMES DIV BTIMES BDIV MOD
@@ -56,7 +56,7 @@ expr:
 | expr PGE expr       { BinopPC($1, PCGeq, $3) }
 | expr CONCAT expr    { Binop($1, Concat, $3) }
 | expr CONS expr      { Binop($1, Cons, $3) }
-| expr BEQ expr       { Binop($1, BoolEq, $3) }
+| expr EQ expr        { Binop($1, BoolEq, $3) }
 | expr AND expr       { Binop($1, And, $3) }
 | expr OR expr        { Binop($1, Or, $3) }
 
