@@ -19,23 +19,27 @@ whitespace                  { token lexbuf } (* White space *)
 | '\n'                      { NL }
 | '&'                       { NL } 
 | '['                       { LLIST }           
-| ']'                       { RLIST } (* List punctuation *)
+| ']'                       { RLIST } 
 | '+'                       { PLUS }            
-| '<'                       { LT }      (* Operators *)
 | '-'                       { MINUS }           
-| '>'                       { GT }
+| '*'                       { MULT }
+| '/'                       { DIV }
 | '%'                       { MOD }             
+| '<'                       { LT }      
+| '>'                       { GT }
 | "<="                      { LE }
-| "$+"                      { BPLUS }           
 | ">="                      { GE }
+| "$+"                      { BPLUS }           
 | "$-"                      { BMINUS }      
 | "$<"                      { BLT }
 | "$*"                      { BTIMES }      
 | "$>"                      { BGT }
 | "$/"                      { BDIV }            
 | "$<="                     { BLE }
-| "=="                      { EQ }              
 | "$>="                     { BGE }
+| "%+"                      { PCPLUS }
+| "%-"                      { PCMINUS }
+| "=="                      { EQ }              
 | '!'                       { NOT }             
 | "&&"                      { AND }
 | "||"                      { OR }              
@@ -49,10 +53,8 @@ whitespace                  { token lexbuf } (* White space *)
 | '~'                       { INV }             
 | "<>"                      { RET }
 | '('                       { LPAREN }      
-| ')'                       { RPAREN }  (* Punctuation *)
+| ')'                       { RPAREN }  
 | ','                       { COMMA }   
-| '*'                       { MULT }
-| '/'                       { DIV }
 | '.'                       { PERIOD }  
 | "let"                     { LET }
 | "in"                      { IN }
