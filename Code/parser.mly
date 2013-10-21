@@ -36,7 +36,7 @@ expr:
 | expr TIMES expr     { Binop($1, Mul, $3) }
 | expr DIV expr    	  { Binop($1, Div, $3) }
 | expr MOD expr       { Binop($1, Mod, $3) }
-| expr BDIV expr    	{ Binop($1, BeatDiv, $3) }
+| expr BDIV expr      { Binop($1, BeatDiv, $3) }
 | expr BTIMES expr    { Binop($1, BeatMul, $3) }
 | expr BPLUS expr     { BinopB($1, BeatAdd, $3) }
 | expr BMINUS expr    { BinopB($1, BeatSub, $3) }
