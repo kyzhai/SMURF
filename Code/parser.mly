@@ -66,7 +66,6 @@ expr:
 | RET expr           	{ Rowop(Retro, $2) } 
 | TRANS expr          { Rowop(Trans, $2) } 
 
-| VARIABLE BIND expr  { Assign($1, $3) }
 | LITERAL             { Literal($1) }
 | VARIABLE            { Variable($1) }
 | LPAREN expr RPAREN  { $2 }
