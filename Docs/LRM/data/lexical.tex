@@ -35,12 +35,19 @@ re-definition or overloading by users. Following is a list of reserved keywords 
     \hline\hline
     Keywords & Descriptions \\ 
     \hline\hline
+      {\texttt Bool} & Boolean data type \\ \hline
+      {\texttt Int} & Integer data type \\ \hline
+      {\texttt Note} & Represent musical term of note \\ \hline
+      {\texttt Beat} & Represent the duration a note last \\ \hline
+      {\texttt Chord} & List of several notes playing simultaneously \\ \hline
+      {\texttt System} & List of several chords \\ \hline
+      {\texttt True, False} & Specify boolean logic \\ \hline
       {\texttt let, in} & Allow local bindlings in expressions  \\ \hline
       {\texttt if, then, else} & Specify conditional expression, else compulsory  \\ \hline
-      {\texttt True, False} & Specify boolean logic \\ \hline
       {\texttt otherwise} & Specify conditional expression used with guards \\ \hline 
       {\texttt random} & Generate random numbers \\ \hline
       {\texttt print} & Print information to the screen \\ \hline
+      {\texttt main} & The eveluated value of which to be returned by a SMURF program\\ \hline
     \end{tabular}
 \end{table}
 
@@ -91,6 +98,7 @@ Arithmetic Operator & Description & Example \\
   \texttt{$\wedge$-} & Rhythmic Subtraction & \texttt{1 $\wedge$- 2 == 2}  \\ \hline
   \texttt{$\wedge$*} & Rhythmic Augmentation & \texttt{8 $\wedge$* 4 == 2}  \\ \hline
   \texttt{$\wedge$/} & Rhythmic Diminution & \texttt{2 $\wedge$/ 8 == 16}  \\ \hline
+  \texttt{.} & Increase beat duration by half for each period & \texttt{2.. == 2 $\wedge$+ 4 $\wedge$+ 8}  \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -179,12 +187,13 @@ Separators in SMURF are used to separate tokens. The definition os separators in
 SMURF is 
 
 \begin{grammar}
-<separator> $\rightarrow$ \texttt{,} | \texttt{;} | \it{whitespace}
+<separator> $\rightarrow$ \texttt{,} | \texttt{;} | \texttt{\&} | \it{whitespace}
 \end{grammar}
 
 where {\it comma} is used to separate elementes in list definitions.
-{\it semicolon} is used to separate declarations in let bindings. The definition of
-{\it whitespace} is in section~\ref{sec:whitespaces}
+{\it semicolon} is used to separate declarations in let bindings. 
+When the symbole of \texttt{\&} is used, compiler will replay it with a {\it newline} symbol.
+The definition of {\it whitespace} is in section~\ref{sec:whitespaces}. 
 
 
 \subsubsection{Newlines}

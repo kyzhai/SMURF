@@ -15,6 +15,7 @@ type signatures, definitions, and function declarations.
 <type-sig> $\rightarrow$ <identifier> \texttt{::} <type>
 
 <type> $\rightarrow$ \texttt{Int} \\ \texttt{Bool} \\ \texttt{Beat} \\ \texttt{Note} \\
+											\texttt{Chord} \\ \texttt{System} \\ 
 											\texttt{[} <type> \texttt{]} \\ \texttt{(} <type>\texttt{,} 
 											$\ldots$\texttt{,} <type> \texttt{)} \\ <type> \texttt{->} <type>
 											 \\ \texttt{(} <type> \texttt{)}
@@ -81,10 +82,10 @@ scope must be unique and can be mutually recursive. For example, the following
 is legal in SMURF:
 
 \begin{verbatim}
-let  DO WE NEED SPECIAL SLASH CHAR HERE????
-  x = 4
-  z = if y == 7 then x else y
-  y = let x = 5 in x + 3 
+let x = 4
+  	z = if y == 7 then x else y
+  	y = let x = 5 
+        in x + 3 
 in x + z + y
 \end{verbatim}
 
@@ -129,4 +130,16 @@ scope, a compile-time error will be generated. The type of the arguments
 passed to a function are checked at compile-time as well, and an error
 is issued if they don't match the types specified in that function's 
 type signature.
+
+\subsection{\texttt{main} Declaration}
+
+Every SMURF program must contain a definition for the reserved identifier \texttt{main}. This
+identifier may only be used as the left-hand side of a top-level definition. The expression
+bound to \texttt{main} is evaluated and its value is the value of the SMURF program itself.
+That is, when a SMURF program is compiled and run, the expression bound to \texttt{main} is
+evaluated and the result is converted to our bytecode representation of a MIDI file. As a result,
+this expression must evaluate to a value of type \texttt{[]}, \texttt{Note}, \texttt{Chord}, 
+\texttt{System}, or \texttt{[System]}. If a definition for \texttt{main} is not included in a 
+SMURF program or if the expression bound to it does not have one of the types outlined above,
+a compile-time error will occur.
 

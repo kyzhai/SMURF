@@ -47,31 +47,25 @@ to be printed in line 4 should be 3 (0+3). After the finishing of line
 accessed anymore.
 
 \subsection{Basic Types}
-There are two fundamental types in SMURF: {\texttt int} and {\texttt bool}. 
+There are three fundamental types in SMURF: {\texttt int}, {\texttt bool} and {\texttt bool}. 
 \begin{itemize}
-\item {\it Integer}: \texttt{int}, used to represent integers.
-\item {\it Boolean}: \texttt{bool}, used to represent boolean values.
+\item {\it Integer}: \texttt{Int}, used to represent integers.
+\item {\it Boolean}: \texttt{Bool}, used to represent boolean values.
+\item {\it Beat}   : \texttt{Beat}, used to represent the duration of a note. The value of {\texttt Beat} are integers of the power of 2, ranging from 1 to 16.
 \end{itemize}
 
 \subsection{Structured Types}
-Structured types hold groups of elements. There are three structured types in
-SMURF: tuples, lists and functions.
+Structured types hold groups of elements. There are two structured types in
+SMURF: {\it list} and {\it function}.
 
-Tuples have the format of 
-\begin{grammar}
-<tuple> $\rightarrow$ ({\it a, ..., n})
-\end{grammar}
-where items {\it a - n} are elements in the tuple. Elements
-of tuples can have different types.
-
-Lists have the format of 
+{\it list} has the format of 
 \begin{grammar}
 <list> $\rightarrow$ [{\it a, ..., n}]
 \end{grammar}
 where items {\it a - n} are elements in the list. Elements
 of lists must have the same type.
 
-Functions have the format of 
+{\it function} has the format of 
 \begin{grammar}
 <function> $\rightarrow$ {\it arg1} {\texttt -\textgreater} ... {\texttt
     -\textgreater} {\it argk}
@@ -82,19 +76,38 @@ output of the function.
 
 
 \subsection{Derived Types}
-SMURF has a derived type of {\it note}, which has the format of 
+Besides the basic types, SMURF has also several derived types. 
+
+The type of \texttt{Note} is used to represent a musical note in SMURF. The format of \texttt{Note} is defined as below.
 \begin{grammar}
-<note> $\rightarrow$ ({\it pc}, {\it reg})\^{\it k}[.]*
+<note> $\rightarrow$ ({\it pc}, {\it reg})\^{\it k}[.]* 
 \end{grammar}
 where {\it pc} is an integer in the range from -1 to 11. When {\it pc} 
 has a value of -1, the note is a rest, otherwise it represents the pitch class of 
 the note. 
 {\it reg} is an integer in the range of 0-3, representing the register of the 
-note. The register of the note is Bass 1, Bass 2, Treble 1 and Treble 2 for the
-{\it reg} value from 0 to 3 repectively.
-{\it k} is an integer of the power of 2, ranging from 1 to 16. 
+note, where the integer values and corresponding registers are given below.
+\begin{itemize}
+    \item 0: Bass clef, B directly below middle C to first C below middle C
+    \item 1: Bass clef, next lowest B to next lowest C
+    \item 2: Treble clef, middle C to the first B above middle C
+    \item 3: Treble clef, first C above middle C to next highest B
+\end{itemize}
+{\it k} stands for the beat of the note.
 Periods following {\it k} are optional. Users can add dots until the added duration
 gets down to 16th note.
+
+The type of \texttt{Chord} is used to represent several notes to be played simultaneously. It is defined as 
+\begin{grammar}
+<chord> $\rightarrow$ [{\it note}]
+\end{grammar}
+The compiler will check to make sure all the {\it note} in the same {\it chord} have the same time duration.
+
+The type of \texttt{System} is used to represent a list of {\it chord} to be played in a sequential patterns. It is defined as 
+\begin{grammar}
+<system> $\rightarrow$ [{\it chord}]
+\end{grammar}
+
 
 \begin{comment}
 
