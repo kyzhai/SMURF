@@ -1,0 +1,412 @@
+All Java MIDI Instruments,,,All Usable Java MIDI Instruments,
+282,50's Sci-Fi,,21,Accordion
+272,5th Pulse,,32,Acoustic Bass
+277,5th Saw Drone,,113,Agogo
+263,Accent Piccolo,,65,Alto Sax
+256,Accent Sax,,126,Applause
+248,Accent Trombone,,99,Atmosphere
+247,Accent Trumpet,,109,Bag Pipe
+21,Accordion,,105,Banjo
+32,Acoustic Bass,,67,Baritone Sax
+215,Acoustic Bass Gtr,,70,Bassoon
+139,Acoustic Snare,,123,Bird
+113,Agogo,,76,Bottle Blow
+332,air snare,,92,Bowed Glass
+378,air snare,,61,Brass Ensemble
+300,Alarm,,121,Breath Noise
+65,Alto Sax,,1,Bright Piano
+290,Analog Sequence,,100,Brightness
+268,Apparition,,8,Celesta
+126,Applause,,42,Cello
+99,Atmosphere,,52,Choir Aahs
+109,Bag Pipe,,19,Church Organ
+105,Banjo,,71,Clarinet
+67,Baritone Sax,,7,Clavinet
+70,Bassoon,,27,Clean Guitar
+303,Beatnik,,43,Contrabass
+185,Bell Tree,,98,Crystal
+123,Bird,,30,Distortion Guitar
+76,Bottle Blow,,15,Dulcimer
+92,Bowed Glass,,102,Echo Drops
+61,Brass Ensemble,,2,Electric Grand
+252,Brass Ensemble 2,,4,Electric Piano 1
+267,Breath Echoes,,5,Electric Piano 2
+121,Breath Noise,,69,English Horn
+208,Bright Perc Organ,,48,Ensemble Strings
+1,Bright Piano,,88,Fantasia
+100,Brightness,,110,Fiddle
+189,Brush Snare High,,33,Fingered Bass
+190,Brush Snare Low,,73,Flute
+342,bucket hit,,60,French Horn
+388,bucket hit,,35,Fretless Bass
+340,buzzy hit,,9,Glockenspiel
+386,buzzy hit,,101,Goblins
+170,Cabasa,,120,Guitar Fret Noise
+305,Carriage Return,,31,Guitar Harmonics
+307,Cash Register,,127,Gunshot
+186,Castanets,,94,Halo Pad
+8,Celesta,,16,Hammond Organ
+42,Cello,,22,Harmonica
+236,Cello Stroke,,6,Harpsichord
+363,chem-tone,,125,Helicopter
+409,chem-tone,,3,Honky Tonk Piano
+153,Chinese Cymbal,,96,Ice Rain
+52,Choir Aahs,,26,Jazz Electric Gtr
+226,Chorus Bass,,108,Kalimba
+210,Chorus Church Organ,,107,Koto
+197,Chorus Harpsichord,,12,Marimba
+217,Chorus Jazz Guitar,,117,Melodic Tom
+19,Church Organ,,93,Metal Pad
+71,Clarinet,,10,Music Box
+176,Claves,,28,Muted Guitar
+7,Clavinet,,59,Muted Trumpet
+27,Clean Guitar,,24,Nylon Str Guitar
+324,click,,68,Oboe
+370,click,,79,Ocarina
+181,Close Triangle,,55,Orchestra Hit
+143,Closed Hi-Hat,,46,Orchestral Harp
+245,Cloudscapes,,29,Overdrive Guitar
+287,Comet Tails,,75,Pan Flute
+43,Contrabass,,17,Perc Organ
+213,Corny Harmonica,,0,Piano
+316,Cosmic Ray,,72,Piccolo
+157,Cowbell,,34,Picked Bass
+150,Crash Cymbal 1,,45,Pizzicato Strings
+158,Crash Cymbal 2,,90,Polysynth
+302,Crickets,,74,Recorder
+98,Crystal,,20,Reed Organ
+199,Curious Chime,,119,Reverse Cymbal
+223,Dark Syn Bass,,18,Rock Organ
+234,Deep Bass Stab,,103,Sci Fi
+298,Digi-Dodo,,122,Seashore
+30,Distortion Guitar,,77,Shakuhachi
+294,Droplet,,106,Shamisen
+295,Droplet 2,,111,Shanai
+364,dub_kick,,104,Sitar
+410,dub_kick,,36,Slap Bass 1
+15,Dulcimer,,37,Slap Bass 2
+201,Echo Bell,,49,Slow Strings
+102,Echo Drops,,64,Soprano Sax
+219,Echo Mute Bass,,97,Soundtrack
+2,Electric Grand,,91,Space Vox
+4,Electric Piano 1,,114,Steel Drums
+5,Electric Piano 2,,25,Steel String Guitar
+141,Electric Snare,,95,Sweep Pad
+329,electrobrite,,38,Syn Bass 1
+375,electrobrite,,39,Syn Bass 2
+69,English Horn,,62,Syn Brass 1
+48,Ensemble Strings,,63,Syn Brass 2
+344,explosive kick,,87,Syn Brass and Lead
+390,explosive kick,,82,Syn Calliope
+212,Expressive Accordion,,84,Syn Charang
+299,Fairy Godmother,,83,Syn Chiff
+88,Fantasia,,54,Syn Choir
+279,Fantasy Bells,,118,Syn Drum
+110,Fiddle,,86,Syn Fifths Saw
+33,Fingered Bass,,81,Syn Saw Wave
+195,Flange Electric Piano,,80,Syn Square Wave
+221,Flange Guitar,,85,Syn Voice
+222,Flange Guitar Stab,,50,Synth Strings 1
+193,Flange Piano,,51,Synth Strings 2
+334,flange snare,,116,Taiko Drum
+380,flange snare,,23,Tango Accordion
+73,Flute,,124,Telephone
+314,FlyBy 1,,66,Tenor Sax
+315,FlyBy 2,,47,Timpani
+233,Formula 1,,112,Tinkle Bell
+60,French Horn,,44,Tremolo Strings
+251,French Horn Swell,,57,Trombone
+35,Fretless Bass,,56,Trumpet
+289,Friendly Data,,58,Tuba
+362,Gate-tone,,14,Tubular Bell
+408,Gate-tone,,11,Vibraphone
+9,Glockenspiel,,41,Viola
+101,Goblins,,40,Violin
+292,Goblins 2,,53,Voice Oohs
+209,Growl Organ,,89,Warm Pad
+220,Grungey Guitar,,78,Whistle
+120,Guitar Fret Noise,,115,Woodblock
+31,Guitar Harmonics,,13,Xylophone
+127,Gunshot,,,
+94,Halo Pad,,,
+16,Hammond Organ,,,
+140,Handclap,,,
+22,Harmonica,,,
+6,Harpsichord,,,
+241,Heads of Space,,,
+125,Helicopter,,,
+347,Hi Temple Gong,,,
+393,Hi Temple Gong,,,
+338,hi_metallic_snare,,,
+384,hi_metallic_snare,,,
+361,hi-click,,,
+407,hi-click,,,
+168,High Agogo,,,
+161,High Bongo
+149,High Mid Tom
+166,High Timbale
+151,High Tom
+177,High Wood Block
+322,hippishake
+368,hippishake
+128,Hi-Q
+360,hi-tone*
+406,hi-tone*
+351,hollow_metal_hit
+397,hollow_metal_hit
+3,Honky Tonk Piano
+301,Hoverbug
+269,Humorous Whistle
+246,Hype Orch Hit
+96,Ice Rain
+343,icecube
+389,icecube
+336,itchy-scratch
+382,itchy-scratch
+337,itchy-scratch2
+383,itchy-scratch2
+26,Jazz Electric Gtr
+184,Jingle Bell
+224,Jungle Bass
+225,Jungle Bass 2
+108,Kalimba
+137,Kick
+107,Koto
+358,Krelltone
+404,Krelltone
+278,Lead Synth 2
+349,LoBell
+395,LoBell
+175,Long Guiro
+173,Long Whistle
+169,Low Agogo
+162,Low Bongo
+165,Low Conga
+136,Low Kick
+148,Low Mid Tom
+167,Low Timbale
+178,Low Wood Block
+228,Lowrider
+291,Luminous Voice
+264,Lyrical Flute
+259,Lyrical Oboe
+255,Lyrical Sax
+171,Maracas
+12,Marimba
+265,Mello Breath
+249,Mellow Trombone
+117,Melodic Tom
+311,Metal Chirp
+93,Metal Pad
+313,Metal Spray
+135,Metronome Bell
+134,Metronome Click
+273,Moon Jelly
+240,Moving Strings
+10,Music Box
+345,mutant cowbell
+391,mutant cowbell
+179,Mute Cuica
+216,Mute Guitar 2
+163,Mute High Conga
+187,Mute Surdo
+28,Muted Guitar
+59,Muted Trumpet
+250,Muted Trumpet 2
+321,nine_inch_kick
+367,nine_inch_kick
+339,noise echo
+385,noise echo
+24,Nylon Str Guitar
+229,OB Bass
+230,OB Bass 2
+68,Oboe
+79,Ocarina
+194,Octopus Piano
+198,Ondioline
+180,Open Cuica
+164,Open High Conga
+147,Open Hi-Hat
+188,Open Surdo
+182,Open Triangle
+55,Orchestra Hit
+46,Orchestral Harp
+29,Overdrive Guitar
+75,Pan Flute
+145,Pedal Hi-Hat
+17,Perc Organ
+204,Percolator
+206,Percussive Piano
+266,Peruvian
+0,Piano
+72,Piccolo
+34,Picked Bass
+335,ping drum
+381,ping drum
+45,Pizzicato Strings
+312,Poing
+90,Polysynth
+281,Polysynth 2
+310,Pop Click
+244,Pulsing Voices
+74,Recorder
+20,Reed Organ
+192,Reflection Piano
+286,Refractions
+205,Reverse Bell
+119,Reverse Cymbal
+353,reverse cymbal
+399,reverse cymbal
+341,rez_hat
+387,rez_hat
+274,Ricochet Pad
+154,Ride Bell
+152,Ride Cymbal 1
+160,Ride Cymbal 2
+138,Rimclik
+232,Robot Threat
+18,Rock Organ
+275,Rock Radiation
+207,Rot. Speaker Organ 1
+325,rvs cymb pan long
+371,rvs cymb pan long
+326,rvs cymb pan med
+372,rvs cymb pan med
+327,rvs cymb pan shrt
+373,rvs cymb pan shrt
+317,SampHold
+318,SampHold 2
+211,Sawteeth
+103,Sci Fi
+323,ScienceTom
+369,ScienceTom
+131,Scratch Pull
+130,Scratch Push
+122,Seashore
+239,sfz Strings
+183,Shaker
+77,Shakuhachi
+106,Shamisen
+111,Shanai
+174,Short Guiro
+172,Short Whistle
+359,sine_kick
+405,sine_kick
+357,sineblock
+403,sineblock
+350,sinechirp
+396,sinechirp
+356,sinehit
+402,sinehit
+104,Sitar
+129,Slap
+36,Slap Bass 1
+37,Slap Bass 2
+330,SloLaser
+376,SloLaser
+243,Slow Choir Aahs
+257,Slow Sax
+49,Slow Strings
+242,Slow Synth Strings
+280,Slow Warm Pad
+262,Smooth Clarinet
+260,Soft Lead Synth
+203,Soft Marimba
+191,Soft Piano
+276,Solo Vox 2
+355,sonarblip
+401,sonarblip
+285,Soprano
+64,Soprano Sax
+97,Soundtrack
+288,Soundtrack 2
+91,Space Vox
+156,Splash Cymbal
+133,Square Click
+214,Squeeze Box
+261,Staccato Bassoon
+258,Staccato Sax
+114,Steel Drums
+25,Steel String Guitar
+132,Sticks
+270,Strobes
+95,Sweep Pad
+200,Swirly Bell
+38,Syn Bass 1
+39,Syn Bass 2
+62,Syn Brass 1
+63,Syn Brass 2
+253,Syn Brass 3
+254,Syn Brass 4
+87,Syn Brass and Lead
+82,Syn Calliope
+84,Syn Charang
+83,Syn Chiff
+54,Syn Choir
+118,Syn Drum
+86,Syn Fifths Saw
+81,Syn Saw Wave
+80,Syn Square Wave
+85,Syn Voice
+227,Synth Slap Bass
+50,Synth Strings 1
+51,Synth Strings 2
+231,Synth Violin
+320,tablaesque_hi
+366,tablaesque_hi
+319,tablaesque_lo
+365,tablaesque_lo
+354,tablaesque_slap
+400,tablaesque_slap
+116,Taiko Drum
+155,Tambourine
+23,Tango Accordion
+124,Telephone
+271,Teletronic
+304,Teletype
+346,Temple Bell
+392,Temple Bell
+66,Tenor Sax
+308,Thru Phone Chirp
+348,Thuddy Kick
+394,Thuddy Kick
+293,Tick Blok
+47,Timpani
+112,Tinkle Bell
+144,Tom Hi
+146,Tom Hi
+142,Tom Low
+196,Tremolo Electric Piano
+218,Tremolo Guitar
+44,Tremolo Strings
+235,Trill Strings
+57,Trombone
+56,Trumpet
+58,Tuba
+14,Tubular Bell
+238,Tuned Drum
+306,Typewriter Key
+331,ufo-by
+377,ufo-by
+284,UFOs
+237,VibHarp
+11,Vibraphone
+202,Vibraphone 2
+159,Vibraslap
+296,Video Game 1
+297,Video Game 2
+41,Viola
+40,Violin
+53,Voice Oohs
+89,Warm Pad
+283,Watery Glass
+333,weird snare
+379,weird snare
+309,Whipped
+78,Whistle
+115,Woodblock
+352,woodblock
+398,woodblock
+328,woodstick
+374,woodstick
+13,Xylophone
