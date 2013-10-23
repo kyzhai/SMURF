@@ -58,19 +58,12 @@ paren-expression :: ( expression )
 
 
 \subsection{Curried Applications}
-
-    \subsubsection{Function declaration}
-    \emph{function-expression} \texttt{::}  \emph{argument-type-list} \texttt{$\rightarrow$} \emph{result-type} \\ \\
-    where\\
-    
-    \emph{argument-type-list} $\rightarrow$ \emph{argument-type}$+$ \\ \\
-    A function declaration must be on its own line and must declare a type. Declaring a general type is allowed. There are no explicit return statements.
   
     \subsubsection{Function application}
     \emph{function-expression} \emph{argument-expression-list} \\ \\
     where\\
     
-    \emph{argument-expression-list} $\rightarrow$ \emph{argument-expression}$+$ \\ \\ 
+    \emph{argument-expression-list} $\rightarrow$ \emph{identifier}$+$ $|$ \emph{expression}$+$ \\ \\ 
     A function application associates from left to right, so parentheses are optional: \\
     
     \emph{funct a b}  is equivalent to \emph{((funct a) b)} \\ \\
@@ -83,41 +76,53 @@ paren-expression :: ( expression )
   
 
 \subsection{Operator Application}
-    \emph{expression  operator  expression}\\ \\
+    \emph{expression$_{1}$  operator  expression$_{2}$}\\ \\
     where\\
     
-    \emph{operator} $\rightarrow$ \emph{arithmetic-operator} $ | $  \emph{comparison-operator} $ | $ \emph{boolean-operator} $ | $ 
+    \emph{operator} $\rightarrow$ 
+        \emph{operator$_{arithmetic}$} $|$
+        \emph{operator$_{comparison}$}  $|$ 
+        \emph{operator$_{boolean}$}  $|$
+        \emph{operator$_{list}$}  $|$
+        \emph{operator$_{binding}$} \\ \\
+OR\\ \\
+          \emph{operator  expression$_{1}$}\\ \\
+    where\\
     
-    \emph{list-operator} $ | $ \emph{function-operator}
+    \emph{operator} $\rightarrow$ \emph{operator$_{negation}$} \\ \\
+\textbf{\emph{operator$_{arithmetic}$}} \\
+For integer arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. For beat arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers that are powers of 2 from 1 to 32 . For pitch class arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers between 0 and 11.  \\ \\
+\textbf{\emph{operator$_{comparison}$}} \\
+For integer comparison, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. For beat comparison, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to beats. \\ \\
+\textbf{\emph{operator$_{boolean}$}} \\
+For comparison, conjunction, and disjunction, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. \\ \\
+\textbf{\emph{operator$_{list}$}} \\ \\
+List operators require that  \emph{expression$_{2}$} is a list. When doing list construction,  \emph{expression$_{1}$} must be an element of the same type as the other elements in  \emph{expression$_{2}$}. When doing list concatenation,  \emph{expression$_{1}$} must be a list containing elements of the same type as  \emph{expression$_{2}$}. \\ \\
+\textbf{\emph{operator$_{binding}$}} \\ \\
+When doing type specification, \emph{expression$_{2}$} must be a type and \emph{expression$_{1}$} must be a non-keyword identifier. When doing argument and function return type specification, \emph{expression$_{1}$} and \emph{expression$_{2}$} must be types. When using case alternatives with guards,  \emph{expression$_{2}$} is a conditional expression and  \emph{expression$_{1}$} is either a conditional expression, indicating that there is more than one case for the guard, or a declaration. When doing assignment,  \emph{expression$_{1}$} is a non-keyword identifier and  \emph{expression$_{2}$} is an expression to bind to that identifier. \\ \\
+\textbf{\emph{operator$_{negation}$}} \\ \\
+For negation,  \emph{expression$_{1}$} is a comparison, conjunction, or disjunction expression.
     
 \subsection{Conditionals}
-  \texttt{if}  \emph{expression}  \texttt{then}  \emph{expression-true}  \texttt{else}  \emph{expression-false} \\ \\
-  When the value of expression evaluates to true,  \emph{expression-true} is evaluated, otherwise  \emph{expression-false} is evaluated. Conditional expressions do not have newline restrictions.
+  \texttt{if} \emph{expression$_{boolean}$} \texttt{then}  \emph{expression$_{true}$} \texttt{else}  \emph{expression$_{false}$} \\ \\
+  When the value of \emph{expression$_{boolean}$} evaluates to true, \emph{expression$_{true}$} is evaluated, otherwise  \emph{expression$_{false}$} is evaluated. Conditional expressions do not have newline restrictions.
 
 \subsection{Lists}
   \texttt{[} \emph{expression-list} \texttt{]} \\ \\
   where \\
   
-  \emph{expression-list} $\rightarrow$  \emph{expression}$?$ (\texttt{,} \emph{expression})$*$ \\ \\
-\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} = 
-  \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[ ]))} \\ 
-where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor \texttt{:} and empty list \texttt{[ ]} are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
+  \emph{expression-list} $\rightarrow$  
+  \emph{\textless empty \textgreater} $|$
+  \emph{expression} (\texttt{,} \emph{expression})$*$  \\ \\
+An example of how a list can be written is: \\
 
-\subsection{Tuples}
-  \texttt{(} \emph{expression-list} \texttt{)} \\ \\
-  where \\
-  
-  \emph{expression-list} $\rightarrow$  \emph{expression} (\texttt{,} \emph{expression})$*$  \texttt{,} \emph{expression} \\ \\
-The expressions in a tuple may be of different types. The constructor of an n-tuple is denoted by (\textunderscore
-, ..., \textunderscore) where there are \textit{n-1} commas.
+\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} = 
+  \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[ ]))} \\ \\
+where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor \texttt{:} and empty list \texttt{[ ]} are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
 
 \subsection{Parenthesized Expressions}
   \texttt{(} \emph{expression} \texttt{)} \\ \\
-  where expression is evaluated as a primary expression.
-
-\subsection{Expression Type-Signature}
-  \emph{expression} \texttt{::} \emph{type} \\ \\
-  where \emph{expression} is an expression and \emph{type} is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
+  where \emph{expression} is evaluated as a primary expression. Parentheses are used to increase the precedence of an expression. For example 2 \texttt{+} 3 \texttt{*}  4  evaluates to 14 but \texttt{(} 2 \texttt{+} 3 \texttt{) *}  4 evaluates to 20. The parentheses force the addition operation to occur before the multiplication operation even though multiplication has higher precedence than addition in SMURF.
 
 \subsection{Let Expressions}
 \begin{grammar}
