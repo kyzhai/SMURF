@@ -7,7 +7,7 @@ ast: ast.mli
 	ocamlc -c ast.mli
 
 parser.ml parser.mli:  parser.mly
-	ocamlyacc parser.ml
+	ocamlyacc -v parser.mly
 
 parser: parser.mli parser.ml ast
 	ocamlc -c parser.mli parser.ml
@@ -16,4 +16,4 @@ scanner: scanner.ml
 	ocamlc -c scanner.ml
 
 clean:
-	rm *.cmi *.ml parser.mli
+	rm *.cmi *.cmo *.ml *.output parser.mli

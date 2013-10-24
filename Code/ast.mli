@@ -7,20 +7,21 @@ type unary_operator = Not
 
 type row_operator = Inv | Retro | Trans
 
-type types = Int | Bool | Note | Beat | Chord | System | List of types list   (* Not sure if these should be here...doing it 
+type types = Int | Bool | Note | Pitch | Beat | Chord | System | List of types list   (* Not sure if these should be here...doing it 
                                                                          for type signature definition *)
-
 type expr =                                 (* Expressions *)
     Literal of int                          (* 42 *)
     | Variable of string                    (* bar *)
+    | Beat of int * int                     (* 2. *)
+    | Note of int * int * expr              (* (11, 2)^4. *)
     | Binop of expr * operator * expr       (* a + 2 *)
     | Unop of unary_operator * expr         (* ! a == 4 *)
     | Rowop of row_operator * expr          (* ~[1,2,3,4,5,6] *)
 
 type pattern =                              (* Patterns *)
     Patconst of int                         (* integer or boolean constant *)
-    | Patvar of string                        (* identifier *)
-    | Patlist of pattern list                 (* x:rest or [1,2,3] *)
+    | Patvar of string                      (* identifier *)
+    | Patlist of pattern list               (* x:rest or [1,2,3] *)
 
 type func_decl = {                          (* Function Declaration *)
     fname : string;                         (* Function name *)
@@ -30,7 +31,7 @@ type func_decl = {                          (* Function Declaration *)
 
 type dec =                                  (* Declarations *)
     Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
-    | Funcdec of func_decl list               (* f x y = x + y *)
+    | Funcdec of func_decl list             (* f x y = x + y *)
 
 type def =                                  (* Definitions *)
     Vardef of string * expr                 (* x = (2 + 5) : [1,2,3] *)
