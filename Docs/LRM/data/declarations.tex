@@ -15,7 +15,7 @@ type signatures, definitions, and function declarations.
 <type-sig> $\rightarrow$ <identifier> \texttt{::} <type>
 
 <type> $\rightarrow$ \texttt{Int} \\ \texttt{Bool} \\ \texttt{Beat} \\ \texttt{Note} \\
-											\texttt{Chord} \\ \texttt{System} \\ 
+											\texttt{Chord} \\ \texttt{System} \\ <identifier> \\ 
 											\texttt{[} <type> \texttt{]} \\ \texttt{(} <type>\texttt{,} 
 											$\ldots$\texttt{,} <type> \texttt{)} \\ <type> \texttt{->} <type>
 											 \\ \texttt{(} <type> \texttt{)}
@@ -29,6 +29,18 @@ for a given identifier can exist in a given scope. That is, two different
 type signatures for a given identifier can exist, but they must be declared
 in different scopes. There are three categories of types in SMURF: primitive
 types,  structured types, and type synonyms. Types are described in sections 3.3-3.5.
+
+SMURF also permits the use of polymorphism in specifying the types of identifiers. If some
+non-keyword identifier appears on the right-hand side of the \texttt{::} operator, it means
+that that identifier could be replaced with any standard SMURF type. For example, if we have
+the type signature \texttt{x :: a -> b}, we have defined a function \texttt{x} that takes
+an argument of any type and returns an argument of any type. That is, \texttt{x} could take
+an argument of type \texttt{Int} and return a value of type \texttt{Char}.
+If the same identifier is used multiple times in the same type signature, 
+it must take on the same type everywhere that it appears. If our last example
+was instead defined \texttt{x :: a -> a}, we would have defined a function that took an argument
+of any type and returned a value of the \emph{same} type. That is, \texttt{x} could take an argument
+of type \texttt{Int}, but then it would be forced to return a value of type \texttt{Int} as well.
 
 %\subsubsection{Primitive Types}
 %
