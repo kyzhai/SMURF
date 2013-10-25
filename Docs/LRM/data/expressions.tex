@@ -1,11 +1,10 @@
 \section{Expressions}
 
 This section describes the syntax and semantics of \emph{expressions} in 
-SMURF. Expressions can have either infix or prefix operators. All 
-infix operators are built in operators. Unless otherwise stated infix 
-operators are left associated. All prefix operators (function calls) 
-are left associated. Prefix operators will always evaluate with a 
-higher precedence than infix operators.  
+SMURF. Expressions can have either infix or prefix operators. 
+Unless otherwise stated infix operators are left associated. 
+All prefix operators are left associated. Prefix operators will always 
+evaluate with a higher precedence than infix operators.  
 
 
 %TODO: check the correct position for this table
@@ -15,9 +14,8 @@ higher precedence than infix operators.
 		Expression & Association \\
 		\hline
 		\texttt{f x + g y} & \texttt{(f x) + (g y)} \\
-		\texttt{f g x} & \texttt{(f (g x))} \\
+		\texttt{f g x} & \texttt{((f g) x)} \\
 		\texttt{ let \{ ... \} in x + y} & \texttt{let \{ ... \} in (x + y)} \\
-		type declaration example & order of precedence \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -25,13 +23,59 @@ higher precedence than infix operators.
 
 \subsection{Errors}
 
-Errors can occur during runtime of a SMURF program. These erros cannot be 
-caught by a programmer nor can a programmer produce an error artificially. 
-Errors that occur during runtime are out of bounds errors in \texttt{Note} 
-and \texttt{Beat} creation.
+Errors can only occur during compilation of a SMURF program. All generated 
+code will run successfully. 
 
 \subsection{Description of Precedence}
+Precedence describes the order of all operations on operands including 
+built-in operators and functions and user created functions. All 
+functions have the same precedence. Function precedence is higher than all
+operators. The operator precedence will be as listed below. They are listed 
+in order of precedence between the different types of operators with the 
+top operators having the lowest precedence and the bottom operators having 
+the highest precedence. 
 
+\subsubsection{Declaration Operators}
+Declaration operators are used in declarations. These 
+operators are \texttt{::}, \texttt{->}, and \texttt{|}. 
+All three operators have the same level of precedence. 
+\subsubsection{Tone Row Operators}
+Tone row operators manipulate lists of notes. 
+The three operators are ~, \texttt{<>}, and \texttt{wedge wedge}. 
+The ~ operator has the highest precedence of the tone row 
+operators. Next highest operator is \texttt{$\wedge$}. While \texttt{<>} 
+has the lowest precedence of the tone row operators. 
+\subsubsection{Boolean Operators}
+Boolean operators are used to do boolean logic on 
+boolean types. The order of precedence for these 
+operators is, lowest to highest, \texttt{||}, 
+\texttt{\&\&}, \texttt{==} and \texttt{!=} , and \texttt{!}. 
+\subsubsection{Comparison Operators}
+Comparison operators are used to compare primitive types sizes. 
+All comparison operators have the same precedence. 
+\subsubsection{Arithmetic Operators}
+There are three types of arithmetic operator. There are 
+basic operators found in most programming languages like 
+\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, and \texttt{\%}. 
+There are also more advance operators for modulus arithmetic commonly 
+found in twelve tone serialism like \texttt{\%+} and \texttt{\%-}. 
+Last their are \texttt{Beat} arithmetic operators. 
+These include \texttt{\^+}, \texttt{\^-}, \texttt{\^*}, \texttt{\^/}, 
+and \texttt{.}. 
+
+Basic arithmetic operators have a higher precedence than both
+modulus and \texttt{Beat} arithmetic operators. Modulus operators 
+then have a higher precedence than \texttt{Beat} operators. 
+
+In basic arithmetic operators \texttt{*}, \texttt{/}, and \texttt{\%} 
+have higher precedence than \texttt{+} and \texttt{-}. 
+Both modulus operators have the same precedence. In \texttt{Beat} 
+operators the highest precedence operator is \texttt{.} followed 
+by \texttt{\^*} and \texttt{\^/} with \texttt{\^+} and {\^-} having 
+the lowest precedence. 
+\subsubsection{List Operators}
+List operators are manipulate lists. There are two of these operators,
+: and ++. The : operator will be evaluated before the ++ operator. 
 
 \subsection{Primary Expressions}
 

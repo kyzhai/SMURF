@@ -1,9 +1,5 @@
 \section{Library Functions}
 
-\textcolor{red}{Since we moved the previous library functions to operations and removed measures not sure what to put here. I will brain storm and 
-think of any library functions we might need.} 
-
-
 Below are the library functions that can be used in the SMURF language. 
 These functions are implemented in SMURF but are available to all users 
 for their convenience. Each library function will include a description 
@@ -12,11 +8,28 @@ and its SMURF definition. \newline
 \noindent\textbf{Head}
 
 The function \texttt{head} takes a list and returns the first element. 
-This function is commonly used when working with lists. 
+This function is commonly used when working with lists. The head function
+is available for all lists of primitive and derivative types. 
 
 \begin{verbatim}
-head :: [a] -> a
+head_note :: [Note] -> Note
 head (h:tl) = h
+
+head_int :: [Int] -> Int
+head (h:tl) = h
+
+head_beat :: [Beat] -> Beat
+head (h:tl) = h
+
+head_bool :: [Bool] -> Bool
+head (h:tl) = h
+
+head_chord :: [Chord] -> Chord
+head (h:tl) = h
+
+head_system :: [System] -> System
+head (h:tl) = h
+
 \end{verbatim} 
 
 
@@ -26,9 +39,26 @@ The function \texttt{tail} takes a list and returns the end of the list.
 This function is commmonly used when working with lists. 
 
 \begin{verbatim}
-tail :: [a] -> [a]
+tail_note :: [Note] -> [Note]
 tail (h:tl) = tl
-\end{verbatim}
+
+tail_int :: [Int] -> [Int]
+tail (h:tl) = tl
+
+tail_beat :: [Beat] -> [Beat]
+tail (h:tl) = tl
+
+tail_bool :: [Bool] -> [Bool]
+tail (h:tl) = tl
+
+tail_chord :: [Chord] -> [Chord]
+tail (h:tl) = tl
+
+tail_system :: [System] -> [System]
+tail (h:tl) = tl
+
+\end{verbatim} 
+
 
 \noindent\textbf{MakeNotes}
 
@@ -41,7 +71,7 @@ to easily turn their modified rows and columns into a list of notes to add
 to their system. 
 
 \begin{verbatim}
-makeNotes :: [a] [a] [b] -> [Note]
+makeNotes :: [Int] [Int] [Beat] -> [Note]
 makeNotes [] = []
 makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)^h3:(makeNotes tl1 tl2 tl3)
 \end{verbatim}
