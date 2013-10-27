@@ -105,14 +105,15 @@ paren-expression :: ( expression )
     where\\
     
     \emph{argument-expression-list} $\rightarrow$ \emph{identifier}$+$ $|$ \emph{expression}$+$ \\ \\ 
-    A function application associates from left to right, so parentheses are optional: \\
+    A function gets called by invoking its name and supplying any necessary arguments. Functions can only be called once it is defined and may also be called recursively. A function application associates from left to right. Parentheses can be used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
+    evaluates function \emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
     
-    \emph{funct a b}  is equivalent to \emph{((funct a) b)} \\ \\
-    Parentheses are used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
-    evaluates function \emph{funct2} with argument \emph{a}: \\
-    
-    \emph{funct2 a (funct1 b)}
-
+    \emph{funct2 a (funct1 b)}\\ \\
+A function call may be used as a subexpression in a \texttt{let} expression. For example:
+\begin{verbatim}
+let a = double 10
+\end{verbatim}
+where \texttt{double} is a function that takes a single integer argument. 
 
 \subsection{Operator Application}
     \emph{expression$_{1}$  operator  expression$_{2}$}\\ \\
