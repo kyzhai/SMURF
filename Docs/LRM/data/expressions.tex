@@ -27,11 +27,58 @@ all prefix operators are right-associative. Some examples of association are giv
 %Errors can only occur during compilation of a SMURF program. All generated 
 %code will run successfully. 
 %
+
 \subsection{Description of Precedence in Expressions}
 Precedence describes the order of evaluation for subexpressions in a given expression.
 The order of precendence for expressions and their operators mirrors our ordering of the following
 subsections i.e. the first subsection describes the expressions with highest precedence, and the last
 subsection describes the expressions with lowest precedence.
+
+\subsection{Primary Expressions}
+
+\setlength{\grammarindent}{7.5em}
+\begin{grammar}
+<primary-expr> $\rightarrow$ <variable> \\ <constant> \\ \texttt{(} <expression> \texttt{)} \\
+														<function-application> 
+
+<variable> $\rightarrow$ <identifier> 
+
+<function-application> $\rightarrow$ <identifier> <args-list> 
+
+<args-list> $\rightarrow$ (<expression>)+
+
+\end{grammar}
+
+\subsubsection{Variables}
+A variable $x$ is a primary expression whose type is the same as the type of $x$.
+When we evaluate a variable, we are actually evaluating
+the expression bound to the variable in the closest lexical scope.
+
+\subsubsection{Constants}
+An integer or boolean constant, as described in section \ref{sec:constants}, is a primary expression
+with type equivalent to the type of the constant.
+
+\subsubsection{Parenthesized Expression}
+An expression surrounded by parentheses is a primary expression.
+
+\subsubsection{Function application}
+A function gets called by invoking its name and supplying any necessary arguments. 
+Functions can only be called if they have been declared in the same scope where the call occurs,
+or in a higher scope. Functions may be called recursively. Function application associates 
+from left to right. Parentheses can be used to change the precedence from the default.
+The following evaluates function \emph{funct1} with argument \emph{b} then evaluates function
+\emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
+    
+    \emph{funct2 a (funct1 b)}\\ \\
+If the parentheses were not included, a compile-time error would be generated, as it would imply
+that \emph{funct2} would be called with \emph{a} as
+its first argument and \emph{funct1} as its second argument, which is illegal based on the description
+of function types in section \ref{sec:structtype}.
+A function call may be used as a subexpression in a \texttt{let} expression. For example:
+\begin{verbatim}
+let a = double 10
+\end{verbatim}
+where \texttt{double} is a function that takes a single integer argument. 
 
 \subsubsection{Declaration Operators}
 Declaration operators are used in declarations. These 
@@ -76,44 +123,6 @@ the lowest precedence.
 List operators are used to manipulate lists. 
 There are two of these operators,
 \texttt{:} and \texttt{++}. The \texttt{:} operator will be evaluated before the \texttt{++} operator. 
-
-\subsection{Primary Expressions}
-
-\subsubsection{Identifiers}
-An identifier expression is an expression that involves only identifiers. \\\\*
-%\begin{verbatim}
-\emph{identifier-expression :: identifiers}\\ \\*
-%\end{verbatim}
-where \emph{identifiers} are defined in section~\ref{sec:identifiers}.
-
-
-\subsubsection{Constants}
-A constant expression is an expression that involves only constants. \\ \\*
-%i\begin{verbatim}
-\emph{constant-expression :: constants} \\ \\*
-%\end{verbatim}
-where \emph{constants} are defined in section~\ref{sec:constants}.
-
-\subsubsection{(Expression)}
-An expression surrounded by parentheses is a new expression. \\ \\*
-%\begin{verbatim}
-\emph{paren-expression :: ( expression )} \\ \\*
-%\end{verbatim}
-
-\subsection{Function application}
-    \emph{function-expression} \emph{argument-expression-list} \\ \\
-    where\\
-    
-    \emph{argument-expression-list} $\rightarrow$ \emph{(identifier} $|$ \emph{expression)}$+$ \\ \\ 
-    A function gets called by invoking its name and supplying any necessary arguments. Functions can only be called once it is defined and may also be called recursively. A function application associates from left to right. Parentheses can be used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
-    evaluates function \emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
-    
-    \emph{funct2 a (funct1 b)}\\ \\
-A function call may be used as a subexpression in a \texttt{let} expression. For example:
-\begin{verbatim}
-let a = double 10
-\end{verbatim}
-where \texttt{double} is a function that takes a single integer argument. 
 
 \subsection{Operator Application}
 \label{sec:operator application}

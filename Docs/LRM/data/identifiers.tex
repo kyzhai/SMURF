@@ -70,7 +70,9 @@ must themselves have type \emph{t}. Note that \emph{t} itself may be a list type
 A {\it function} type has the format \emph{t$_1$} \texttt{->} \emph{t$_2$} \texttt {->}
 \dots \texttt{->} \emph {t$_n$} \texttt{->} \emph{t$_{ret}$} which specifies a function type
 that takes $n$ arguments, where the $kth$ argument has type \emph{t$_k$}, and returns an expression
-of type \emph{t$_{ret}$}.
+of type \emph{t$_{ret}$}. Any type may be used to define a function type, except for a function
+type itself. In other words, functions may not be passed as arguments to other functions, nor may
+a function return another function.
 
 
 \subsection{Derived Types}
