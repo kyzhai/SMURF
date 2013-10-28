@@ -127,10 +127,9 @@ where \texttt{double} is a function that takes a single integer argument.
         \emph{operator$_{list}$}  $|$
         \emph{operator$_{binding}$} \\ \\
 OR\\ \\
-          \emph{operator  expression$_{1}$}\\ \\
-    where\\
+          \emph{operator$_{negation}$  expression$_{1}$} $|$
+					\emph{expression$_{1}$ operator$_{beat}$}\\ \\
     
-    \emph{operator} $\rightarrow$ \emph{operator$_{negation}$} \\ \\
 \textbf{\emph{operator$_{arithmetic}$}} \\
 For integer arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. For beat arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers that are powers of 2 from 1 to 16. For pitch class arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers between 0 and 11.  \\ \\
 \textbf{\emph{operator$_{comparison}$}} \\
@@ -143,6 +142,11 @@ List operators require that  \emph{expression$_{2}$} is a list. When doing list 
 When doing type specification, \emph{expression$_{2}$} must be a type and \emph{expression$_{1}$} must be a non-keyword identifier. When doing argument and function return type specification, \emph{expression$_{1}$} and \emph{expression$_{2}$} must be types. When using case alternatives with guards,  \emph{expression$_{2}$} is a conditional expression and  \emph{expression$_{1}$} is either a conditional expression, indicating that there is more than one case for the guard, or a declaration. When doing assignment,  \emph{expression$_{1}$} is a non-keyword identifier and  \emph{expression$_{2}$} is an expression to bind to that identifier. \\ \\
 \textbf{\emph{operator$_{negation}$}} \\ \\
 For negation,  \emph{expression$_{1}$} is a comparison, conjunction, or disjunction expression.
+
+\textbf{\emph{operator$_{beat}$}} \\ \\
+The beat operator makes the beat that it is applied to last 
+1.5 of its original length. 
+
     
 \subsection{Conditionals}
   \texttt{if} \emph{expression$_{boolean}$} \texttt{then}  \emph{expression$_{true}$} \texttt{else}  \emph{expression$_{false}$} \\ \\
