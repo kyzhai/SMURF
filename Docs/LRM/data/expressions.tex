@@ -39,13 +39,10 @@ subsection describes the expressions with lowest precedence.
 \setlength{\grammarindent}{7.5em}
 \begin{grammar}
 <primary-expr> $\rightarrow$ <variable> \\ <constant> \\ \texttt{(} <expression> \texttt{)} \\
-														<function-application> 
+														\texttt{[} (<expression>?|<expression> (\texttt{,} <expression>)*) \texttt{]} \\
+														\texttt{(} <expression>\texttt{,} <expression>\texttt{)\$}<expression>
 
 <variable> $\rightarrow$ <identifier> 
-
-<function-application> $\rightarrow$ <identifier> <args-list> 
-
-<args-list> $\rightarrow$ (<expression>)+
 
 \end{grammar}
 
@@ -61,7 +58,67 @@ with type equivalent to the type of the constant.
 \subsubsection{Parenthesized Expression}
 An expression surrounded by parentheses is a primary expression.
 
-\subsubsection{Function application}
+\subsubsection{Lists}
+A set of zero or more expressions enclosed in square brackets is a list. All expressions in
+a list must have the same type. A list is a primary expression.
+
+\subsubsection{Notes}
+A note is a primary expression, and is written as a tuple of expressions of type \texttt{Int} followed
+by a \texttt{\$} symbol and an expression of type \texttt{Beat}. The values of each of these
+expressions must follow the rules outlined in section \ref{sec:derivedtype}.
+
+\subsection{Postfix Operator Expressions}
+\label{sec:postfix}
+
+\begin{grammar}
+<postfix-expression> $\rightarrow$ <beat-expr>\texttt{.}
+\end{grammar}
+
+The only expression in SMURF using a postfix operator is the partial augmentation of an expression
+of type \texttt{Beat}, which uses the dot operator.
+We say ``partial augmentation" because a dot increases the durational value of
+the expression to which it's applied, but only by half of the durational value of that expression.
+That is, if \emph{expr} is an expression of type \texttt{Beat} that evaluates to a duration of $n$, 
+then \emph{expr}\texttt{.} is a postfix expression of type \texttt{Beat} 
+that evaluates to a duration of $n/2$.
+The dot operator may be applied until it represents an addition of a sixteenth note
+duration, after which no more dots may be applied. For instance, \texttt{4..} is legal, as this
+is equivalent to a quarter note duration plus an eighth note duration (the first dot) plus a
+sixteenth note duration (the second dot). However, \texttt{8..} is not legal, as the second
+dot implies that a thirty-second note duration should be added to the total duration of this
+expression. Our compiler will check the number of dots and return an error if too many are applied.
+
+\subsection{Prefix Operator Expressions}
+
+\begin{grammar}
+<prefix-expression> $\rightarrow$ <prefix-op> <expression>
+\end{grammar}
+
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{0.9\textwidth}{llX}
+\hline\hline
+Prefix Operator & Description & Example \\
+\hline\hline
+   \texttt{$\sim$} & Tone row inversion & $\sim$ \texttt{row} (returns the inversion of \texttt{row})\\ \hline
+   \texttt{<>} & Tone row retrograde & \texttt{<>}~\texttt{row} (returns the
+           retrograde of \texttt{row})\\ \hline
+   \texttt{!} & Logical negation & \texttt{if !(a == 5) then True else False} \\ \hline
+\end{tabularx}
+\end{table}
+
+SMURF has three prefix operators: logical negation, tone row inversion, and tone row retrograde.
+There is another row transformation operator, but it takes multiple arguments and is described in
+section \ref{sec:bintonerow}. The logical negation operator can only be applied to expressions of
+type \texttt{Bool}, and the two row operators can only be applied to expressions of type
+\texttt{[Int]}. The compiler will check that all of the integers in a list are in the range $0-11$
+if the list is passed to either of the tone row operators.
+All three operators return an expression of the same type as the expression the
+operator was applied to.
+
+
+\subsection{Function application}
 A function gets called by invoking its name and supplying any necessary arguments. 
 Functions can only be called if they have been declared in the same scope where the call occurs,
 or in a higher scope. Functions may be called recursively. Function application associates 
@@ -83,25 +140,6 @@ in a
 \end{verbatim}
 evaluates to 20, where \texttt{double} is a function that takes a single integer argument and
 returns that integer multiplied by two. 
-
-\subsection{Postfix Operator Expressions}
-
-\begin{grammar}
-<postfix-expression> $\rightarrow$ <beat-expr> (\texttt{.})*
-\end{grammar}
-
-The only expression in SMURF using a postfix operator is the partial augmentation of an expression
-of type \texttt{Beat}. We say partial augmentation because a dot increases the durational value of
-the expression to which it's applied, but only by half of the durational value of that expression.
-That is, if \emph{expr} is an expression of type \texttt{Beat} that evaluates to a duration of $n$, 
-then \emph{expr}\texttt{.} is a postfix expression of type \texttt{Beat} 
-that evaluates to a duration of $n/2$.
-The dot operator may be applied until it represents an addition of a sixteenth note
-duration, after which no more dots may be applied. For instance, \texttt{4..} is legal, as this
-is equivalent to a quarter note duration plus an eighth note duration (the first dot) plus a
-sixteenth note duration (the second dot). However, \texttt{8..} is not legal, as the second
-dot implies that a thirty-second note duration should be added to the total duration of this
-expression. Our compiler will check the number of dots and return an error if too many are applied.
 
 \subsubsection{Declaration Operators}
 Declaration operators are used in declarations. These 
