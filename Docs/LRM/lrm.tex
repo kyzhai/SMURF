@@ -68,26 +68,25 @@
 \tableofcontents
 
 \section{Introduction}
-SMURF is a function language that allows a composer to create serialist music
-based on twelve-tone composition. In general, serialism is a musical composition
-technique where a set of values, chosen through some methodical progress,
+SMURF is a functional language that allows a composer to create serialist music
+based on the twelve-tone composition technique. In general, serialism is a musical composition
+method where a set of values, chosen through some methodical progress,
 generates a sequence of musical elements. SMURF is based on the
 functional syntax and semantics set forth by Haskell. The backend of
-SMURF generates MIDIs corresponding to the uses's initial program in
-SMURF. 
+SMURF generates MIDIs corresponding to the composition defined by the 
+user's initial program in SMURF. 
 
 \section{Syntax Notation}
 The syntax notation used in this manual is as follows. Syntactic 
 categories are indicated by \emph{italic} type. Literal words and 
-characters will be displayed in \texttt{typeset}. Alternatives are listed 
-on separate lines. Optional terminal and non-terminals are indicated by the
-subscript\_{opt}. 
+characters used in the SMURF language will be displayed in \texttt{typeset}. 
+Alternatives are listed on separate lines. 
 
 Regular expression notations are used to specify grammar patterns in this
-manual.  {\it r}$*$ means the pattern {\it r} may appear zero or more time,
-{\it r}$+$ means the {\it r} may appear one or more times, {\it r}$?$
-means {\it r} may appear zero or once. {\it r1}$|${\it r2} denotes an option
-between two patterns, {\it r1 r2} denotes {\it r1} followed by
+manual.  {\it r}$*$ means the pattern {\it r} may appear zero or more times,
+{\it r}$+$ means {\it r} may appear one or more times, and {\it r}$?$
+means {\it r} may appear once or not at all. {\it r1}$|${\it r2} denotes an option
+between two patterns, and {\it r1 r2} denotes {\it r1} followed by
 {\it r2}. 
 
 
@@ -98,9 +97,6 @@ between two patterns, {\it r1 r2} denotes {\it r1} followed by
 \input{data/libraryFuncs}
 \clearpage
 
-{% citations begin here
-\bibliographystyle{ieeetr}
-\bibliography{ref/refs}
 
 
 \end{document}
