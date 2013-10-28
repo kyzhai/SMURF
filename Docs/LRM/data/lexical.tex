@@ -88,38 +88,9 @@ except for declaration operators, which are described in section \ref{sec:declar
 
 %
 %
-%SMURF allows comparison operations between expressions that evaluate to values of type \texttt{Int} or \texttt{Beat}.
-%\begin{table} [H]
-%\centering
-%\begin{tabular}{lll}
-%\hline\hline
-%Comparison Operator & Description & Example \\
-%\hline\hline
-%  \texttt{<}  & Integer Less than & \texttt{if a \textless\space  5 then True else False} \\ \hline
-%  \texttt{>}  & Integer Greater than & \texttt{if a \textgreater\space  5 then True else False}  \\ \hline
-%  \texttt{<=}  & Integer Less than or equal to & \texttt{if a \textless= 5 then True else False} \\ \hline
-%  \texttt{>=} & Integer Greater than or equal to & \texttt{if a \textgreater= 5 then True else False} \\ \hline
-%  \texttt{\$<} & Rhythmic Less than & \texttt{4 \textless\space  8 == False} \\ \hline
-%  \texttt{\$>}  & Rhythmic Greater than &  \texttt{4 \textgreater\space  8 == True}  \\ \hline
-%  \texttt{\$<=} & Rhythmic Less than or equal to & \texttt{4 \textless= 4 == True} \\ \hline
-%  \texttt{\$>=} & Rhythmic Greater than or equal to &  \texttt{1 \textgreater= 16 == True} \\ \hline
-%\end{tabular}
-%\end{table}
 %
 %
 %SMURF allows logical negation, conjunction, and disjunction, in addition to structural comparison.
-%\begin{table} [H]
-%\centering
-%\begin{tabular}{lll}
-%\hline\hline
-%Boolean Operator & Description & Example \\
-%\hline\hline
-%   \texttt{==} & Structural comparison & \texttt{if a == 5 then a = True else a = False} \\ \hline
-%   \texttt{!} & Logical negation & \texttt{if !(a == 5) then True else False} \\ \hline
-%   \texttt{\&\&} & Logical conjunction & \texttt{if b \&\& c  then True else False} \\ \hline
-%   \texttt{\textbar\textbar} & Logical disjunction & \texttt{if b \textbar\textbar\space   c  then True else False} \\ \hline
-% \end{tabular}
-%\end{table}
 %
 %SMURF provides operators to specify types of identifiers, arguments, and return values in various declarations,
 %as well as an operator to indicate a guard in a declaration.
@@ -139,21 +110,6 @@ except for declaration operators, which are described in section \ref{sec:declar
 %\end{tabularx}
 %\end{table}
 %
-%SMURF allows 3 transformation operations to tone rows: inversion, retrograde and
-%transposition.
-%\begin{table} [H]
-%\centering
-%\begin{tabularx}{0.9\textwidth}{llX}
-%\hline\hline
-%Tone Row Operator & Description & Example \\
-%\hline\hline
-%   $\sim$ & Inversion & $\sim$ {\texttt row} (returns the inversion of {\texttt row})\\ \hline
-%   \textless\textgreater & Retrograde & \textless\textgreater~{\texttt row} (returns the
-%           retrograde of {\texttt row})\\ \hline
-%   $\wedge\wedge$ & Transposition & $\wedge\wedge$ {\texttt row} 3 (transpose {\texttt row} by 3
-%           semitones)\\ \hline
-%\end{tabularx}
-%\end{table}
 
 \subsubsection{Separators}
 
