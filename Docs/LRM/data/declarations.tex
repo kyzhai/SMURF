@@ -114,12 +114,23 @@ A type signature may be given for a definition but is not required.
 
 \subsection{Function Declarations}
 
+\setlength{\grammarindent}{5em}
 \begin{grammar}
 
 <fun-dec> $\rightarrow$ <identifier> <args> $=$ <expression> \\
 												 <func-dec> <new-line> <func-dec>
 
-<args> $\rightarrow$ <pattern> \\ <pattern> <args>
+<args> $\rightarrow$ <pattern> \\ <pattern> <args> 
+
+
+<pattern> $\rightarrow$ <pat> \\ <pat> \texttt{:} <pattern> \\ \texttt{[} <pattern-list>$?$ \texttt{]} \\
+												\texttt{(} <pattern> \texttt{)} \\
+
+
+<pattern-list> $\rightarrow$ <pat> (\texttt{,} <pat>)* 
+
+<pat> $\rightarrow$ <identifier> \\ <constant> \\ \texttt{_}
+												
 \end{grammar}
 
 A function declaration defines an identifier as a function that takes
@@ -144,6 +155,39 @@ scope, a compile-time error will be generated. The type of the arguments
 passed to a function are checked at compile-time as well, and an error
 is issued if they don't match the types specified in that function's 
 type signature.
+
+A \emph{pattern} can be used in a function declaration to ``match" against arguments passed to the function. The
+arguments are evaluated and the resultant values are matched against the patterns in the same order they were given
+to the function. If the pattern
+is a constant, the argument must be the same constant or evaluate to that constant value in order for a match to
+occur. If the pattern is an identifier, the argument's value is bound to that identifier in the scope of the
+function declaration where the pattern was used. If the pattern is the wildcard character `\texttt{_}', 
+any argument will be matched and no binding will occur. If the pattern is structured, the argument must follow
+the same structure in order for a match to occur. 
+
+Below, we have defined an example function \texttt{f} that takes two arguments. 
+The value of the function call is dependent
+on which patterns are matched. The patterns are checked against the arguments from top to bottom i.e. the first
+function declaration's patterns are checked, then if there isn't a match, the next set of patterns are checked,
+and so on. In this example, we first check if the second argument is the empty list (we disregard the first
+argument using the wildcard character), and return False if it is. Otherwise, we check if the second argument
+is composed of two elements, and, if so, the first element is bound to \texttt{x} and the second is bound to
+\texttt{y} in the expression to the right of the binding operator \texttt{=}, and that expression is evaluated and
+returned. If that match failed, we check if the first argument is zero and disregard the second. Finally, if
+none of the previous pattern sets matched, we bind the first argument to \texttt{m}, the head of the
+second argument to \texttt{x}, and the rest of the second argument to \texttt{rest}. Note we can do this
+as we already checked if the second argument was the empty list, and, since we did not match that pattern,
+we can assume there is at least one element in the list.
+
+\begin{verbatim}
+f :: Int -> [Int] -> Bool
+f _ [] = False
+f _ [x, y] = if x then True else False
+f 0 _ = True
+f x l = if x == (head x) then True else False
+f m x:rest = f m rest 
+\end{verbatim}
+
 
 \subsection{\texttt{main} Declaration}
 \label{sec:main}

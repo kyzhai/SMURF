@@ -248,7 +248,49 @@ and \emph{expression$_2$} must have type \texttt{Int}. The result of this operat
 tone row where each pitch class has been transposed up by $n$ semitones, where $n$ is the result
 of evaluating \emph{expression$_2$}.
 
-\subsection{Function application}
+\subsection{Conditional expressions}
+\begin{grammar}
+<conditional-expression> $\rightarrow$ \texttt{if} \emph{expression$_{boolean}$} \texttt{then}
+													\emph{expression$_{true}$} \texttt{else} 
+													\emph{expression$_{false}$}
+\end{grammar}
+When the value of \emph{expression$_{boolean}$} evaluates to true, \emph{expression$_{true}$} 
+is evaluated, otherwise \emph{expression$_{false}$} is evaluated. \emph{expression$_{boolean}$}
+must have type \texttt{Bool}. Conditional expressions do not have newline restrictions.
+
+\subsection{Let Expressions}
+\begin{grammar}
+<let-exp> $\rightarrow$ \texttt{let} <decls>+ \texttt{in} <expression>
+\end{grammar}
+Let expressions have the form \texttt{let} \emph{decls} \texttt{in} \emph{e}, where 
+\emph{decls} is a list of one or more declarations and \emph{e} is an expression. 
+The scope of these declarations is discussed in section \ref{sec:declarations}.
+
+The declarations in a let expression can be separated by an \& symbol and also by a newline character. For example:
+
+\begin{verbatim}
+let x = 2 & y = 4 & z = 8 
+in x + y + z
+\end{verbatim}
+
+The previous code is equivalent to the following:
+
+\begin{verbatim}
+let x = 2
+    y = 4
+    z = 8
+in x + y + z
+\end{verbatim}
+
+If the first code snippet were written without the \texttt{\$} symbol and no newlines in between the
+declarations, a compile-time error would be raised.
+
+\subsection{Function application expressions}
+
+\begin{grammar}
+<function-app-expression> $\rightarrow$ <identifier> <expression>+
+\end{grammar}
+
 A function gets called by invoking its name and supplying any necessary arguments. 
 Functions can only be called if they have been declared in the same scope where the call occurs,
 or in a higher scope. Functions may be called recursively. Function application associates 
@@ -271,93 +313,10 @@ in a
 evaluates to 20, where \texttt{double} is a function that takes a single integer argument and
 returns that integer multiplied by two. 
 
-\subsection{Conditionals}
-  \texttt{if} \emph{expression$_{boolean}$} \texttt{then}  \emph{expression$_{true}$} \texttt{else}  \emph{expression$_{false}$} \\ \\
-  When the value of \emph{expression$_{boolean}$} evaluates to true, \emph{expression$_{true}$} is evaluated, otherwise  \emph{expression$_{false}$} is evaluated. Conditional expressions do not have newline restrictions.
-
-\subsection{Lists}
-  \texttt{[} \emph{expression-list} \texttt{]} \\ \\
-  where \\
-  
-  \emph{expression-list} $\rightarrow$  
-  \emph{\textless empty \textgreater} $|$
-  \emph{expression} (\texttt{,} \emph{expression})$*$  \\ \\
-
-\subsection{Parenthesized Expressions}
-  \texttt{(} \emph{expression} \texttt{)} \\ \\
-  where \emph{expression} is evaluated as a primary expression. Parentheses are used to increase the precedence of an expression. For example 2 \texttt{+} 3 \texttt{*}  4  evaluates to 14 but \texttt{(} 2 \texttt{+} 3 \texttt{) *}  4 evaluates to 20. The parentheses force the addition operation to occur before the multiplication operation even though multiplication has higher precedence than addition in SMURF.
-
-\subsection{Let Expressions}
-\begin{grammar}
-<let-exp> $\rightarrow$ \texttt{let} <decls>+ \texttt{in} <expression>
-\end{grammar}
-Let expressions have the form \texttt{let} \emph{decls} \texttt{in} \emph{e}, where \emph{decls} is a list of one or more declarations and \emph{e} is an expression. Note that the scope of \emph{decls} is in expression \emph{e}. 
-
-The declarations in a let expression can be separated by an \& symbol and also by a newline character. For example:
-
-\begin{verbatim}
-let x = 2 & y = 4 & z = 8 
-in x + y + z
-\end{verbatim}
-Using only newline as a separator for declarations, the example would be as follows:
-
-\begin{verbatim}
-let x = 2
-    y = 4
-    z = 8
-in x + y + z
-\end{verbatim}
-
-\subsection{Pattern Matching}
-
-\setlength{\grammarindent}{5em}
-\begin{grammar}
-<pattern> $\rightarrow$ <pat> \\ <pat> \texttt{:} <pattern> \\ \texttt{[} <pattern-list>$?$ \texttt{]} \\
-												\texttt{(} <pattern> \texttt{)} \\
-
-
-<pattern-list> $\rightarrow$ <pat> (\texttt{,} <pat>)* 
-
-<pat> $\rightarrow$ <identifier> \\ <constant> \\ \texttt{_}
-												
-\end{grammar}
-
-A \emph{pattern} can be used in a function declaration to ``match" against arguments passed to the function. The
-arguments are evaluated and the resultant values are matched against the patterns in the same order they were given
-to the function. If the pattern
-is a constant, the argument must be the same constant or evaluate to that constant value in order for a match to
-occur. If the pattern is an identifier, the argument's value is bound to that identifier in the scope of the
-function declaration where the pattern was used. If the pattern is the wildcard character `\texttt{_}', 
-any argument will be matched and no binding will occur. If the pattern is structured, the argument must follow
-the same structure in order for a match to occur. 
-
-Below, we have defined an example function \texttt{f} that takes two arguments. 
-The value of the function call is dependent
-on which patterns are matched. The patterns are checked against the arguments from top to bottom i.e. the first
-function declaration's patterns are checked, then if there isn't a match, the next set of patterns are checked,
-and so on. In this example, we first check if the second argument is the empty list (we disregard the first
-argument using the wildcard character), and return False if it is. Otherwise, we check if the second argument
-is composed of two elements, and, if so, the first element is bound to \texttt{x} and the second is bound to
-\texttt{y} in the expression to the right of the binding operator \texttt{=}, and that expression is evaluated and
-returned. If that match failed, we check if the first argument is zero and disregard the second. Finally, if
-none of the previous pattern sets matched, we bind the first argument to \texttt{m}, the head of the
-second argument to \texttt{x}, and the rest of the second argument to \texttt{rest}. Note we can do this
-as we already checked if the second argument was the empty list, and, since we did not match that pattern,
-we can assume there is at least one element in the list.
-
-\begin{verbatim}
-f :: Int -> [Int] -> Bool
-f _ [] = False
-f _ [x, y] = if x then True else False
-f 0 _ = True
-f x l = if x == (head x) then True else False
-f m x:rest = f m rest 
-\end{verbatim}
-
-\subsection{Guards}
-\begin{grammar}
-<guard> $\rightarrow$  let <decls> | <infixexp>          
-\end{grammar}
-
-There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
-
+%\subsection{Guards}
+%\begin{grammar}
+%<guard> $\rightarrow$  let <decls> | <infixexp>          
+%\end{grammar}
+%
+%There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
+%
