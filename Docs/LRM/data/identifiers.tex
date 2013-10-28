@@ -1,49 +1,52 @@
 \section{Meaning of Identifiers}
-In SMURF, an identifier is a name for a variable or function. The naming rule of
-identifier is defined in section~\ref{sec:identifiers}. Keywords defined in
-section~\ref{sec:keywords} are not available for the use of identifiers.
+In SMURF, an identifier is either a keyword or a name for a variable or a function. 
+The naming rules for identifiers are defined in section~\ref{sec:identifiers}. This section outlines
+the use and possible types of non-keyword identifiers.
 
 
 \subsection{Purpose}
 \subsubsection{Functions}
 Functions in SMURF enable users to structure programs in a more modular way. 
-Each function has input and output, whose types need to be explicitly defined by
-users. The function describes how to produce the output from its input.
+Each function has at least one argument and exactly one return value, whose types need to be 
+explicitly defined by the programmer. The function describes how to produce the return value,
+given a certain set of arguments.
 SMURF is a side effect free language, which means
-that if provided with the same input, a function is guaranteed to give the same
-output. 
+that if provided with the same arguments, a function is guaranteed to return the same value. 
 
 
-\subsubsection{variables}
-In SMURF, a variable is an identifier that is linked to a value stored in the
-system's memory or an expression that can be evaluated.
-A variable is an abstraction of a computer memory cell or a collection
-of memory cells. 
-SMURF is a strongly typed programming language, which means the type of a variable can't
-be changed once declared. Each variable has a static type which can be automatically
+\subsubsection{Variables}
+In SMURF, a variable is an identifier that is bound to a constant value
+or to an expression. Any use of a variable within the scope of its definition
+refers to the value or expression to which the variable was bound.
+Each variable has a static type which can be automatically
 deduced by the SMURF compiler, or explicitly defined by users. The variables in SMURF are immutable.
 
 
 \subsection{Scope and Lifetime}
-In SMURF, a variable is bound in its scope to a value using constructs 
-\texttt{let}. A variable is only visible within its scope.
-A variable becomes invalid after the ending of its scope. E.g.
+The lexical scope of a top-level binding in a SMURF program is the whole program itself.
+As a result of this fact, a top-level binding can refer to any other top-level variable or function
+on its right-hand side, regardless of which bindings occur first in the program.
+Local bindings may also occur
+with the \texttt{let} \emph{declarations} \texttt{in} \emph{expression} construct, and the
+scope of a binding in \emph{declarations} is \emph{expression} and the right hand side of any other bindings in
+\emph{declarations}. A variable or function is only visible within its scope.
+An identifier becomes invalid after the ending of its scope. E.g.
 
 \begin{lstlisting}
-let prime = [2,0,4,6,8,10,1,3,5,7,9,11] 
-in let prime = [0,2,4,6,8,10,1,3,5,7,9,11]
-       p3 = trans 3 prime 
-   in print (head p3)
+prime = [2,0,4,6,8,10,1,3,5,7,9,11] 
+main = let prime = [0,2,4,6,8,10,1,3,5,7,9,11]
+           p3 = (head prime) + 3
+       in print (p3)
 \end{lstlisting}
 
-where {\texttt prime} and {\texttt p3} are bound by the {\texttt let}
-expression. 
-In line 2, {\texttt prime} is
-redefined in a inner {\texttt let} expressions. In line 3, the {\texttt
-trans} function sees the newly defined {\texttt prime}. So the result
-to be printed in line 4 should be 3 (0+3). After the finishing of line
-4, all the variables defined in this example will be invalid and can't be
-accessed anymore.
+In line 1, \texttt{prime} is bound to a list of integers in a top-level definition, so it
+has global scope.
+In line 2, the \texttt{main} identifier (a special keyword described in \ref{sec:main}) 
+is bound to a \texttt{let} expression. The \texttt{let} expression declares two local variables,
+\texttt{prime} and \texttt{p3}. In line 3, the \texttt{head} function looks for a definition
+of prime in the closest scope, and thus uses the binding in line 2. So the result
+to be printed in line 4 should be 3. After line 4, the locally defined \texttt{prime} and
+\texttt{p3} variables will be invalid and can't be accessed anymore.
 
 \subsection{Basic Types}
 \label{sec:basictype}

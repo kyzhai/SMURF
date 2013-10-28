@@ -220,7 +220,7 @@ genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:genAltChords ys
 SMURF uses newlines to signify the end of a declaration, except
 when preceded by the \texttt{\textbackslash} token. In the latter case, the newline is ignored by the compiler 
 (see example above). If no such token precedes a newline, then the compiler will treat the newline as
-a token being used to separate declarations.
+a token being used to terminate a declaration.
 
 \subsection{Whitespace}
 \label{sec:whitespaces}
