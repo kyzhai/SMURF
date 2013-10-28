@@ -3,8 +3,7 @@
 This section describes the syntax and semantics of \emph{expressions} in 
 SMURF. Expressions can have either infix or prefix operators. 
 Unless otherwise stated infix operators are left associated. 
-All prefix operators are left associated. Prefix operators will always 
-evaluate with a higher precedence than infix operators.  
+All prefix operators are left associated. 
 
 
 %TODO: check the correct position for this table
@@ -28,8 +27,9 @@ code will run successfully.
 
 \subsection{Description of Precedence}
 Precedence describes the order of all operations on operands including 
-built-in operators and functions and user created functions. All 
-functions have the same precedence. Function precedence is higher than all
+built-in operators and all functions. 
+Functions all have the same precedence. 
+Function precedence is higher than all
 operators. The operator precedence will be as listed below. They are listed 
 in order of precedence between the different types of operators with the 
 top operators having the lowest precedence and the bottom operators having 
@@ -51,7 +51,7 @@ boolean types. The order of precedence for these
 operators is, lowest to highest, \texttt{||}, 
 \texttt{\&\&}, \texttt{==} and \texttt{!=} , and \texttt{!}. 
 \subsubsection{Comparison Operators}
-Comparison operators are used to compare primitive types sizes. 
+Comparison operators are used to compare primitive types. 
 All comparison operators have the same precedence. 
 \subsubsection{Arithmetic Operators}
 There are three types of arithmetic operator. There are 
@@ -60,7 +60,7 @@ basic operators found in most programming languages like
 There are also more advance operators for modulus arithmetic commonly 
 found in twelve tone serialism like \texttt{\%+} and \texttt{\%-}. 
 Last their are \texttt{Beat} arithmetic operators. 
-These include \texttt{\^+}, \texttt{\^-}, \texttt{\^*}, \texttt{\^/}, 
+These include \texttt{\$+}, \texttt{\$-}, \texttt{\$*}, \texttt{\$/}, 
 and \texttt{.}. 
 
 Basic arithmetic operators have a higher precedence than both
@@ -71,40 +71,41 @@ In basic arithmetic operators \texttt{*}, \texttt{/}, and \texttt{\%}
 have higher precedence than \texttt{+} and \texttt{-}. 
 Both modulus operators have the same precedence. In \texttt{Beat} 
 operators the highest precedence operator is \texttt{.} followed 
-by \texttt{\^*} and \texttt{\^/} with \texttt{\^+} and {\^-} having 
+by \texttt{\$*} and \texttt{\$/} with \texttt{\$+} and {\$-} having 
 the lowest precedence. 
 \subsubsection{List Operators}
-List operators are manipulate lists. There are two of these operators,
-: and ++. The : operator will be evaluated before the ++ operator. 
+List operators are used to manipulate lists. 
+There are two of these operators,
+\texttt{:} and \texttt{++}. The \texttt{:} operator will be evaluated before the \texttt{++} operator. 
 
 \subsection{Primary Expressions}
 
 \subsubsection{Identifiers}
-An identifier expression is an expression that involves only identifiers. 
-\begin{verbatim}
-identifier-expression :: identifiers
-\end{verbatim}
-where \texttt{identifiers} are defined in section~\ref{sec:identifiers}.
+An identifier expression is an expression that involves only identifiers. \\\\*
+%\begin{verbatim}
+\emph{identifier-expression :: identifiers}\\ \\*
+%\end{verbatim}
+where \emph{identifiers} are defined in section~\ref{sec:identifiers}.
 
 
 \subsubsection{Constants}
-A constant expression is an expression that involves only constants. 
-\begin{verbatim}
-constant-expression :: constants
-\end{verbatim}
-where \texttt{constants} are defined in section~\ref{sec:constants}.
+A constant expression is an expression that involves only constants. \\ \\*
+%i\begin{verbatim}
+\emph{constant-expression :: constants} \\ \\*
+%\end{verbatim}
+where \emph{constants} are defined in section~\ref{sec:constants}.
 
 \subsubsection{(Expression)}
-An expression surrounded by parentheses is a new expression.
-\begin{verbatim}
-paren-expression :: ( expression )
-\end{verbatim}
+An expression surrounded by parentheses is a new expression. \\ \\*
+%\begin{verbatim}
+\emph{paren-expression :: ( expression )} \\ \\*
+%\end{verbatim}
 
 \subsection{Function application}
     \emph{function-expression} \emph{argument-expression-list} \\ \\
     where\\
     
-    \emph{argument-expression-list} $\rightarrow$ \emph{identifier}$+$ $|$ \emph{expression}$+$ \\ \\ 
+    \emph{argument-expression-list} $\rightarrow$ \emph{(identifier} $|$ \emph{expression)}$+$ \\ \\ 
     A function gets called by invoking its name and supplying any necessary arguments. Functions can only be called once it is defined and may also be called recursively. A function application associates from left to right. Parentheses can be used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
     evaluates function \emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
     
