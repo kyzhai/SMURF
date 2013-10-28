@@ -100,24 +100,20 @@ An expression surrounded by parentheses is a new expression.
 paren-expression :: ( expression )
 \end{verbatim}
 
-
-\subsection{Curried Applications}
-  
-    \subsubsection{Function application}
+\subsection{Function application}
     \emph{function-expression} \emph{argument-expression-list} \\ \\
     where\\
     
     \emph{argument-expression-list} $\rightarrow$ \emph{identifier}$+$ $|$ \emph{expression}$+$ \\ \\ 
-    A function application associates from left to right, so parentheses are optional: \\
+    A function gets called by invoking its name and supplying any necessary arguments. Functions can only be called once it is defined and may also be called recursively. A function application associates from left to right. Parentheses can be used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
+    evaluates function \emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
     
-    \emph{funct a b}  is equivalent to \emph{((funct a) b)} \\ \\
-    Parentheses are used to change the precedence from the default. The following evaluates function \emph{funct1} with argument \emph{b} then 
-    evaluates function \emph{funct2} with argument \emph{a}: \\
-    
-    \emph{funct2 a (funct1 b)}
-
-  \subsubsection{**PARTIAL APPLICATION**}
-  
+    \emph{funct2 a (funct1 b)}\\ \\
+A function call may be used as a subexpression in a \texttt{let} expression. For example:
+\begin{verbatim}
+let a = double 10
+\end{verbatim}
+where \texttt{double} is a function that takes a single integer argument. 
 
 \subsection{Operator Application}
     \emph{expression$_{1}$  operator  expression$_{2}$}\\ \\
@@ -170,11 +166,24 @@ where \textit{k} \textgreater\space 0. The expressions in a list must all be of 
 
 \subsection{Let Expressions}
 \begin{grammar}
-<let-exp> $\rightarrow$ let <decls> in <expression>
+<let-exp> $\rightarrow$ \texttt{let} <decls>+ \texttt{in} <expression>
 \end{grammar}
-Let expressions have the form \emph{let \{} $d_1;...;d_n$ \} \emph{in e}, where $d_n$ is the nth declaration and \emph{e} is an expression. Note that the scope of $d_n$ is in \emph{e}.
+Let expressions have the form \texttt{let} \emph{decls} \texttt{in} \emph{e}, where \emph{decls} is a list of one or more declarations and \emph{e} is an expression. Note that the scope of \emph{decls} is in expression \emph{e}. 
 
-% are pattern bindings matched lazily?
+The declarations in a let expression can be separated by an \& symbol and also by a newline character. For example:
+
+\begin{verbatim}
+let x = 2 & y = 4 & z = 8 
+in x + y + z
+\end{verbatim}
+Using only newline as a separator for declarations, the example would be as follows:
+
+\begin{verbatim}
+let x = 2
+    y = 4
+    z = 8
+in x + y + z
+\end{verbatim}
 
 \subsection{Pattern Matching}
 

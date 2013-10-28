@@ -41,13 +41,13 @@ re-definition or overloading by users. Following is a list of reserved keywords 
       {\texttt Beat} & Represent the duration a note last \\ \hline
       {\texttt Chord} & List of several notes playing simultaneously \\ \hline
       {\texttt System} & List of several chords \\ \hline
-      {\texttt True, False} & Specify Boolean logic \\ \hline
-      {\texttt let, in} & Allow local bindings in expressions  \\ \hline
+      {\texttt True, False} & Specify boolean logic \\ \hline
+      {\texttt let, in} & Allow local bindlings in expressions  \\ \hline
       {\texttt if, then, else} & Specify conditional expression, else compulsory  \\ \hline
       {\texttt otherwise} & Specify conditional expression used with guards \\ \hline 
       {\texttt random} & Generate random numbers \\ \hline
       {\texttt print} & Print information to the screen \\ \hline
-      {\texttt main} & The evaluated value of which to be returned by a SMURF program\\ \hline
+      {\texttt main} & The eveluated value of which to be returned by a SMURF program\\ \hline
     \end{tabular}
 \end{table}
 
@@ -55,7 +55,7 @@ re-definition or overloading by users. Following is a list of reserved keywords 
 \subsubsection{Constants}
 \label{sec:constants}
 In SMURF, constants are expressions with a fixed value. Integer literals and
-Boolean keywords are the constants of SMURF. 
+boolean keywords are the constants of SMURF. 
 
 \begin{grammar}
 <letter> $\rightarrow$ [`a'-`z' `A'-`Z'] 
@@ -66,8 +66,8 @@ Boolean keywords are the constants of SMURF.
 \end{grammar}
 
 \subsubsection{Operators}
-Operators in SMURF can be classified into comment operators, arithmetic operators, comparison
-operators, Boolean operators, list operators, declaration operators, and row operators. 
+Operators in SMURF can be classified into comment operators, arithmetic operators, comparision
+operators, boolean operators, list operators, declaration operators, and row operators. 
 
 SMURF allows nested, multiline comments in addition to single line comments.
 \begin{table} [H]
@@ -159,7 +159,7 @@ Declaration Operator & Description & Example \\
    \texttt{::} & Type specification & \texttt{number :: Int} \\ \hline
    \texttt{->} & Argument and function return type specification
      & \texttt{isPositiveNum :: Int -> Bool}  \\ \hline
-   \texttt{\textbar} & Guard indicator & \texttt{isSeven :: [Int] -> Bool}\\ 
+   \texttt{\textbar} & Gaurd indicator & \texttt{isSeven :: [Int] -> Bool}\\ 
 	 	 && \texttt{isSeven num} \\
      && \texttt{\textbar\space (num == 7) = True} \\
      && \texttt{\textbar\space otherwise = False}\\ \hline
@@ -183,39 +183,41 @@ Tone Row Operator & Description & Example \\
 \end{table}
 
 \subsubsection{Separators}
-Separators in SMURF are used to separate tokens. The definition of separators in
+Separators in SMURF are used to separate tokens. The definition os separators in
 SMURF is 
 
 \begin{grammar}
 <separator> $\rightarrow$ \texttt{,} | \texttt{;} | \texttt{\&} | \it{whitespace}
 \end{grammar}
 
-where {\it comma} is used to separate elements in list definitions.
+where {\it comma} is used to separate elementes in list definitions.
 {\it semicolon} is used to separate declarations in let bindings. 
-When the symbol of \texttt{\&} is used, compiler will replace it with a {\it newline} symbol.
+When the symbole of \texttt{\&} is used, compiler will replay it with a {\it newline} symbol.
 The definition of {\it whitespace} is in section~\ref{sec:whitespaces}. 
 
 
 \subsubsection{Newlines}
-SMURF uses {\it newline} to signify the end of a line of text. Newlines
+SMURF uses {\it newline} to signify the end of a line of text. {\it Newlines}
 are treated as a tokens in SMURF. They can change the semantic meaning of programs.
 
 
 \subsection{Whitespaces}
 \label{sec:whitespaces}
-{\it Whitespaces} consist of any sequences of {\it blank} and {\it tab}.
-They are used to
-separate tokens as well as to format programs. They are ignored by
-SMURF compiler. As a result, indentations are not significant in SMURF.
+{\it Blank} and {\it tab} are referred to as {\it whitespaces} in SMURF. 
+{\it Whitespaces} are used to
+separating tokens as well as formatting programs. They are ignored in
+SMURF programs. As a result, indentations are not significant in SMURF.
 
 
 \subsection{Backslash Line Splicing}
-In SMURF, you can use a \textbackslash\textless{\it newline}\textgreater~symbol to splice two lines. E.g.
+In SMURF, you can use a \textbackslash\textless{\it newline}\textgreater~{}symbol to splice two lines. The symbol
+will be ignored by compiler. E.g.
 \begin{lstlisting}
 genAltChords (x:y:ys) = [(x,Time 4,1)]   \
                         :[(y,Time 4,-1)]:genAltChords ys
 \end{lstlisting}
-is the same as 
+will be treated as 
 \begin{lstlisting}
 genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:genAltChords ys
 \end{lstlisting}
+in SMURF.

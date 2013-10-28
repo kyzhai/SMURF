@@ -8,7 +8,7 @@ section~\ref{sec:keywords} are not available for the use of identifiers.
 \subsubsection{Functions}
 Functions in SMURF enable users to structure programs in a more modular way. 
 Each function has input and output, whose types need to be explicitly defined by
-users. The function describes how to produce the output from its input.
+users. The function describles how to produce the output from its input.
 SMURF is a side effect free language, which means
 that if provided with the same input, a function is guaranteed to give the same
 output. 
@@ -25,9 +25,10 @@ deduced by the SMURF compiler, or explicitly defined by users. The variables in 
 
 
 \subsection{Scope and Lifetime}
-In SMURF, a variable is bound in its scope to a value using constructs 
-\texttt{let}. A variable is only visible within its scope.
-A variable becomes invalid after the ending of its scope. E.g.
+In SMURF, a variable is bound in its scope to a value using constructs like
+\texttt{let}. A variable is visible within its scope.
+There is no global variables in SMURF. A variable becomes invalid after the 
+ending of its scope. E.g.
 
 \begin{lstlisting}
 let prime = [2,0,4,6,8,10,1,3,5,7,9,11] 
@@ -39,7 +40,7 @@ in let prime = [0,2,4,6,8,10,1,3,5,7,9,11]
 where {\texttt prime} and {\texttt p3} are bound by the {\texttt let}
 expression. 
 In line 2, {\texttt prime} is
-redefined in a inner {\texttt let} expressions. In line 3, the {\texttt
+redefined in a inner {\texttt let} expression. In line 3, the {\texttt
 trans} function sees the newly defined {\texttt prime}. So the result
 to be printed in line 4 should be 3 (0+3). After the finishing of line
 4, all the variables defined in this example will be invalid and can't be
@@ -49,9 +50,9 @@ accessed anymore.
 \label{sec:basictype}
 There are three fundamental types in SMURF: {\texttt Int}, {\texttt Bool} and {\texttt Beat}. 
 \begin{itemize}
-\item Integer: \texttt{Int}, used to represent integers.
-\item Boolean: \texttt{Bool}, used to represent Boolean values.
-\item Beat   : \texttt{Beat}, used to represent the duration of a note. The value of {\texttt Beat} are integers of the power of 2, ranging from 1 to 16.
+\item {\it Integer}: \texttt{Int}, used to represent integers.
+\item {\it Boolean}: \texttt{Bool}, used to represent boolean values.
+\item {\it Beat}   : \texttt{Beat}, used to represent the duration of a note. The value of {\texttt Beat} are integers of the power of 2, ranging from 1 to 16.
 \end{itemize}
 
 \subsection{Structured Types}
@@ -72,7 +73,7 @@ of lists must have the same type.
     -\textgreater} {\it argk}
 {\texttt -\textgreater} {\it return-value}
 \end{grammar}
-where {\it arg1 - argk} are the inputs of function and {\it return-value} is the
+where {\it arg1 - argk} are the input of function and {\it return-value} is the
 output of the function.
 
 
