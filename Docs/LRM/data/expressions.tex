@@ -1,9 +1,9 @@
 \section{Expressions}
 
 This section describes the syntax and semantics of \emph{expressions} in 
-SMURF. Expressions can have either infix or prefix operators. 
-Unless otherwise stated infix operators are left associated. 
-All prefix operators are left associated. 
+SMURF. Some expressions in SMURF use prefix, infix, or postfix operators.
+Unless otherwise stated, all infix and postfix operators are left-associative and
+all prefix operators are right-associative. Some examples of association are given below.
 
 
 %TODO: check the correct position for this table
@@ -12,28 +12,26 @@ All prefix operators are left associated.
 		\hline
 		Expression & Association \\
 		\hline
-		\texttt{f x + g y} & \texttt{(f x) + (g y)} \\
+		\texttt{f x + g y - h z} & \texttt{((f x) + (g y)) - (h z)} \\
 		\texttt{f g x} & \texttt{((f g) x)} \\
 		\texttt{ let \{ ... \} in x + y} & \texttt{let \{ ... \} in (x + y)} \\
+		\texttt{$\sim$ <> [0,1,2,3,4,5,6,7,8,9,10,11]} &
+					\texttt{($\sim$ (<> [0,1,2,3,4,5,6,7,8,9,10,11]))}\\
 		\hline
 	\end{tabular}
 \end{center}
 
-
-\subsection{Errors}
-
-Errors can only occur during compilation of a SMURF program. All generated 
-code will run successfully. 
-
-\subsection{Description of Precedence}
-Precedence describes the order of all operations on operands including 
-built-in operators and all functions. 
-Functions all have the same precedence. 
-Function precedence is higher than all
-operators. The operator precedence will be as listed below. They are listed 
-in order of precedence between the different types of operators with the 
-top operators having the lowest precedence and the bottom operators having 
-the highest precedence. 
+%
+%\subsection{Errors}
+%
+%Errors can only occur during compilation of a SMURF program. All generated 
+%code will run successfully. 
+%
+\subsection{Description of Precedence in Expressions}
+Precedence describes the order of evaluation for subexpressions in a given expression.
+The order of precendence for expressions and their operators mirrors our ordering of the following
+subsections i.e. the first subsection describes the expressions with highest precedence, and the last
+subsection describes the expressions with lowest precedence.
 
 \subsubsection{Declaration Operators}
 Declaration operators are used in declarations. These 
