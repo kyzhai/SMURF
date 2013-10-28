@@ -68,7 +68,7 @@ by a \texttt{\$} symbol and an expression of type \texttt{Beat}. The values of e
 expressions must follow the rules outlined in section \ref{sec:derivedtype}.
 
 \subsection{Postfix Operator Expressions}
-\label{sec:postfix}
+\label{sec:postfixop}
 
 \begin{grammar}
 <postfix-expression> $\rightarrow$ <beat-expr>\texttt{.}
@@ -89,7 +89,7 @@ dot implies that a thirty-second note duration should be added to the total dura
 expression. Our compiler will check the number of dots and return an error if too many are applied.
 
 \subsection{Prefix Operator Expressions}
-
+\label{sec:prefixop}
 \begin{grammar}
 <prefix-expression> $\rightarrow$ <prefix-op> <expression>
 \end{grammar}
@@ -117,6 +117,127 @@ if the list is passed to either of the tone row operators.
 All three operators return an expression of the same type as the expression the
 operator was applied to.
 
+\subsection{Binary Operator Expressions}
+\label{sec:binops}
+\begin{grammar}
+<binary-expression> $\rightarrow$ <expression>$_1$ <binary-op> <expression>$_2$
+\end{grammar}
+The following categories of binary operators exist in SMURF, and are listed in order of decreasing
+precendence: list, arithmetic, comparison, Boolean, tone row. 
+
+\subsubsection{List operators}
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+List Operator & Description & Example \\
+\hline\hline
+   \texttt{++} & List Concatenation & \texttt{[1,2,3] ++ [4,5,6]} (result is \texttt{[1,2,3,4,5,6]}) \\ \hline
+   \texttt{:} & List Construction & \texttt{1 : [2,3,4]} (result is \texttt{[1,2,3,4]}) \\ \hline
+\end{tabular}
+\end{table}
+
+List operators are used to construct and concatenate lists. 
+These two operators are \texttt{:} and \texttt{++}, respectively. The \texttt{:} operator has 
+higher precedence than the \texttt{++} operator. Both of these operators are right-associative.
+List operators require that  \emph{expression$_{2}$} be an expression of type 
+\texttt{[}\emph{t}\texttt{]}, where \emph{t} is the type of \emph{expression$_{1}$}. 
+In other words, \emph{expression$_{1}$} must have the same type 
+as the other elements in \emph{expression$_{2}$} when doing list construction.
+When doing list concatenation, both
+\emph{expression$_{1}$} and \emph{expression$_{2}$} must have type \texttt{[}\emph{t}\texttt{]},
+where \emph{t} is some non-function type. 
+
+\subsubsection{Arithmetic operators}
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\hline\hline
+Arithmetic Operator & Description & Example \\
+\hline\hline
+  \texttt{+} & Integer Addition  & \texttt{a + 2} \\ \hline
+  \texttt{-} & Integer Subtraction  & \texttt{5 - a} \\ \hline 
+  \texttt{*} & Integer Multiplication  & \texttt{5 * 10} \\ \hline 
+  \texttt{/} & Integer Division  & \texttt{4 / 2} \\ \hline 
+  \texttt{\%} & Integer Modulus, ignores negatives  & \texttt{14 \% 12} \\ \hline
+  \texttt{\%+} & Pitch Class Addition (addition mod 12)  & \texttt{14 \%+ 2 == 4 }\\ \hline
+  \texttt{\%-} & Pitch Class Subtraction (subtraction mod 12)  & \texttt{14 \%- 2 == 0 } \\ \hline
+  \texttt{$\$$+} & Rhythmic Addition & \texttt{2 $\$$+ 2 == 1} \\ \hline
+  \texttt{$\$$-} & Rhythmic Subtraction & \texttt{1 $\$$- 2 == 2}  \\ \hline
+  \texttt{$\$$*} & Rhythmic Augmentation & \texttt{8 $\$$* 4 == 2}  \\ \hline
+  \texttt{$\$$/} & Rhythmic Diminution & \texttt{2 $\$$/ 8 == 16}  \\ \hline
+\end{tabularx}
+\end{table}
+
+There are three types of arithmetic operators (listed in descending order of precedence):
+basic, pitch class, and rhythmic. 
+Basic arithmetic operators are those found in most programming languages like 
+\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, and \texttt{\%}, which operate on expressions of
+type \texttt{Int}. It should be noted that the modulus operator ignores negatives e.g.
+\texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}.
+The pitch class operators are \texttt{\%+} and \texttt{\%-}. These can be read as mod 12 addition
+and mod 12 subtraction. They also operate on expressions of type \texttt{Int}. The built-in mod 12
+arithmetic serves for easy manipulation of pitch class integers.
+Lastly, there are rhythmic arithmetic operators (both operands must be of type \texttt{Beat}). 
+These include \texttt{\$+}, \texttt{\$-}, \texttt{\$*}, and \texttt{\$/}. 
+
+Out of the basic arithmetic operators, \texttt{*}, \texttt{/}, and \texttt{\%} 
+have higher precedence than \texttt{+} and \texttt{-}. 
+Both pitch class operators have the same precedence. 
+Rhythmic arithmetic operators follow the same form as basic arithmetic operators, with
+\texttt{\$*} and \texttt{\$/} having higher precedence than \texttt{\$+} and {\$-}.
+
+\subsubsection{Comparison operators}
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+Comparison Operator & Description & Example \\
+\hline\hline
+  \texttt{<}  & Integer Less than & \texttt{if a < 5 then True else False} \\ \hline
+  \texttt{>}  & Integer Greater than & \texttt{if a > 5 then True else False}  \\ \hline
+  \texttt{<=}  & Integer Less than or equal to & \texttt{if a <= 5 then True else False} \\ \hline
+  \texttt{>=} & Integer Greater than or equal to & \texttt{if a >= 5 then True else False} \\ \hline
+  \texttt{\$<} & Rhythmic Less than & \texttt{4 \$< 8 == False} \\ \hline
+  \texttt{\$>}  & Rhythmic Greater than &  \texttt{4 \$> 8 == True}  \\ \hline
+  \texttt{\$<=} & Rhythmic Less than or equal to & \texttt{4 \$<= 4 == True} \\ \hline
+  \texttt{\$>=} & Rhythmic Greater than or equal to &  \texttt{1 \$>= 16 == True} \\ \hline
+  \texttt{==} & Structural comparison & \texttt{if a == 5 then a = True else a = False} \\ \hline
+\end{tabular}
+\end{table}
+
+SMURF allows comparison operations between expressions of type \texttt{Int} or \texttt{Beat}.
+Structural comparison, however, can be used to compare expressions of any type for equality.
+All of the comparison operators have the same precedence except for structural comparison, which
+has lower precedence than all of the other comparison operators.
+
+\subsubsection{Boolean operators}
+
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+Boolean Operator & Description & Example \\
+\hline\hline
+   \texttt{\&\&} & Logical conjunction & \texttt{if b \&\& c  then True else False} \\ \hline
+   \texttt{\textbar\textbar} & Logical disjunction & \texttt{if b \textbar\textbar\space   c  then True else False} \\ \hline
+ \end{tabular}
+\end{table}
+
+Boolean operators are used to do boolean logic on expressions of type \texttt{Bool}. Logical
+conjuction has higher precedence than logical disjunction.
+
+\subsubsection{Tone row operators}
+\label{sec:bintonerow}
+The only binary tone row operator is the transposition operator, \texttt{$\wedge\wedge$}.
+\emph{expression$_1$} must be an expression that evaluates to a list of pitch classes,
+and \emph{expression$_2$} must have type \texttt{Int}. The result of this operation is a new
+tone row where each pitch class has been transposed up by $n$ semitones, where $n$ is the result
+of evaluating \emph{expression$_2$}.
 
 \subsection{Function application}
 A function gets called by invoking its name and supplying any necessary arguments. 
@@ -152,38 +273,12 @@ The $\sim$ operator has the highest precedence of the tone row
 operators. Next highest operator is $\wedge\wedge$. While \texttt{<>} 
 has the lowest precedence of the tone row operators. 
 \subsubsection{Boolean Operators}
-Boolean operators are used to do boolean logic on 
-boolean types. The order of precedence for these 
-operators is, lowest to highest, \texttt{||}, 
-\texttt{\&\&}, \texttt{==} and \texttt{!=} , and \texttt{!}. 
 \subsubsection{Comparison Operators}
 Comparison operators are used to compare primitive types. 
 All comparison operators have the same precedence. 
 \subsubsection{Arithmetic Operators}
 \label{Arithmetic Operators}
-There are three types of arithmetic operator. There are 
-basic operators found in most programming languages like 
-\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, and \texttt{\%}. 
-There are also more advance operators for modulus arithmetic commonly 
-found in twelve tone serialism like \texttt{\%+} and \texttt{\%-}. 
-Last their are \texttt{Beat} arithmetic operators. 
-These include \texttt{\$+}, \texttt{\$-}, \texttt{\$*}, \texttt{\$/}, 
-and \texttt{.}. 
-
-Basic arithmetic operators have a higher precedence than both
-modulus and \texttt{Beat} arithmetic operators. Modulus operators 
-then have a higher precedence than \texttt{Beat} operators. 
-
-In basic arithmetic operators \texttt{*}, \texttt{/}, and \texttt{\%} 
-have higher precedence than \texttt{+} and \texttt{-}. 
-Both modulus operators have the same precedence. In \texttt{Beat} 
-operators the highest precedence operator is \texttt{.} followed 
-by \texttt{\$*} and \texttt{\$/} with \texttt{\$+} and {\$-} having 
-the lowest precedence. 
 \subsubsection{List Operators}
-List operators are used to manipulate lists. 
-There are two of these operators,
-\texttt{:} and \texttt{++}. The \texttt{:} operator will be evaluated before the \texttt{++} operator. 
 
 \subsection{Operator Application}
 \label{sec:operator application}
@@ -207,7 +302,6 @@ For integer comparison, \emph{expression$_{1}$} and \emph{expression$_{2}$} are 
 \textbf{\emph{operator$_{boolean}$}} \\
 For comparison, conjunction, and disjunction, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. \\ \\
 \textbf{\emph{operator$_{list}$}} \\ \\
-List operators require that  \emph{expression$_{2}$} is a list. When doing list construction,  \emph{expression$_{1}$} must be an element of the same type as the other elements in  \emph{expression$_{2}$}. When doing list concatenation,  \emph{expression$_{1}$} must be a list containing elements of the same type as  \emph{expression$_{2}$}. \\ \\
 \textbf{\emph{operator$_{binding}$}} \\ \\
 When doing type specification, \emph{expression$_{2}$} must be a type and \emph{expression$_{1}$} must be a non-keyword identifier. When doing argument and function return type specification, \emph{expression$_{1}$} and \emph{expression$_{2}$} must be types. When using case alternatives with guards,  \emph{expression$_{2}$} is a conditional expression and  \emph{expression$_{1}$} is either a conditional expression, indicating that there is more than one case for the guard, or a declaration. When doing assignment,  \emph{expression$_{1}$} is a non-keyword identifier and  \emph{expression$_{2}$} is an expression to bind to that identifier. \\ \\
 \textbf{\emph{operator$_{negation}$}} \\ \\

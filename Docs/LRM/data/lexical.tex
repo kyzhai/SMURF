@@ -82,36 +82,11 @@ Boolean keywords are the constants of SMURF.
 \subsubsection{Operators}
 SMURF permits arithmetic, comparison, Boolean, list, declaration, and row operations, all of which
 are carried out through the use of specific operators. The syntax and semantics of all of these
-operators are described in section \ref{sec:operator application}, except for declaration operators,
-which are described in section \ref{sec:declarations}.
+operators are described in sections \ref{sec:prefixop}, \ref{sec:postfixop}, and \ref{sec:binaryop},
+except for declaration operators, which are described in section \ref{sec:declarations}.
 
 
 %
-%SMURF allows addition, subtraction, multiplication, divison, modulus, and mod 12 addition and subtraction on expressions that evaluate to integer literals of type \texttt{Int}. The built-in mod 12 arithmetic serves for easy 
-%manipulation of pitch class integers. We also have addition, subtraction,
-%multiplication, and division on expressions that evaluate to integer literals of type \texttt{Beat}. All of these operators are infix.
-%The modulus operator ignores negatives e.g. \texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}. Rhythmic arithmetic is explained
-%in section \ref{Arithmetic Operators}.
-%\begin{table} [H]
-%\centering
-%\begin{tabularx}{\textwidth}{lXX}
-%\hline\hline
-%Arithmetic Operator & Description & Example \\
-%\hline\hline
-%  \texttt{+} & Integer Addition  & \texttt{a + 2} \\ \hline
-%  \texttt{-} & Integer Subtraction  & \texttt{5 - a} \\ \hline 
-%  \texttt{*} & Integer Multiplication  & \texttt{5 * 10} \\ \hline 
-%  \texttt{/} & Integer Division  & \texttt{4 / 2} \\ \hline 
-%  \texttt{\%} & Integer Modulus, ignores negatives  & \texttt{14 \% 12} \\ \hline
-%  \texttt{\%+} & Pitch Class Addition (addition mod 12)  & \texttt{14 \%+ 2 == 4 }\\ \hline
-%  \texttt{\%-} & Pitch Class Subtraction (subtraction mod 12)  & \texttt{14 \%- 2 == 0 } \\ \hline
-%  \texttt{$\$$+} & Rhythmic Addition & \texttt{2 $\$$+ 2 == 1} \\ \hline
-%  \texttt{$\$$-} & Rhythmic Subtraction & \texttt{1 $\$$- 2 == 2}  \\ \hline
-%  \texttt{$\$$*} & Rhythmic Augmentation & \texttt{8 $\$$* 4 == 2}  \\ \hline
-%  \texttt{$\$$/} & Rhythmic Diminution & \texttt{2 $\$$/ 8 == 16}  \\ \hline
-%  \texttt{.} & Increase beat duration by half for each period & \texttt{2.. == 2 $\$$+ 4 $\$$+ 8}  \\ \hline
-%\end{tabularx}
-%\end{table}
 %
 %SMURF allows comparison operations between expressions that evaluate to values of type \texttt{Int} or \texttt{Beat}.
 %\begin{table} [H]
@@ -145,19 +120,6 @@ which are described in section \ref{sec:declarations}.
 %   \texttt{\textbar\textbar} & Logical disjunction & \texttt{if b \textbar\textbar\space   c  then True else False} \\ \hline
 % \end{tabular}
 %\end{table}
-%
-%SMURF allows concatenation and construction of lists.
-%\begin{table} [H]
-%\centering
-%\begin{tabular}{lll}
-%\hline\hline
-%List Operator & Description & Example \\
-%\hline\hline
-%   \texttt{++} & List Concatenation & \texttt{[1,2,3] ++ [4,5,6]} (result is \texttt{[1,2,3,4,5,6]}) \\ \hline
-%   \texttt{:} & List Construction & \texttt{1 : [2,3,4]} (result is \texttt{[1,2,3,4]}) \\ \hline
-%\end{tabular}
-%\end{table}
-%
 %
 %SMURF provides operators to specify types of identifiers, arguments, and return values in various declarations,
 %as well as an operator to indicate a guard in a declaration.
