@@ -59,8 +59,16 @@ with type equivalent to the type of the constant.
 An expression surrounded by parentheses is a primary expression.
 
 \subsubsection{Lists}
-A set of zero or more expressions enclosed in square brackets is a list. All expressions in
-a list must have the same type. A list is a primary expression.
+A list is a primary expression. Lists can be written as: \\
+
+\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} \\
+
+	or \\
+
+  \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[]))} \\ \\
+where \textit{k} $>=$ 0. These two lists are equivalent.
+The expressions in a list must all be of the same type. The empty list \texttt{[]} has type
+\texttt{[a]}, where $a$ is a polymorphic type.
 
 \subsubsection{Notes}
 A note is a primary expression, and is written as a tuple of expressions of type \texttt{Int} followed
@@ -178,7 +186,8 @@ Basic arithmetic operators are those found in most programming languages like
 type \texttt{Int}. It should be noted that the modulus operator ignores negatives e.g.
 \texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}.
 The pitch class operators are \texttt{\%+} and \texttt{\%-}. These can be read as mod 12 addition
-and mod 12 subtraction. They also operate on expressions of type \texttt{Int}. The built-in mod 12
+and mod 12 subtraction. They also operate on expressions of type \texttt{Int}, but the expressions
+must evaluate to values in the range $0-11$. The built-in mod 12
 arithmetic serves for easy manipulation of pitch class integers.
 Lastly, there are rhythmic arithmetic operators (both operands must be of type \texttt{Beat}). 
 These include \texttt{\$+}, \texttt{\$-}, \texttt{\$*}, and \texttt{\$/}. 
@@ -262,56 +271,6 @@ in a
 evaluates to 20, where \texttt{double} is a function that takes a single integer argument and
 returns that integer multiplied by two. 
 
-\subsubsection{Declaration Operators}
-Declaration operators are used in declarations. These 
-operators are \texttt{::}, \texttt{->}, and \texttt{|}. 
-All three operators have the same level of precedence. 
-\subsubsection{Tone Row Operators}
-Tone row operators manipulate lists of notes. 
-The three operators are $\sim$, \texttt{<>}, and $\wedge\wedge$. 
-The $\sim$ operator has the highest precedence of the tone row 
-operators. Next highest operator is $\wedge\wedge$. While \texttt{<>} 
-has the lowest precedence of the tone row operators. 
-\subsubsection{Boolean Operators}
-\subsubsection{Comparison Operators}
-Comparison operators are used to compare primitive types. 
-All comparison operators have the same precedence. 
-\subsubsection{Arithmetic Operators}
-\label{Arithmetic Operators}
-\subsubsection{List Operators}
-
-\subsection{Operator Application}
-\label{sec:operator application}
-    \emph{expression$_{1}$  operator  expression$_{2}$}\\ \\
-    where\\
-    
-    \emph{operator} $\rightarrow$ 
-        \emph{operator$_{arithmetic}$} $|$
-        \emph{operator$_{comparison}$}  $|$ 
-        \emph{operator$_{boolean}$}  $|$
-        \emph{operator$_{list}$}  $|$
-        \emph{operator$_{binding}$} \\ \\
-OR\\ \\
-          \emph{operator$_{negation}$  expression$_{1}$} $|$
-					\emph{expression$_{1}$ operator$_{beat}$}\\ \\
-    
-\textbf{\emph{operator$_{arithmetic}$}} \\
-For integer arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. For beat arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers that are powers of 2 from 1 to 16. For pitch class arithmetic, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers between 0 and 11.  \\ \\
-\textbf{\emph{operator$_{comparison}$}} \\
-For integer comparison, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. For beat comparison, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to beats. \\ \\
-\textbf{\emph{operator$_{boolean}$}} \\
-For comparison, conjunction, and disjunction, \emph{expression$_{1}$} and \emph{expression$_{2}$} are variables or constants that evaluate to integers. \\ \\
-\textbf{\emph{operator$_{list}$}} \\ \\
-\textbf{\emph{operator$_{binding}$}} \\ \\
-When doing type specification, \emph{expression$_{2}$} must be a type and \emph{expression$_{1}$} must be a non-keyword identifier. When doing argument and function return type specification, \emph{expression$_{1}$} and \emph{expression$_{2}$} must be types. When using case alternatives with guards,  \emph{expression$_{2}$} is a conditional expression and  \emph{expression$_{1}$} is either a conditional expression, indicating that there is more than one case for the guard, or a declaration. When doing assignment,  \emph{expression$_{1}$} is a non-keyword identifier and  \emph{expression$_{2}$} is an expression to bind to that identifier. \\ \\
-\textbf{\emph{operator$_{negation}$}} \\ \\
-For negation,  \emph{expression$_{1}$} is a comparison, conjunction, or disjunction expression.
-
-\textbf{\emph{operator$_{beat}$}} \\ \\
-The beat operator makes the beat that it is applied to last 
-1.5 of its original length. 
-
-    
 \subsection{Conditionals}
   \texttt{if} \emph{expression$_{boolean}$} \texttt{then}  \emph{expression$_{true}$} \texttt{else}  \emph{expression$_{false}$} \\ \\
   When the value of \emph{expression$_{boolean}$} evaluates to true, \emph{expression$_{true}$} is evaluated, otherwise  \emph{expression$_{false}$} is evaluated. Conditional expressions do not have newline restrictions.
@@ -323,11 +282,6 @@ The beat operator makes the beat that it is applied to last
   \emph{expression-list} $\rightarrow$  
   \emph{\textless empty \textgreater} $|$
   \emph{expression} (\texttt{,} \emph{expression})$*$  \\ \\
-An example of how a list can be written is: \\
-
-\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} = 
-  \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[ ]))} \\ \\
-where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor \texttt{:} and empty list \texttt{[ ]} are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
 
 \subsection{Parenthesized Expressions}
   \texttt{(} \emph{expression} \texttt{)} \\ \\
