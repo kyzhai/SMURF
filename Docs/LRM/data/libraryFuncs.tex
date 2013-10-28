@@ -31,15 +31,16 @@ tail (h:tl) = tl
 \noindent\textbf{MakeNotes}
 
 The function \texttt{makeNotes} takes in three lists and returns a list 
-of notes. The first list corresponds to \texttt{integer}s representing 
-pitches or rests. The second list corresponds to \texttt{integer}s representing the register that the pitch will be played in. The third list is a list 
-of \texttt{Beat}s representing the duration of the note. It is common in 
+of notes. The first list consists of expressions of type \texttt{Int} representing 
+pitches or rests. The second list consists of expressions of type \texttt{Int}
+representing the register that the pitch will be played in. The third list is a list 
+of expressions of type \texttt{Beat} representing a set of durations. It is common in 
 12 tone serialism to use lists of notes. This function allows the user 
 to easily turn their modified rows and columns into a list of notes to add 
 to their system. 
 
 \begin{verbatim}
-makeNotes :: [Int] [Int] [Beat] -> [Note]
+makeNotes :: [Int] -> [Int] -> [Beat] -> [Note]
 makeNotes [] = []
-makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)^h3:(makeNotes tl1 tl2 tl3)
+makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)$h3:(makeNotes tl1 tl2 tl3)
 \end{verbatim}
