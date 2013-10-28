@@ -81,10 +81,11 @@ Comment Operator & Description & Example \\
 \end{tabularx}
 \end{table}
 
-SMURF allows addition, subtraction, and modulus on expressions that evaluate to integer literals of type \texttt{Int}. We also have addition, subtraction,
+SMURF allows addition, subtraction, multiplication, divison, modulus, and mod 12 addition and subtraction on expressions that evaluate to integer literals of type \texttt{Int}. The built-in mod 12 arithmetic serves for easy 
+manipulation of pitch class integers. We also have addition, subtraction,
 multiplication, and division on expressions that evaluate to integer literals of type \texttt{Beat}. All of these operators are infix.
 The modulus operator ignores negatives e.g. \texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}. Rhythmic arithmetic is explained
-in section INSERT SECTION NUMBER HERE.
+in section \ref{Arithmetic Operators}.
 \begin{table} [H]
 \centering
 \begin{tabularx}{\textwidth}{lXX}
@@ -93,12 +94,16 @@ Arithmetic Operator & Description & Example \\
 \hline\hline
   \texttt{+} & Integer Addition  & \texttt{a + 2} \\ \hline
   \texttt{-} & Integer Subtraction  & \texttt{5 - a} \\ \hline 
+  \texttt{*} & Integer Multiplication  & \texttt{5 * 10} \\ \hline 
+  \texttt{/} & Integer Division  & \texttt{4 / 2} \\ \hline 
   \texttt{\%} & Integer Modulus, ignores negatives  & \texttt{14 \% 12} \\ \hline
-  \texttt{$\wedge$+} & Rhythmic Addition & \texttt{2 $\wedge$+ 2 == 1} \\ \hline
-  \texttt{$\wedge$-} & Rhythmic Subtraction & \texttt{1 $\wedge$- 2 == 2}  \\ \hline
-  \texttt{$\wedge$*} & Rhythmic Augmentation & \texttt{8 $\wedge$* 4 == 2}  \\ \hline
-  \texttt{$\wedge$/} & Rhythmic Diminution & \texttt{2 $\wedge$/ 8 == 16}  \\ \hline
-  \texttt{.} & Increase beat duration by half for each period & \texttt{2.. == 2 $\wedge$+ 4 $\wedge$+ 8}  \\ \hline
+  \texttt{\%+} & Pitch Class Addition (addition mod 12)  & \texttt{14 \%+ 2 == 4 }\\ \hline
+  \texttt{\%-} & Pitch Class Subtraction (subtraction mod 12)  & \texttt{14 \%- 2 == 0 } \\ \hline
+  \texttt{$\$$+} & Rhythmic Addition & \texttt{2 $\$$+ 2 == 1} \\ \hline
+  \texttt{$\$$-} & Rhythmic Subtraction & \texttt{1 $\$$- 2 == 2}  \\ \hline
+  \texttt{$\$$*} & Rhythmic Augmentation & \texttt{8 $\$$* 4 == 2}  \\ \hline
+  \texttt{$\$$/} & Rhythmic Diminution & \texttt{2 $\$$/ 8 == 16}  \\ \hline
+  \texttt{.} & Increase beat duration by half for each period & \texttt{2.. == 2 $\$$+ 4 $\$$+ 8}  \\ \hline
 \end{tabularx}
 \end{table}
 

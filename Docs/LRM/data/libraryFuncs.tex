@@ -9,27 +9,11 @@ and its SMURF definition. \newline
 
 The function \texttt{head} takes a list and returns the first element. 
 This function is commonly used when working with lists. The head function
-is available for all lists of primitive and derivative types. 
+is available for all lists through the use of polymorphic typing. 
 
 \begin{verbatim}
-head_note :: [Note] -> Note
+head_note :: [a] -> a
 head (h:tl) = h
-
-head_int :: [Int] -> Int
-head (h:tl) = h
-
-head_beat :: [Beat] -> Beat
-head (h:tl) = h
-
-head_bool :: [Bool] -> Bool
-head (h:tl) = h
-
-head_chord :: [Chord] -> Chord
-head (h:tl) = h
-
-head_system :: [System] -> System
-head (h:tl) = h
-
 \end{verbatim} 
 
 
@@ -39,24 +23,8 @@ The function \texttt{tail} takes a list and returns the end of the list.
 This function is commmonly used when working with lists. 
 
 \begin{verbatim}
-tail_note :: [Note] -> [Note]
+tail_note :: [a] -> [a]
 tail (h:tl) = tl
-
-tail_int :: [Int] -> [Int]
-tail (h:tl) = tl
-
-tail_beat :: [Beat] -> [Beat]
-tail (h:tl) = tl
-
-tail_bool :: [Bool] -> [Bool]
-tail (h:tl) = tl
-
-tail_chord :: [Chord] -> [Chord]
-tail (h:tl) = tl
-
-tail_system :: [System] -> [System]
-tail (h:tl) = tl
-
 \end{verbatim} 
 
 
