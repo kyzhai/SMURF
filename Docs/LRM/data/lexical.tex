@@ -86,31 +86,6 @@ operators are described in sections \ref{sec:prefixop}, \ref{sec:postfixop}, and
 except for declaration operators, which are described in section \ref{sec:declarations}.
 
 
-%
-%
-%
-%
-%SMURF allows logical negation, conjunction, and disjunction, in addition to structural comparison.
-%
-%SMURF provides operators to specify types of identifiers, arguments, and return values in various declarations,
-%as well as an operator to indicate a guard in a declaration.
-%\begin{table} [H]
-%\centering
-%\begin{tabularx}{\textwidth}{lXl}
-%\hline\hline
-%Declaration Operator & Description & Example \\
-%\hline\hline
-%   \texttt{::} & Type specification & \texttt{number :: Int} \\ \hline
-%   \texttt{->} & Argument and function return type specification
-%     & \texttt{isPositiveNum :: Int -> Bool}  \\ \hline
-%   \texttt{\textbar} & Guard indicator & \texttt{isSeven :: [Int] -> Bool}\\ 
-%	 	 && \texttt{isSeven num} \\
-%     && \texttt{\textbar\space (num == 7) = True} \\
-%     && \texttt{\textbar\space otherwise = False}\\ \hline
-%\end{tabularx}
-%\end{table}
-%
-
 \subsubsection{Separators}
 
 \begin{grammar}

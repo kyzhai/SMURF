@@ -3,23 +3,38 @@
 \setlength{\grammarindent}{4em}
 
 This section of the LRM describes the syntax and informal semantics of
-declarations in SMURF. Declarations may occur at a global level of scope
-in a SMURF program or inside of
-\texttt{let} expressions. The scoping of such declarations is described 
+declarations in SMURF. A program in SMURF, at its top-most level, is a series of declarations
+separated by newline tokens.
+Declarations may also occur inside of
+\texttt{let} expressions (but still must be separated with newline tokens).
+The scoping of such declarations is described 
 in this section. There are three types of declarations in SMURF: 
 type signatures, definitions, and function declarations.
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{lXl}
+\hline\hline
+Declaration Operator & Description & Example \\
+\hline\hline
+   \texttt{::} & Type specification & \texttt{number :: Int} \\ \hline
+   \texttt{->} & Argument and function return type specification
+     & \texttt{isPositiveNum :: Int -> Bool}  \\ \hline
+	 \texttt{=} & Variable or function binding & \texttt {x = 3} \\ \hline
+\end{tabularx}
+\end{table}
 
 \subsection{Type Signatures}
 
 \begin{grammar}
 
-<type-sig> $\rightarrow$ <identifier> \texttt{::} <type>
+<type-sig> $\rightarrow$ <identifier> \texttt{::} (<type>|<function-type>) <newline>
+
+<function-type> $\rightarrow$ <type> \texttt{->} <type> (\texttt{->} <type>)*
 
 <type> $\rightarrow$ \texttt{Int} \\ \texttt{Bool} \\ \texttt{Beat} \\ \texttt{Note} \\
 											\texttt{Chord} \\ \texttt{System} \\ <identifier> \\ 
-											\texttt{[} <type> \texttt{]} \\ \texttt{(} <type>\texttt{,} 
-											$\ldots$\texttt{,} <type> \texttt{)} \\ <type> \texttt{->} <type>
-											 \\ \texttt{(} <type> \texttt{)}
+											\texttt{[} <type> \texttt{]} \\ 
 										
 
 \end{grammar}
@@ -87,7 +102,7 @@ of type \texttt{Int}, but then it would be forced to return a value of type \tex
 
 \begin{grammar}
 
-<definition> $\rightarrow$ <identifier> $=$ <expression>
+<definition> $\rightarrow$ <identifier> $=$ <expression> <newline>
 
 \end{grammar}
 
@@ -108,7 +123,7 @@ The $x$ in the nested let statement is in a different scope than the $x$ in the 
 so the two definitions do not conflict. $z$ is able to refer to $y$ even though
 $y$ is defined after $z$ in the program. In this example, the three 
 identifiers $x, y, $ and $z$ in the global \texttt{let} will evaluate to values 4, 8, and 8, respectively,
-while the identifier $x$ after the nested let statement will evaluate to 5.
+while the identifier $x$ in the nested let statement will evaluate to 5.
 
 A type signature may be given for a definition but is not required.
 
@@ -117,15 +132,13 @@ A type signature may be given for a definition but is not required.
 \setlength{\grammarindent}{5em}
 \begin{grammar}
 
-<fun-dec> $\rightarrow$ <identifier> <args> $=$ <expression> \\
-												 <func-dec> <new-line> <func-dec>
+<fun-dec> $\rightarrow$ <identifier> <args> $=$ <expression> <newline> (<fun-dec>)*
 
 <args> $\rightarrow$ <pattern> \\ <pattern> <args> 
 
 
 <pattern> $\rightarrow$ <pat> \\ <pat> \texttt{:} <pattern> \\ \texttt{[} <pattern-list>$?$ \texttt{]} \\
-												\texttt{(} <pattern> \texttt{)} \\
-
+												\texttt{(} <pattern> \texttt{)} 
 
 <pattern-list> $\rightarrow$ <pat> (\texttt{,} <pat>)* 
 
@@ -137,19 +150,19 @@ A function declaration defines an identifier as a function that takes
 some number of patterns as arguments and, based on which patterns are matched
 when the function is called, returns the result
 of a given expression. Essentially, a function declaration can be seen as a 
-sequence of one or more assignment expressions, where each assignment defines
-a value bound to the function identifier. The actual value returned by the function
-is dependent on the patterns matched in the function call. There must be at least one pattern listed
-as an argument in a function declaration. All assignment expressions defining
-a function must be contiguous and separated by new lines, and the number of
-patterns as arguments in each assignment expression must be the same.
+sequence of one or more bindings, where each binding associates
+an expression with the function identifier. The binding associated with the identifier depends on the patterns matched in the function call. There must be at least one pattern listed
+as an argument in a function declaration. All bindings defining
+a function must be contiguous and separated by newlines, and the number of
+patterns supplied in each binding must be the same.
 
-As with definitions, only one declaration of a given function name can exist
+As with definitions, only one set of bindings outlining a function declaration for a given name
+can exist
 in a given scope. However, the same function name can be declared multiple
 times if each instance is in a different scope.
 
 If a function declaration for some identifier $x$ occurs in scope $n$, then
-a type signature for $x$ in scope $k>n$ is required. That is if a function has
+a type signature for $x$ in scope $k>=n$ is required. That is if a function has
 been declared but its type has not been explicitly stated in the same or a higher
 scope, a compile-time error will be generated. The type of the arguments
 passed to a function are checked at compile-time as well, and an error
