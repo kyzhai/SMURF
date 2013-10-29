@@ -59,7 +59,7 @@ re-definition or overloading by users.
       \texttt{if, then, else} & Specify conditional expression, else compulsory  \\ \hline
       \texttt{random} & Generate random numbers \\ \hline
       \texttt{print} & Print information to standard output \\ \hline
-      \texttt{main} & Specifies the value of a SMURF program\\ \hline
+      \texttt{main} & Specify the value of a SMURF program\\ \hline
     \end{tabular}
 \end{table}
 
@@ -80,11 +80,17 @@ Boolean keywords are the constants of SMURF.
 \end{grammar}
 
 \subsubsection{Operators}
-SMURF permits arithmetic, comparison, Boolean, list, declaration, and row operations, all of which
+SMURF permits arithmetic, comparison, boolean, list, declaration, and row operations, all of which
 are carried out through the use of specific operators. The syntax and semantics of all of these
 operators are described in sections \ref{sec:postfixop}, \ref{sec:prefixop}, and \ref{sec:binaryop},
 except for declaration operators, which are described in section \ref{sec:declarations}.
 
+
+\subsubsection{Newlines}
+SMURF uses newlines to signify the end of a declaration, except
+when preceded by the \texttt{\textbackslash} token. In the latter case, the newline is ignored by the compiler 
+(see example below). If no such token precedes a newline, then the compiler will treat the newline as
+a token being used to terminate a declaration.
 
 \subsubsection{Separators}
 
@@ -109,11 +115,6 @@ is the same as
 genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:genAltChords ys
 \end{lstlisting}
 
-\subsubsection{Newlines}
-SMURF uses newlines to signify the end of a declaration, except
-when preceded by the \texttt{\textbackslash} token. In the latter case, the newline is ignored by the compiler 
-(see example above). If no such token precedes a newline, then the compiler will treat the newline as
-a token being used to terminate a declaration.
 
 \subsection{Whitespace}
 \label{sec:whitespaces}
