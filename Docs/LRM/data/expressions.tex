@@ -30,7 +30,7 @@ all prefix operators are right-associative. Some examples of association are giv
 
 \subsection{Description of Precedence in Expressions}
 Precedence describes the order of evaluation for subexpressions in a given expression.
-The order of precendence for expressions and their operators mirrors our ordering of the following
+The order of precedence for expressions and their operators mirrors our ordering of the following
 subsections i.e. the first subsection describes the expressions with highest precedence, and the last
 subsection describes the expressions with lowest precedence.
 
@@ -131,7 +131,7 @@ operator was applied to.
 <binary-expression> $\rightarrow$ <expression>$_1$ <binary-op> <expression>$_2$
 \end{grammar}
 The following categories of binary operators exist in SMURF, and are listed in order of decreasing
-precendence: list, arithmetic, comparison, Boolean, tone row. 
+precedence: list, arithmetic, comparison, Boolean, tone row. 
 
 \subsubsection{List operators}
 
@@ -202,7 +202,7 @@ Rhythmic arithmetic operators follow the same form as basic arithmetic operators
 
 \begin{table} [H]
 \centering
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{XlX}
 \hline\hline
 Comparison Operator & Description & Example \\
 \hline\hline
@@ -215,7 +215,7 @@ Comparison Operator & Description & Example \\
   \texttt{\$<=} & Rhythmic Less than or equal to & \texttt{4 \$<= 4 == True} \\ \hline
   \texttt{\$>=} & Rhythmic Greater than or equal to &  \texttt{1 \$>= 16 == True} \\ \hline
   \texttt{==} & Structural comparison & \texttt{if a == 5 then a = True else a = False} \\ \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 SMURF allows comparison operations between expressions of type \texttt{Int} or \texttt{Beat}.
@@ -238,7 +238,7 @@ Boolean Operator & Description & Example \\
 \end{table}
 
 Boolean operators are used to do boolean logic on expressions of type \texttt{Bool}. Logical
-conjuction has higher precedence than logical disjunction.
+conjunction has higher precedence than logical disjunction.
 
 \subsubsection{Tone row operators}
 \label{sec:bintonerow}
