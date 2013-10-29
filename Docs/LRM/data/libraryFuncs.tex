@@ -8,8 +8,10 @@ and its SMURF definition. \newline
 \noindent\textbf{Head}
 
 The function \texttt{head} takes a list and returns the first element. 
-This function is commonly used when working with lists. The head function
-is available for all lists through the use of polymorphic typing. 
+This function is commonly used when working with lists. Although we do not currently
+support polymorphic typing in SMURF, the head function can nonetheless be thought
+of as a function that takes an expression of type \texttt{[}\emph{t}\texttt{]} and returns an expression
+of type \emph{t}, where \emph{t} may be any non-function type.
 
 \begin{verbatim}
 head_note :: [a] -> a
@@ -20,7 +22,8 @@ head (h:tl) = h
 \noindent\textbf{Tail}
 
 The function \texttt{tail} takes a list and returns the end of the list.
-This function is commonly used when working with lists. 
+This function is commonly used when working with lists. The typing of this function is the same
+as the typing of \texttt{head}.
 
 \begin{verbatim}
 tail_note :: [a] -> [a]
