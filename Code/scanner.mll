@@ -16,8 +16,8 @@ whitespace                  { token lexbuf } (* White space *)
 | "//"                      { nlcomment lexbuf }
 | "/*"                      { cc.(0)<-cc.(0)+1; nc1 lexbuf }
 | '\\'                      { continue lexbuf } 
-| '\n'                      { newline lexbuf }
-| '&'                       { newline lexbuf } 
+| '\n'                      { NL }
+| '&'                       { NL } 
 | '['                       { LLIST }           
 | ']'                       { RLIST } 
 | '+'                       { PLUS }            

@@ -34,13 +34,15 @@
 
 program:                                        /* List of declarations, possibly surrounded by NL */
     /* nothing */       { [] }
-|   NL                  { [] }
-|   decs                { $1 }
-|   NL decs             { $2 }
-|   decs NL             { $1 }
-|   NL decs NL          { $2 }
+|   newlines            { [] }
+|   decs                { List.rev $1 }
+|   newlines decs             { List.rev $2 }
+|   decs newlines             { List.rev $1 }
+|   newlines decs newlines          { List.rev $2 }
 
-
+newlines:
+    NL              {  }
+|   newlines NL     { }
 decs:
     dec                 { [$1] }
 |   decs NL dec         { $3 :: $1 }            /* declarations are separated by >= 1 newline */
