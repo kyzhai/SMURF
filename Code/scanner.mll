@@ -16,8 +16,8 @@ whitespace                  { token lexbuf } (* White space *)
 | "//"                      { nlcomment lexbuf }
 | "/*"                      { cc.(0)<-cc.(0)+1; nc1 lexbuf }
 | '\\'                      { continue lexbuf } 
-| '\n'                      { NL }
-| '&'                       { NL } 
+| '\n'                      { newline lexbuf }
+| '&'                       { newline lexbuf } 
 | '['                       { LLIST }           
 | ']'                       { RLIST } 
 | '+'                       { PLUS }            
@@ -79,6 +79,12 @@ whitespace                  { token lexbuf } (* White space *)
 | '-'?(digit)+ as num       { LITERAL(int_of_string num) } 
 | eof                       { EOF } 
 | _ as char { raise (Failure("Illegal character: " ^ Char.escaped char)) }
+
+and newline = parse
+'\n'            { newline lexbuf }
+| whitespace    { newline lexbuf }
+| '&'           { newline lexbuf }
+| _             { token lexbuf }
 
 and nlcomment = parse
 '\n'            { token lexbuf }

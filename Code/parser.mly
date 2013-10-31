@@ -39,7 +39,6 @@ program:                                        /* List of declarations */
 decs:
     VARIABLE TYPE types NL         { Tysig($1, [$3]) }
 |   VARIABLE BIND expr NL          { Vardef($1, $3) }
-|   VARIABLE patterns BIND expr NL { Funcdec($1, $2, $4) }
 
 types:                                          /* Non-function types */
     INT                            { TInt }
