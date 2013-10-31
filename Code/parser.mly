@@ -9,11 +9,12 @@
 %token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE PLT PGT PLE PGE
 %token CONCAT CONS BIND
 %token INV RET TRANS
+%token WILD
 %token <int> LITERAL
 %token <int> BOOLEAN
 %token <string> VARIABLE
 
-%nonassoc IF THEN ELSE OTHERWISE INT BOOL BEAT CHORD SYSTEM MAIN RANDOM PRINT 
+%nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT 
 %nonassoc LLIST RLIST COMMA
 %nonassoc TYPE FUNC
 %left OR 
@@ -30,6 +31,24 @@
 %type < Ast.expr> expr
 
 %%
+
+program:                                        /* List of declarations */
+    /* nothing */       { [] }
+|   program decs        { $2 :: $1 }
+    
+decs:
+    VARIABLE TYPE types NL         { Tysig($1, [$3]) }
+|   VARIABLE BIND expr NL          { Vardef($1, $3) }
+|   VARIABLE patterns BIND expr NL { Funcdec($1, $2, $4) }
+
+types:                                          /* Non-function types */
+    INT                            { TInt }
+|   BOOL                           { TBool }
+|   NOTE                           { TNote }
+|   BEAT                           { TBeat }
+|   CHORD                          { TChord }
+|   SYSTEM                         { TSystem }
+|   LLIST types RLIST              { TList($2) }
 
 dots:
     PERIOD      { 1 }

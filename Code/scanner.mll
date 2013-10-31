@@ -57,6 +57,7 @@ whitespace                  { token lexbuf } (* White space *)
 | ','                       { COMMA }   
 | '.'                       { PERIOD }  
 | '$'                       { DOLLAR }
+| '_'                       { WILD }
 | "let"                     { LET }
 | "in"                      { IN }
 | "if"                      { IF }
