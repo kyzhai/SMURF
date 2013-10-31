@@ -42,3 +42,35 @@ type stmt =                                 (* Statements *)
     Expr of expr                            (* c = 4 : [3,2,1] *)
     | If of expr * stmt * stmt              (* if b == 4 then True else False *)
 
+
+let rec string_of_expr = function
+    Literal(l) -> string_of_int l
+  | Variable(s) -> s
+  | Binop(e1, o, e2) ->
+      string_of_expr e1 ^ " " ^
+      (match o with
+	Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/"
+      | BoolEq -> "==" 
+      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=" | m -> "OP") ^ " " ^
+      string_of_expr e2
+  | x -> "other expr"
+
+let rec string_of_patterns  = function
+    Patconst(l) -> string_of_int l
+    | Patvar(s) -> s
+    | Patcomma(p) -> "[" ^ (String.concat ", " (List.map string_of_patterns p)) ^ "]"
+    | Patcons(p1, p2) -> (string_of_patterns p1) ^ " : " ^ (string_of_patterns p2)
+
+let rec string_of_types  = function
+    TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
+    | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
+    | TList(t) -> "[" ^ string_of_types t ^ "]"
+
+let string_of_dec  = function
+    Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^ "\n"
+  | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
+  | Funcdec(fdec) -> fdec.fname ^ String.concat " " (List.map string_of_patterns fdec.args) ^
+    " = " ^ string_of_expr fdec.value ^ "\n"
+
+let string_of_program decs =
+  String.concat "" (List.map string_of_dec decs)

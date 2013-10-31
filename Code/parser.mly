@@ -33,26 +33,27 @@
 %%
 
 program:                                        /* List of declarations, possibly surrounded by NL */
-    /* nothing */       { [] }
-|   newlines            { [] }
-|   decs                { List.rev $1 }
-|   newlines decs             { List.rev $2 }
-|   decs newlines             { List.rev $1 }
+    /* nothing */                   { [] }
+|   newlines                        { [] }
+|   decs                            { List.rev $1 }
+|   newlines decs                   { List.rev $2 }
+|   decs newlines                   { List.rev $1 }
 |   newlines decs newlines          { List.rev $2 }
 
 newlines:
-    NL              {  }
-|   newlines NL     { }
+    NL                              { }
+|   newlines NL                     { }
+
 decs:
     dec                 { [$1] }
 |   decs NL dec         { $3 :: $1 }            /* declarations are separated by >= 1 newline */
 
 dec:
-    VARIABLE TYPE types          { Tysig($1, [$3]) }    /* variable type-sig only have one type */
-|   VARIABLE TYPE func_types     { Tysig($1, $3)   }    /* function type-sig have >= 2 types */
+    VARIABLE TYPE types          { Tysig($1, [$3]) }             /* variable type-sig only have one type */
+|   VARIABLE TYPE func_types     { Tysig($1, List.rev $3)   }    /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr           { Vardef($1, $3) }
 
-types:                                          /* types for vars */
+types:                                                           /* types for vars */
     INT                            { TInt }
 |   BOOL                           { TBool }
 |   NOTE                           { TNote }
@@ -61,7 +62,7 @@ types:                                          /* types for vars */
 |   SYSTEM                         { TSystem }
 |   LLIST types RLIST              { TList($2) }
 
-func_types:                                     /* types for functions */
+func_types:                                                     /* types for functions */
     types FUNC types               { $3 :: [$1] }
 |   func_types FUNC types          { $3 :: $1 }
 
