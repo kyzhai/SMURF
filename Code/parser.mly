@@ -27,20 +27,30 @@
 %nonassoc INV RET TRANS DOLLAR PERIOD 
 %nonassoc LPAREN RPAREN
 
-%start expr
-%type < Ast.expr> expr
+%start program
+%type <Ast.program> program
 
 %%
 
-program:                                        /* List of declarations */
+program:                                        /* List of declarations, possibly surrounded by NL */
     /* nothing */       { [] }
-|   program decs        { $2 :: $1 }
-    
-decs:
-    VARIABLE TYPE types NL         { Tysig($1, [$3]) }
-|   VARIABLE BIND expr NL          { Vardef($1, $3) }
+|   NL                  { [] }
+|   decs                { $1 }
+|   NL decs             { $2 }
+|   decs NL             { $1 }
+|   NL decs NL          { $2 }
 
-types:                                          /* Non-function types */
+
+decs:
+    dec                 { [$1] }
+|   decs NL dec         { $3 :: $1 }            /* declarations are separated by >= 1 newline */
+
+dec:
+    VARIABLE TYPE types          { Tysig($1, [$3]) }    /* variable type-sig only have one type */
+|   VARIABLE TYPE func_types     { Tysig($1, $3)   }    /* function type-sig have >= 2 types */
+|   VARIABLE BIND expr           { Vardef($1, $3) }
+
+types:                                          /* types for vars */
     INT                            { TInt }
 |   BOOL                           { TBool }
 |   NOTE                           { TNote }
@@ -48,6 +58,10 @@ types:                                          /* Non-function types */
 |   CHORD                          { TChord }
 |   SYSTEM                         { TSystem }
 |   LLIST types RLIST              { TList($2) }
+
+func_types:                                     /* types for functions */
+    types FUNC types               { $3 :: [$1] }
+|   func_types FUNC types          { $3 :: $1 }
 
 dots:
     PERIOD      { 1 }
