@@ -18,6 +18,10 @@ type expr =                                 (* Expressions *)
     | Binop of expr * operator * expr       (* a + 2 *)
     | Unop of unary_operator * expr         (* ! a == 4 *)
     | Rowop of row_operator * expr          (* ~[1,2,3,4,5,6] *)
+    | If of expr * expr * expr              (* if b == 4 then True else False *)
+    | List of expr list                     (* [1,2,3,4] *)
+    | Chord of expr list                    (* [Note1, Note2]*)
+    | System of expr list                   (* [Chord1, Chord2]*)
 
 type pattern =                              (* Patterns *)
     Patconst of int                         (* integer or boolean constant *)
@@ -38,21 +42,29 @@ type dec =                                  (* Declarations *)
 
 type program = dec list                     (* A program is a list of declarations *)
 
+    (*
 type stmt =                                 (* Statements *)
     Expr of expr                            (* c = 4 : [3,2,1] *)
     | If of expr * stmt * stmt              (* if b == 4 then True else False *)
-
+    *)
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | Variable(s) -> s
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
-      (match o with
-	Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/"
+      ( match o with
+	    Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/"
       | BoolEq -> "==" 
-      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=" | m -> "OP") ^ " " ^
-      string_of_expr e2
+      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=" 
+      | Concat -> "++" | Cons -> ":" | m -> "OP" ) 
+      ^ " " ^ string_of_expr e2
+  | If(e1, e2, e3) -> "if " ^ string_of_expr e1 ^ " then " ^ string_of_expr e2 ^ " else " ^ string_of_expr e3
+  | Beat(i1, i2) -> "Beat => " ^ string_of_int i1 ^ "_" ^ string_of_int i2
+  | Note(pc, reg, Beat(i1, i2)) -> "Note => (" ^ string_of_int pc ^ ", " ^ string_of_int reg ^ ")$" ^ (string_of_expr (Beat(i1, i2)))
+  | List(el) -> "List => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | Chord(el) -> "Chord => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | System(el) -> "System => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | x -> "other expr"
 
 let rec string_of_patterns  = function

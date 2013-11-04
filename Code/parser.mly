@@ -119,6 +119,13 @@ expr:
   RPAREN
   DOLLAR LITERAL        { Note($2, $4, Beat($7, 0))  }
 
+| IF expr 
+  THEN expr ELSE expr   { If($2, $4, $6) }
+| LLIST expr_list RLIST { match (List.hd $2) with 
+                            Note(_,_,_) -> Chord($2)
+                          | Chord(_) -> System($2)
+                          | _ -> List($2) }
+
 expr_list:
   /* Nothing */  { [] }
 | expr_list_back { List.rev $1 }
@@ -127,6 +134,8 @@ expr_list_back:
   expr                       { [$1] }
 | expr_list_back COMMA expr  { $3 :: $1 }
 
+/*
 stmt: 
   expr                         { Expr($1) }
-| IF expr THEN stmt ELSE stmt  { If($2, $4, $6) }
+| IF expr THEN stmt ELSE stmt  { If($2, $4, $6) } 
+*/

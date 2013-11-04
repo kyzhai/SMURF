@@ -68,7 +68,7 @@ whitespace                  { token lexbuf } (* White space *)
 | "otherwise"               { OTHERWISE } 
 | "Int"                     { INT }
 | "Bool"                    { BOOL }
-| "Beat"                       { BEAT }
+| "Beat"                    { BEAT }
 | "Note"                    { NOTE }
 | "Chord"                   { CHORD }
 | "System"                  { SYSTEM }
