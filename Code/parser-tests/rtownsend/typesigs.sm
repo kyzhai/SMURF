@@ -1,12 +1,7 @@
-/* This is a parser test for the following:
-
-	 1. Type signatures
-
-*/
-
 a :: Int
 b :: Bool
 c :: Note
+
 d :: Chord
 e :: System
 f :: [Beat]

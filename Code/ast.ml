@@ -81,7 +81,7 @@ let rec string_of_types  = function
 let string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^ "\n"
   | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
-  | Funcdec(fdec) -> fdec.fname ^ String.concat " " (List.map string_of_patterns fdec.args) ^
+  | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " (List.map string_of_patterns fdec.args) ^
     " = " ^ string_of_expr fdec.value ^ "\n"
 
 let string_of_program decs =
