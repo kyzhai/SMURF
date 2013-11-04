@@ -45,26 +45,43 @@ newlines:
 |   newlines NL                     { }
 
 decs:
-    dec                 { [$1] }
-|   decs NL dec         { $3 :: $1 }            /* declarations are separated by >= 1 newline */
+    dec                             { [$1] }
+|   decs newlines dec               { $3 :: $1 }            /* declarations are separated by >= 1 newline */
 
 dec:
-    VARIABLE TYPE types          { Tysig($1, [$3]) }             /* variable type-sig only have one type */
-|   VARIABLE TYPE func_types     { Tysig($1, List.rev $3)   }    /* function type-sig have >= 2 types */
-|   VARIABLE BIND expr           { Vardef($1, $3) }
+    VARIABLE TYPE types             { Tysig($1, [$3]) }             /* variable type-sig only have one type */
+|   VARIABLE TYPE func_types        { Tysig($1, List.rev $3)   }    /* function type-sig have >= 2 types */
+|   VARIABLE BIND expr              { Vardef($1, $3) }
+|   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
 
 types:                                                           /* types for vars */
-    INT                            { TInt }
-|   BOOL                           { TBool }
-|   NOTE                           { TNote }
-|   BEAT                           { TBeat }
-|   CHORD                          { TChord }
-|   SYSTEM                         { TSystem }
-|   LLIST types RLIST              { TList($2) }
+    INT                             { TInt }
+|   BOOL                            { TBool }
+|   NOTE                            { TNote }
+|   BEAT                            { TBeat }
+|   CHORD                           { TChord }
+|   SYSTEM                          { TSystem }
+|   LLIST types RLIST               { TList($2) }
 
 func_types:                                                     /* types for functions */
-    types FUNC types               { $3 :: [$1] }
-|   func_types FUNC types          { $3 :: $1 }
+    types FUNC types                { $3 :: [$1] }
+|   func_types FUNC types           { $3 :: $1 }
+
+patterns:
+    pattern                         { [$1] }
+|   patterns pattern                { $2 :: $1 }
+
+pattern:
+    LITERAL                         { Patconst($1) }
+|   BOOLEAN                         { Patconst($1) }
+|   VARIABLE                        { Patvar($1) }
+|   WILD                            { Patvar("_") }
+|   LLIST comma_patterns RLIST      { Patcomma(List.rev $2) }
+|   pattern CONS pattern            { Patcons($1, $3) }
+
+comma_patterns:
+    /* empty */                     { [] }
+|   comma_patterns COMMA pattern    { $3 :: $1 }
 
 dots:
     PERIOD      { 1 }
