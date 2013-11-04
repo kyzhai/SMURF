@@ -80,11 +80,6 @@ whitespace                  { token lexbuf } (* White space *)
 | eof                       { EOF } 
 | _ as char { raise (Failure("Illegal character: " ^ Char.escaped char)) }
 
-and newline = parse
-'\n'            { newline lexbuf }
-| whitespace    { newline lexbuf }
-| '&'           { newline lexbuf }
-| _             { token lexbuf }
 
 and nlcomment = parse
 '\n'            { token lexbuf }

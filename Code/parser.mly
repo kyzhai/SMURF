@@ -46,7 +46,7 @@ newlines:
 
 decs:
     dec                             { [$1] }
-|   decs NL dec                     { $3 :: $1 }            /* declarations are separated by >= 1 newline */
+|   decs newlines dec               { $3 :: $1 }            /* declarations are separated by >= 1 newline */
 
 dec:
     VARIABLE TYPE types             { Tysig($1, [$3]) }             /* variable type-sig only have one type */
