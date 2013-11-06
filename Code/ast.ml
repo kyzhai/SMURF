@@ -12,6 +12,7 @@ type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types
     
 type expr =                                 (* Expressions *)
     Literal of int                          (* 42 *)
+		| Boolean of bool												(* True *)
     | Variable of string                    (* bar *)
     | Beat of int * int                     (* 2. *)
     | Note of int * int * expr              (* (11, 2)^4. *)
@@ -24,7 +25,8 @@ type expr =                                 (* Expressions *)
     | System of expr list                   (* [Chord1, Chord2]*)
 
 type pattern =                              (* Patterns *)
-    Patconst of int                         (* integer or boolean constant *)
+    Patconst of int                         (* integer *)
+		| Patbool of bool												(* boolean *)
     | Patvar of string                      (* identifier or wildcard *)
     | Patcomma of pattern list              (* [pattern, pattern, pattern, ... ] or [] *)
     | Patcons of pattern * pattern          (* pattern : pattern *)
@@ -51,6 +53,7 @@ type stmt =                                 (* Statements *)
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
+	| Boolean(b) -> string_of_bool b
   | Variable(s) -> s
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
@@ -70,6 +73,7 @@ let rec string_of_expr = function
 
 let rec string_of_patterns  = function
     Patconst(l) -> string_of_int l
+		| Patbool(b) -> string_of_bool b
     | Patvar(s) -> s
     | Patcomma(p) -> "[" ^ (String.concat ", " (List.map string_of_patterns p)) ^ "]"
     | Patcons(p1, p2) -> (string_of_patterns p1) ^ " : " ^ (string_of_patterns p2)

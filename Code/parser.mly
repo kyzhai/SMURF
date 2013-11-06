@@ -11,7 +11,7 @@
 %token INV RET TRANS
 %token WILD
 %token <int> LITERAL
-%token <int> BOOLEAN
+%token <bool> BOOLEAN
 %token <string> VARIABLE
 
 %nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT 
@@ -74,7 +74,7 @@ patterns:
 
 pattern:
     LITERAL                         { Patconst($1) }
-|   BOOLEAN                         { Patconst($1) }
+|   BOOLEAN                         { Patbool($1) }
 |   VARIABLE                        { Patvar($1) }
 |   WILD                            { Patvar("_") }
 |   LLIST comma_patterns RLIST      { Patcomma(List.rev $2) }
@@ -128,6 +128,7 @@ expr:
 | VARIABLE              { Variable($1) }
 | LITERAL               { Literal($1) }
 | LITERAL dots          { Beat($1, $2) }
+| BOOLEAN 							{ Boolean($1) }
 | LPAREN 
   LITERAL COMMA LITERAL
   RPAREN
