@@ -11,7 +11,7 @@
 %token INV RET TRANS
 %token WILD
 %token <int> LITERAL
-%token <int> BOOLEAN
+%token <bool> BOOLEAN
 %token <string> VARIABLE
 
 %nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT 
@@ -53,6 +53,7 @@ dec:
 |   VARIABLE TYPE func_types        { Tysig($1, List.rev $3)   }    /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr              { Vardef($1, $3) }
 |   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
+|   MAIN expr												{ Main($2) }
 
 types:                                                           /* types for vars */
     INT                             { TInt }
@@ -73,7 +74,7 @@ patterns:
 
 pattern:
     LITERAL                         { Patconst($1) }
-|   BOOLEAN                         { Patconst($1) }
+|   BOOLEAN                         { Patbool($1) }
 |   VARIABLE                        { Patvar($1) }
 |   WILD                            { Patvar("_") }
 |   LLIST comma_patterns RLIST      { Patcomma(List.rev $2) }
@@ -127,6 +128,9 @@ expr:
 | VARIABLE              { Variable($1) }
 | LITERAL               { Literal($1) }
 | LITERAL dots          { Beat($1, $2) }
+| BOOLEAN 							{ Boolean($1) }
+| PRINT expr						{ Print($2) }
+| RANDOM								{ Random }
 | LPAREN 
   LITERAL COMMA LITERAL
   RPAREN

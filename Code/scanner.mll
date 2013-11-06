@@ -63,8 +63,8 @@ whitespace                  { token lexbuf } (* White space *)
 | "if"                      { IF }
 | "then"                    { THEN }
 | "else"                    { ELSE }
-| "True"                    { BOOLEAN(1) } (* Boolean Literal? *)
-| "False"                   { BOOLEAN(0) } (* Boolean Literal? *)
+| "True"                    { BOOLEAN(true) }
+| "False"                   { BOOLEAN(false) } 
 | "otherwise"               { OTHERWISE } 
 | "Int"                     { INT }
 | "Bool"                    { BOOL }

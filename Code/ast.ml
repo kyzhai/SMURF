@@ -12,8 +12,11 @@ type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types
     
 type expr =                                 (* Expressions *)
     Literal of int                          (* 42 *)
+		| Boolean of bool												(* True *)
     | Variable of string                    (* bar *)
     | Beat of int * int                     (* 2. *)
+		| Print of expr 												(* print 3+4 *)
+		| Random 																(* random *)
     | Note of int * int * expr              (* (11, 2)^4. *)
     | Binop of expr * operator * expr       (* a + 2 *)
     | Unop of unary_operator * expr         (* ! a == 4 *)
@@ -24,7 +27,8 @@ type expr =                                 (* Expressions *)
     | System of expr list                   (* [Chord1, Chord2]*)
 
 type pattern =                              (* Patterns *)
-    Patconst of int                         (* integer or boolean constant *)
+    Patconst of int                         (* integer *)
+		| Patbool of bool												(* boolean *)
     | Patvar of string                      (* identifier or wildcard *)
     | Patcomma of pattern list              (* [pattern, pattern, pattern, ... ] or [] *)
     | Patcons of pattern * pattern          (* pattern : pattern *)
@@ -39,6 +43,7 @@ type dec =                                  (* Declarations *)
     Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
     | Funcdec of func_decl                  (* f x y = x + y *)
     | Vardef of string * expr               (* x = (2 + 5) : [1,2,3] *)
+		| Main of expr													(* main (f x) + (g x) *)
 
 type program = dec list                     (* A program is a list of declarations *)
 
@@ -50,6 +55,7 @@ type stmt =                                 (* Statements *)
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
+	| Boolean(b) -> string_of_bool b
   | Variable(s) -> s
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
@@ -69,6 +75,7 @@ let rec string_of_expr = function
 
 let rec string_of_patterns  = function
     Patconst(l) -> string_of_int l
+		| Patbool(b) -> string_of_bool b
     | Patvar(s) -> s
     | Patcomma(p) -> "[" ^ (String.concat ", " (List.map string_of_patterns p)) ^ "]"
     | Patcons(p1, p2) -> (string_of_patterns p1) ^ " : " ^ (string_of_patterns p2)
@@ -83,6 +90,7 @@ let string_of_dec  = function
   | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
   | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " (List.map string_of_patterns fdec.args) ^
     " = " ^ string_of_expr fdec.value ^ "\n"
+	| Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
