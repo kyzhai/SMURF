@@ -1,0 +1,153 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<meta name="wpd_version" content="0.2">
+<meta name="wpd_baseurl" content="http://www.penguinpeepshow.com/CSV2MIDI.php">
+<meta name="wpd_url" content="http://www.penguinpeepshow.com/CSV2MIDI.php">
+<meta name="wpd_date" content="2013-10-06T18:10Z">
+
+  
+  
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> 
+
+
+
+<title>CSV to MIDI Converter</title>
+  <script> </script><!-- Hack to avoid flash of unstyled content in IE -->
+
+<link rel="stylesheet" type="text/css" href="CSV2MIDI.css" media="all">
+</head>
+<body>
+<noscript>&lt;p&gt;You're not using a javascript capable browser.  Some things on this page may not display properly.&lt;/p&gt;</noscript>
+<div id="threecolumn" align="center">
+  <div id="container">
+    <div class="wrapper">
+
+      <div id="header">
+        <div class="wrapper">
+          <h1 id="page-title"><div id="g_title"><div style="text-align: center;"><font size="6">
+
+CSV to MIDI Converter
+						<hr>
+          </font></div></div></h1>
+        </div> <!-- /wrapper -->
+      </div> <!-- /header -->
+
+      <div id="middle">
+        <div class="wrapper">
+          <div class="middle-content"><div id="g_body">
+<p><a href="http://www.penguinpeepshow.com/assets/CSV2MIDI.zip">This file</a> contains a set of java code that will convert a formatted <a href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> (Comma Separated Values) file into a <a href="http://en.wikipedia.org/wiki/MIDI">MIDI</a>
+file.  To run the program, you need to have <a href="http://java.sun.com/j2se/">Java SE Development Kit</a> installed.  Just run "CSV2MIDI.bat".  You will
+need the java/bin folder in your path, or you can just change the .bat file to suit your needs.  This will convert "ExampleMIDI.csv" into OutFile.midi, which
+should sounds like <a href="http://www.penguinpeepshow.com/assets/OutFile.midi">this</a>.</p>
+
+<p>The input CSV file is formatted with a header and a data section.  Look at "ExampleMIDI.csv" for an example.  The header contains the timing resolution in
+units of pulses per quarter note, and a list of instruments to use.  The number of instruments determines the number of MIDI channels to use, one channel per
+instrument.  In the entire file, all fields that are not integers are ignored, so you can put comments in the file.  In the data section, however, row and
+column number of integers are important.</p>
+
+<p>Instruments are specified by an instrument number.  This number can range from 0 to 127.  The available numbers to choose from and their corresponding
+instrument name are listed in "midi instruments.csv".  These instrument numbers were found with "listInstruments.java".  For some reason Java has instruments
+numbered from 0 to 410, but only the ones up to 127 can be used with this program.  If someone knows how I can change that, enlighten me.</p>
+<br>
+<h2>Header</h2>
+<p>The header is formatted as follows: The first integer is the timing resolution.  The next integer determines the first instrument number.  All following
+integers on the same line as the first instrument determine the other instruments to use.  There can be a maximum of 16 instruments.  The end of this line
+determines the end of the header section.</p>
+
+<p>For example, look at "ExampleMIDI.csv".  The header looks like this:</p>
+<pre style="color: rgb(230, 69, 0);"><i>Timing Resolution (pulses per quarter note)
+4
+
+Instrument,105,Banjo,Instrument,114,Steel Drum,Instrument,71,Clarinet
+</i></pre>
+<br>
+<p>Here, the first integer is <b>4</b>, this is the timing resolution.  The next integer is <b>105</b>, this is the first instrument number (this is the
+number for a banjo).  The rest of the integers on this same line determine the other instrument numbers.  So MIDI channel 0 will be instrument <b>105</b>
+(banjo), channel 1 will be instrument <b>114</b> (steel drum) and channel 2 will be instrument <b>71</b> (clarinet).</p>
+<br>
+<h2>Data</h2>
+<p>Next, notes are listed in the data section.  Each note is specified by a tick number, a note number and a velocity.</p>
+
+<p>The tick number determines where in the song the note will be placed.  For example, if the timing resolution is 4 pulses per quarter note, a tick number
+of 20 will put the note 5 quarter notes after the start of the song.  Tick numbers start at 0.</p>
+
+<p>The note number is the note to play.  This number can range from 0 to 127.  Where 0 is C-1 and 127 is G9.</p>
+
+<p>The velocity number is like the volume of the note.  The higher the velocity the higher the volume.  This number can range from 0 to 127.  Some
+instruments will keep the note on until the velocity of that same note is set to 0.</p>
+
+<p>In the data section, all fields not containing an integer are ignored.  However, the column and row numbers of each field are important.  Each note of an
+instrument is specified by 3 consecutive integers in the same row.  If the three numbers are in columns 1, 2 and 3 (the first three columns) then the note is
+applied to channel 0.  If they are in columns 4, 5 and 6 then the note is applied to channel 1.  Columns 7, 8 and 9 are for channel 2.  Etc.  The three
+numbers are in order of tick number, note number, velocity number.  There can be an unlimited number of rows but the maximum number of channels is 16.</p>
+
+<p>For example, look at "ExampleMIDI.csv".  The beginning of the data section looks like this:</p>
+<pre style="color: rgb(230, 69, 0);"><i>Tick, Note (0-127), Velocity (0-127), Tick, Note (0-127), Velocity (0-127), Tick,Note (0-127), Velocity (0-127)
+0,60,90,5,60,90,10,80,100
+1,65,90,5,64,90,11,82,100
+2,69,90,5,67,90,,,
+3,72,90,5,72,90,,,
+4,73,90,15,53,90,,,
+5,72,90,15,65,90,,,
+6,69,90,15,68,90,,,
+7,65,90,15,73,90,,,
+8,60,90,25,55,90,,,
+9,55,90,25,64,90,,,
+10,51,90,25,67,90,,,
+11,48,90,25,72,90,,,
+12,48,90,35,65,90,51,82,0
+...
+</i></pre>
+<br>
+<p>Here, the entire first row is ignored because none of the fields contain a single integer.  The rest of the rows contain integers and are read in as note
+data.  The first three numbers are <b>0</b>, <b>60</b>, <b>90</b>, so a note with note number <b>60</b> is applied at tick <b>0</b> with velocity <b>90</b>
+on channel 0.  The next three numbers are <b>5</b>, <b>60</b>, <b>90</b>, so a note with note number <b>60</b> is applied at tick <b>5</b> with velocity
+<b>90</b> on channel 1.  Etc.  The first three numbers in the next row are <b>1</b>, <b>65</b>, <b>90</b>, so a note with note number <b>65</b> is applied at
+tick <b>1</b> with velocity <b>90</b> on channel 0.  Etc.  On the next row there is no data specified for channel 2, so those fields are ignored.  It's not
+until the last row shown here that another note is specified for channel 2.  This is allowed; any number of rows or columns can be blank.  Also, tick numbers
+can go in any order and the highest tick number for all notes determines the length of the .midi file.  </p>
+
+<p>Enjoy.  Please contact me if you have any questions.</p>
+          </div></div> <!-- /middle-content -->
+          <div style="clear: both;"></div> 
+        </div> <!-- /wrapper -->
+      </div> <!-- /middle -->
+
+      <div id="footer">
+        <div class="wrapper">
+          <div id="g_footer">
+     	      <br><br><hr>
+<a href="http://www.penguinpeepshow.com/">Home</a><br>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+
+var sc_project=1313778; 
+var sc_invisible=1;
+var sc_partition=9;
+var sc_security="d72f5778";
+var sc_text=1;
+</script>
+
+<script type="text/javascript" language="javascript" src="counter.js"></script>
+<noscript>&lt;a href="http://www.statcounter.com/" target="_blank"&gt; &lt;img src="http://c10.statcounter.com/counter.php?sc_project=1313778&amp;amp;java=0&amp;amp;security=d72f5778&amp;amp;invisible=0" alt="javascript hit counter" border="0"&gt;&lt;/a&gt; </noscript>
+
+<!-- End of StatCounter Code -->
+Page updated December 27, 2006
+
+         	</div>
+          <div style="clear: both;"></div>
+        </div> <!-- /wrapper -->
+      </div> <!-- /footer -->
+
+    </div> <!-- /wrapper -->
+  </div> <!-- /container -->
+</div> <!-- /threecolumn -->
+
+
+      
+</body>
+</html>
