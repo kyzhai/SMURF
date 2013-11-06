@@ -129,6 +129,8 @@ expr:
 | LITERAL               { Literal($1) }
 | LITERAL dots          { Beat($1, $2) }
 | BOOLEAN 							{ Boolean($1) }
+| PRINT expr						{ Print($2) }
+| RANDOM								{ Random }
 | LPAREN 
   LITERAL COMMA LITERAL
   RPAREN
