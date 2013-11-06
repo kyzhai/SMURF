@@ -39,6 +39,7 @@ type dec =                                  (* Declarations *)
     Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
     | Funcdec of func_decl                  (* f x y = x + y *)
     | Vardef of string * expr               (* x = (2 + 5) : [1,2,3] *)
+		| Main of expr													(* main (f x) + (g x) *)
 
 type program = dec list                     (* A program is a list of declarations *)
 
@@ -83,6 +84,7 @@ let string_of_dec  = function
   | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
   | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " (List.map string_of_patterns fdec.args) ^
     " = " ^ string_of_expr fdec.value ^ "\n"
+	| Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
