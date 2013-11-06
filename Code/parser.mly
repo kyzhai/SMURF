@@ -11,7 +11,7 @@
 %token INV RET TRANS
 %token WILD
 %token <int> LITERAL
-%token <int> BOOLEAN
+%token <bool> BOOLEAN
 %token <string> VARIABLE
 
 %nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT 
@@ -55,6 +55,7 @@ dec:
 |   VARIABLE TYPE func_types        { Tysig($1, List.rev $3) }  /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr              { Vardef($1, $3) }
 |   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
+|   MAIN expr												{ Main($2) }
 
 /* types for vars */
 types:
@@ -77,7 +78,7 @@ patterns:
 
 pattern:
     LITERAL                         { Patconst($1) }
-|   BOOLEAN                         { Patconst($1) }
+|   BOOLEAN                         { Patbool($1) }
 |   VARIABLE                        { Patvar($1) }
 |   WILD                            { Patvar("_") }
 |   LLIST comma_patterns RLIST      { Patcomma(List.rev $2) }
@@ -88,55 +89,59 @@ comma_patterns:
 |   comma_patterns COMMA pattern    { $3 :: $1 }
 
 expr:
-    LITERAL                { Literal($1) }
-|   VARIABLE               { Variable($1) }
-|   LPAREN expr RPAREN     { $2 }
+    LITERAL                 { Literal($1) }
+|   VARIABLE                { Variable($1) }
+|   LPAREN expr RPAREN      { $2 }
 
-|   expr PLUS expr         { Binop($1, Add, $3) }
-|   expr MINUS expr        { Binop($1, Sub, $3) }
-|   expr TIMES expr        { Binop($1, Mul, $3) }
-|   expr DIV expr          { Binop($1, Div, $3) }
-|   expr MOD expr          { Binop($1, Mod, $3) }
-|   expr BDIV expr         { Binop($1, BeatDiv, $3) }
-|   expr BTIMES expr       { Binop($1, BeatMul, $3) }
-|   expr BPLUS expr        { Binop($1, BeatAdd, $3) }
-|   expr BMINUS expr       { Binop($1, BeatSub, $3) }
-|   expr PCPLUS expr       { Binop($1, PCAdd, $3) }
-|   expr PCMINUS expr      { Binop($1, PCSub, $3) }
+|   expr PLUS expr          { Binop($1, Add, $3) }
+|   expr MINUS expr         { Binop($1, Sub, $3) }
+|   expr TIMES expr         { Binop($1, Mul, $3) }
+|   expr DIV expr           { Binop($1, Div, $3) }
+|   expr MOD expr           { Binop($1, Mod, $3) }
+|   expr BDIV expr          { Binop($1, BeatDiv, $3) }
+|   expr BTIMES expr        { Binop($1, BeatMul, $3) }
+|   expr BPLUS expr         { Binop($1, BeatAdd, $3) }
+|   expr BMINUS expr        { Binop($1, BeatSub, $3) }
+|   expr PCPLUS expr        { Binop($1, PCAdd, $3) }
+|   expr PCMINUS expr       { Binop($1, PCSub, $3) }
 
-|   expr LT expr           { Binop($1, Less, $3) }
-|   expr GT expr           { Binop($1, Greater, $3) }
-|   expr LE expr           { Binop($1, Leq, $3) }
-|   expr GE expr           { Binop($1, Geq, $3) }
-|   expr BLT expr          { Binop($1, BeatLess, $3) }
-|   expr BGT expr          { Binop($1, BeatGreater, $3) }
-|   expr BLE expr          { Binop($1, BeatLeq, $3) }
-|   expr BGE expr          { Binop($1, BeatGeq, $3) }
+|   expr LT expr            { Binop($1, Less, $3) }
+|   expr GT expr            { Binop($1, Greater, $3) }
+|   expr LE expr            { Binop($1, Leq, $3) }
+|   expr GE expr            { Binop($1, Geq, $3) }
+|   expr BLT expr           { Binop($1, BeatLess, $3) }
+|   expr BGT expr           { Binop($1, BeatGreater, $3) }
+|   expr BLE expr           { Binop($1, BeatLeq, $3) }
+|   expr BGE expr           { Binop($1, BeatGeq, $3) }
 
-|   expr TRANS expr        { Binop($1, Trans, $3) }
-|   expr CONCAT expr       { Binop($1, Concat, $3) }
-|   expr CONS expr         { Binop($1, Cons, $3) }
+|   expr TRANS expr         { Binop($1, Trans, $3) }
+|   expr CONCAT expr        { Binop($1, Concat, $3) }
+|   expr CONS expr          { Binop($1, Cons, $3) }
 
-|   expr EQ expr           { Binop($1, BoolEq, $3) }
-|   expr AND expr          { Binop($1, And, $3) }
-|   expr OR expr           { Binop($1, Or, $3) }
-|   NOT expr               { Unop(Not, $2) }
+|   expr EQ expr            { Binop($1, BoolEq, $3) }
+|   expr AND expr           { Binop($1, And, $3) }
+|   expr OR expr            { Binop($1, Or, $3) }
+|   NOT expr                { Unop(Not, $2) }
 
-|   INV expr               { Rowop(Inv, $2) }
-|   RET expr               { Rowop(Retro, $2) }
+|   INV expr                { Rowop(Inv, $2) }
+|   RET expr                { Rowop(Retro, $2) }
 
-|   expr dots              { Beat($1, $2) }
+|   expr dots               { Beat($1, $2) }
 |   LPAREN
     expr COMMA expr
     RPAREN
-    DOLLAR expr            { Note($2, $4, Beat($7, 0))  }
+    DOLLAR expr             { Note($2, $4, Beat($7, 0))  }
+
+|   BOOLEAN 							  { Boolean($1) }
+|   PRINT expr						  { Print($2) }
+|   RANDOM								  { Random }
 
 |   IF expr
-    THEN expr ELSE expr    { If($2, $4, $6) }
-|   LLIST expr_list RLIST  { match (List.hd $2) with
-                            Note(_,_,_) -> Chord($2)
-                          | Chord(_) -> System($2)
-                          | _ -> List($2) }
+    THEN expr ELSE expr     { If($2, $4, $6) }
+|   LLIST expr_list RLIST   { match (List.hd $2) with
+                                Note(_,_,_) -> Chord($2)
+                              | Chord(_) -> System($2)
+                              | _ -> List($2) }
 
 dots:
     PERIOD        { 1 }
