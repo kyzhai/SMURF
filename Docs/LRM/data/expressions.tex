@@ -1,11 +1,9 @@
 \section{Expressions}
 
 This section describes the syntax and semantics of \emph{expressions} in 
-SMURF. Expressions can have either infix or prefix operators. All 
-infix operators are built in operators. Unless otherwise stated infix 
-operators are left associated. All prefix operators (function calls) 
-are left associated. Prefix operators will always evaluate with a 
-higher precedence than infix operators.  
+SMURF. Expressions in SMURF use prefix, infix, or postfix operators.
+Unless otherwise stated, all infix and postfix operators are left-associative and
+all prefix operators are right-associative. Some examples of association are given below.
 
 
 %TODO: check the correct position for this table
@@ -14,157 +12,312 @@ higher precedence than infix operators.
 		\hline
 		Expression & Association \\
 		\hline
-		\texttt{f x + g y} & \texttt{(f x) + (g y)} \\
-		\texttt{f g x} & \texttt{(f (g x))} \\
+		\texttt{f x + g y - h z} & \texttt{((f x) + (g y)) - (h z)} \\
+		\texttt{f g x} & \texttt{((f g) x)} \\
 		\texttt{ let \{ ... \} in x + y} & \texttt{let \{ ... \} in (x + y)} \\
-		type declaration example & order of precedence \\
+		\texttt{$\sim$ <> [0,1,2,3,4,5,6,7,8,9,10,11]} &
+					\texttt{($\sim$ (<> [0,1,2,3,4,5,6,7,8,9,10,11]))}\\
 		\hline
 	\end{tabular}
 \end{center}
 
+%
+%\subsection{Errors}
+%
+%Errors can only occur during compilation of a SMURF program. All generated 
+%code will run successfully. 
+%
 
-\subsection{Errors}
-
-Errors can occur during runtime of a SMURF program. These erros cannot be 
-caught by a programmer nor can a programmer produce an error artificially. 
-Errors that occur during runtime are out of bounds errors in \texttt{Note} 
-and \texttt{Beat} creation.
-
-\subsection{Description of Precedence}
-
+\subsection{Description of Precedence in Expressions}
+Precedence describes the order of evaluation for subexpressions in a given expression.
+The order of precedence for expressions and their operators mirrors our ordering of the following
+subsections i.e. the first subsection describes the expressions with highest precedence, and the last
+subsection describes the expressions with lowest precedence.
 
 \subsection{Primary Expressions}
 
-\subsubsection{Identifiers}
-An identifier expression is an expression that involves only identifiers. 
-\begin{verbatim}
-identifier-expression :: identifiers
-\end{verbatim}
-where \texttt{identifiers} are defined in section~\ref{sec:identifiers}.
+\setlength{\grammarindent}{7.5em}
+\begin{grammar}
+<primary-expr> $\rightarrow$ <variable> \\ <constant> \\ \texttt{(} <expression> \texttt{)} \\
+														\texttt{[} (<expression>?|<expression> (\texttt{,} <expression>)*) \texttt{]} \\
+														\texttt{(} <expression>\texttt{,} <expression>\texttt{)\$}<expression>
 
+<variable> $\rightarrow$ <identifier> 
+
+\end{grammar}
+
+\subsubsection{Variables}
+A variable $x$ is a primary expression whose type is the same as the type of $x$.
+When we evaluate a variable, we are actually evaluating
+the expression bound to the variable in the closest lexical scope.
 
 \subsubsection{Constants}
-A constant expression is an expression that involves only constants. 
-\begin{verbatim}
-constant-expression :: constants
-\end{verbatim}
-where \texttt{constants} are defined in section~\ref{sec:constants}.
+An integer or boolean constant, as described in section \ref{sec:constants}, is a primary expression
+with type equivalent to the type of the constant.
 
-\subsubsection{(Expression)}
-An expression surrounded by parentheses is a new expression.
-\begin{verbatim}
-paren-expression :: ( expression )
-\end{verbatim}
+\subsubsection{Parenthesized Expression}
+An expression surrounded by parentheses is a primary expression.
+
+\subsubsection{Lists}
+A list is a primary expression. Lists can be written as: \\
+
+\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} \\
+
+	or \\
+
+  \emph{expression$_{1}$}\texttt{:(}\emph{expression$_{2}$}\texttt{:(} \emph{...} \texttt{(}\emph{expression$_{k}$}\texttt{:[]))} \\ \\
+where \textit{k} $>=$ 0. These two lists are equivalent.
+The expressions in a list must all be of the same type. The empty list \texttt{[]} is typeless until it is applied to a non-empty
+list of some type \texttt{[}\emph{t}\texttt{]}, at which time it is assigned the same type.
 
 
-\subsection{Curried Applications}
+\subsubsection{Notes}
+A note is a primary expression, and is written as a tuple of expressions of type \texttt{Int} followed
+by a \texttt{\$} symbol and an expression of type \texttt{Beat}. The values of each of these
+expressions must follow the rules outlined in section \ref{sec:derivedtype}.
 
-    \subsubsection{Function declaration}
-    The syntax of a function declaration is as follows: 
-    \begin{verbatim} 
-    function-expression :: argument-type-list -> result-type 
-    \end{verbatim} 
-    where
-    \begin{verbatim}
-    argument-type-list:     argument-type
-                            argument-type-list  argument-type
-    \end{verbatim} 
-A function declaration must be on its own line and must declare a type. Declaring a general type is allowed. There are no explicit return statements.
-  
-    \subsubsection{Function application}
-    The syntax of a function application is as follows: 
-    \begin{verbatim}
-    function-expression  argument-expression-list \end{verbatim} 
-    where
-    \begin{verbatim}
-    argument-expression-list:     argument-expression
-                                  argument-expression-list  argument-expression
-    \end{verbatim} 
-A function application associates from left to right, so parentheses are optional: 
-    \begin{verbatim}
-    funct a b
-    \end{verbatim}
-    is equivalent to
-    \begin{verbatim}
-    ((funct a) b) 
-    \end{verbatim}
-    Parentheses are used to change the precedence from the default. The following evaluates funct1 with argument b then evaluates funct2 with argument a:
-    \begin{verbatim}
-    funct2 a (funct1 b)
-    \end{verbatim}   
+\subsection{Postfix Operator Expressions}
+\label{sec:postfixop}
 
-  \subsubsection{**PARTIAL APPLICATION**}
-  
+\begin{grammar}
+<postfix-expression> $\rightarrow$ <beat-expr>\texttt{.}
+\end{grammar}
 
-\subsection{Operator Application}
-  The syntax for applying a binary operator to two expressions is infix:
-    \begin{verbatim}
-    expression  operator  expression \end{verbatim} 
-    where
-    \begin{verbatim}
-    operator:     arithmetic-operator
-                  comparison-operator
-                  boolean-operator
-                  list-operator
-                  function-operator \end{verbatim} 
+The only expression in SMURF using a postfix operator is the partial augmentation of an expression
+of type \texttt{Beat}, which uses the dot operator.
+We say ``partial augmentation" because a dot increases the durational value of
+the expression to which it is applied, but only by half of the durational value of that expression.
+That is, if \emph{expr} is an expression of type \texttt{Beat} that evaluates to a duration of $n$, 
+then \emph{expr}\texttt{.} is a postfix expression of type \texttt{Beat} 
+that evaluates to a duration of $n/2$.
+The dot operator may be applied until it represents an addition of a sixteenth note
+duration, after which no more dots may be applied. For instance, \texttt{4..} is legal, as this
+is equivalent to a quarter note duration plus an eighth note duration (the first dot) plus a
+sixteenth note duration (the second dot). However, \texttt{8..} is not legal, as the second
+dot implies that a thirty-second note duration should be added to the total duration of this
+expression. Our compiler will check the number of dots and return an error if too many are applied.
 
-\subsection{Conditionals}
-  The syntax for conditional expressions is as follows:
-  \begin{verbatim}
-  if  expression  then expression-true  else expression-false \end{verbatim} 
-  When the value of expression evaluates to true, expression-true is evaluated, otherwise expression-false is evaluated. Conditional expressions do not have newline restrictions.
+\subsection{Prefix Operator Expressions}
+\label{sec:prefixop}
+\begin{grammar}
+<prefix-expression> $\rightarrow$ <prefix-op> <expression>
+\end{grammar}
 
-\subsection{Lists}
-Lists are written as:
-  \begin{verbatim}
-  [expression-list]\end{verbatim}
-  where
-  \begin{verbatim}
-  expression-list:     <empty>
-                       expression
-                       expression-list,  expression \end{verbatim}
-[expression$_{1}$, ..., expression$_{k}$]  =  expression$_{1}$ : ( expression$_{2}$ : (... (expression$_{k}$ : [ ] )) \\ \\
-where \textit{k} \textgreater\space 0. The expressions in a list must all be of the same type. Both the list constructor : and empty list [ ] are reserved as part of the language syntax and therefore cannot be hidden or redefined. The list constructor has right associativity.
 
-\subsection{Tuples}
-Tuples are written as:
-  \begin{verbatim}
-  (expression-list)\end{verbatim}
-  where
-  \begin{verbatim}
-  expression-list:     expression, expression
-                       expression-list,  expression \end{verbatim}
-The expressions in a tuple may be of different types. The constructor of an n-tuple is denoted by (\textunderscore
-, ..., \textunderscore) where there are \textit{n-1} commas.
+\begin{table} [H]
+\centering
+\begin{tabularx}{0.9\textwidth}{llX}
+\hline\hline
+Prefix Operator & Description & Example \\
+\hline\hline
+   \texttt{$\sim$} & Tone row inversion & $\sim$ \texttt{row} (returns the inversion of \texttt{row})\\ \hline
+   \texttt{<>} & Tone row retrograde & \texttt{<>}~\texttt{row} (returns the
+           retrograde of \texttt{row})\\ \hline
+   \texttt{!} & Logical negation & \texttt{if !(a == 5) then True else False} \\ \hline
+\end{tabularx}
+\end{table}
 
-\subsection{Parenthesized Expressions}
-Parenthesized expressions has the form:
-  \begin{verbatim}
-  (expression)\end{verbatim}
-  where expression is evaluated as a primary expression.
+SMURF has three prefix operators: logical negation, tone row inversion, and tone row retrograde.
+There is another row transformation operator, but it takes multiple arguments and is described in
+section \ref{sec:bintonerow}. The logical negation operator can only be applied to expressions of
+type \texttt{Bool}, and the two row operators can only be applied to expressions of type
+\texttt{[Int]}. The compiler will check that all of the integers in a list are in the range $0-11$
+if the list is passed to either of the tone row operators.
+All three operators return an expression of the same type as the expression the
+operator was applied to.
 
-\subsection{Expression Type-Signature}
-Expression type-signatures have the form:
-  \begin{verbatim}
-  expression :: type \end{verbatim}
-  where expression is an expression and type is a type. This is used to explicitly define a type for an expression. The declared type may be more specific than the principal type but it is illegal to give a declared type that is more general than the principal type. Giving a declared type that is not comparable to the principal type will also yield an error.
+\subsection{Binary Operator Expressions}
+\label{sec:binaryop}
+\begin{grammar}
+<binary-expression> $\rightarrow$ <expression>$_1$ <binary-op> <expression>$_2$
+\end{grammar}
+The following categories of binary operators exist in SMURF, and are listed in order of decreasing
+precedence: list, arithmetic, comparison, boolean, tone row. 
+
+\subsubsection{List operators}
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+List Operator & Description & Example \\
+\hline\hline
+   \texttt{++} & List Concatenation & \texttt{[1,2,3] ++ [4,5,6]} (result is \texttt{[1,2,3,4,5,6]}) \\ \hline
+   \texttt{:} & List Construction & \texttt{1 : [2,3,4]} (result is \texttt{[1,2,3,4]}) \\ \hline
+\end{tabular}
+\end{table}
+
+List operators are used to construct and concatenate lists. 
+These two operators are \texttt{:} and \texttt{++}, respectively. The \texttt{:} operator has 
+higher precedence than the \texttt{++} operator. Both of these operators are right-associative.
+List operators require that  \emph{expression$_{2}$} be an expression of type 
+\texttt{[}\emph{t}\texttt{]}, where \emph{t} is the type of \emph{expression$_{1}$}. 
+In other words, \emph{expression$_{1}$} must have the same type 
+as the other elements in \emph{expression$_{2}$} when doing list construction.
+When doing list concatenation, both
+\emph{expression$_{1}$} and \emph{expression$_{2}$} must have type \texttt{[}\emph{t}\texttt{]},
+where \emph{t} is some non-function type. 
+
+\subsubsection{Arithmetic operators}
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\hline\hline
+Arithmetic Operator & Description & Example \\
+\hline\hline
+  \texttt{+} & Integer Addition  & \texttt{a + 2} \\ \hline
+  \texttt{-} & Integer Subtraction  & \texttt{5 - a} \\ \hline 
+  \texttt{*} & Integer Multiplication  & \texttt{5 * 10} \\ \hline 
+  \texttt{/} & Integer Division  & \texttt{4 / 2} \\ \hline 
+  \texttt{\%} & Integer Modulus, ignores negatives  & \texttt{14 \% 12} \\ \hline
+  \texttt{\%+} & Pitch Class Addition (addition mod 12)  & \texttt{14 \%+ 2 == 4 }\\ \hline
+  \texttt{\%-} & Pitch Class Subtraction (subtraction mod 12)  & \texttt{14 \%- 2 == 0 } \\ \hline
+  \texttt{$\$$+} & Rhythmic Addition & \texttt{2 $\$$+ 2 == 1} \\ \hline
+  \texttt{$\$$-} & Rhythmic Subtraction & \texttt{1 $\$$- 2 == 2}  \\ \hline
+  \texttt{$\$$*} & Rhythmic Augmentation & \texttt{8 $\$$* 4 == 2}  \\ \hline
+  \texttt{$\$$/} & Rhythmic Diminution & \texttt{2 $\$$/ 8 == 16}  \\ \hline
+\end{tabularx}
+\end{table}
+
+There are three types of arithmetic operators (listed in descending order of precedence):
+basic, pitch class, and rhythmic. 
+Basic arithmetic operators are those found in most programming languages like 
+\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, and \texttt{\%}, which operate on expressions of
+type \texttt{Int}. It should be noted that the modulus operator ignores negatives e.g.
+\texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}.
+The pitch class operators are \texttt{\%+} and \texttt{\%-}. These can be read as mod 12 addition
+and mod 12 subtraction. They also operate on expressions of type \texttt{Int}, but the expressions
+must evaluate to values in the range $0-11$. The built-in mod 12
+arithmetic serves for easy manipulation of pitch class integers.
+Lastly, there are rhythmic arithmetic operators (both operands must be of type \texttt{Beat}). 
+These include \texttt{\$+}, \texttt{\$-}, \texttt{\$*}, and \texttt{\$/}. 
+
+Out of the basic arithmetic operators, \texttt{*}, \texttt{/}, and \texttt{\%} 
+have higher precedence than \texttt{+} and \texttt{-}. 
+Both pitch class operators have the same precedence. 
+Rhythmic arithmetic operators follow the same form as basic arithmetic operators, with
+\texttt{\$*} and \texttt{\$/} having higher precedence than \texttt{\$+} and {\$-}.
+
+\subsubsection{Comparison operators}
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{XlX}
+\hline\hline
+Comparison Operator & Description & Example \\
+\hline\hline
+  \texttt{<}  & Integer Less than & \texttt{if a < 5 then True else False} \\ \hline
+  \texttt{>}  & Integer Greater than & \texttt{if a > 5 then True else False}  \\ \hline
+  \texttt{<=}  & Integer Less than or equal to & \texttt{if a <= 5 then True else False} \\ \hline
+  \texttt{>=} & Integer Greater than or equal to & \texttt{if a >= 5 then True else False} \\ \hline
+  \texttt{\$<} & Rhythmic Less than & \texttt{4 \$< 8 == False} \\ \hline
+  \texttt{\$>}  & Rhythmic Greater than &  \texttt{4 \$> 8 == True}  \\ \hline
+  \texttt{\$<=} & Rhythmic Less than or equal to & \texttt{4 \$<= 4 == True} \\ \hline
+  \texttt{\$>=} & Rhythmic Greater than or equal to &  \texttt{1 \$>= 16 == True} \\ \hline
+  \texttt{==} & Structural comparison & \texttt{if a == 5 then a = True else a = False} \\ \hline
+\end{tabularx}
+\end{table}
+
+SMURF allows comparison operations between expressions of type \texttt{Int} or \texttt{Beat}.
+Structural comparison, however, can be used to compare expressions of any type for equality.
+All of the comparison operators have the same precedence except for structural comparison, which
+has lower precedence than all of the other comparison operators.
+
+\subsubsection{Boolean operators}
+
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+Boolean Operator & Description & Example \\
+\hline\hline
+   \texttt{\&\&} & Logical conjunction & \texttt{if b \&\& c  then True else False} \\ \hline
+   \texttt{\textbar\textbar} & Logical disjunction & \texttt{if b \textbar\textbar\space   c  then True else False} \\ \hline
+ \end{tabular}
+\end{table}
+
+Boolean operators are used to do boolean logic on expressions of type \texttt{Bool}. Logical
+conjunction has higher precedence than logical disjunction.
+
+\subsubsection{Tone row operators}
+\label{sec:bintonerow}
+The only binary tone row operator is the transposition operator, \texttt{$\wedge\wedge$}.
+\emph{expression$_1$} must be an expression that evaluates to a list of pitch classes,
+and \emph{expression$_2$} must have type \texttt{Int}. The result of this operation is a new
+tone row where each pitch class has been transposed up by $n$ semitones, where $n$ is the result
+of evaluating \emph{expression$_2$}.
+
+\subsection{Conditional expressions}
+\begin{grammar}
+<conditional-expression> $\rightarrow$ \texttt{if} \emph{expression$_{boolean}$} \texttt{then}
+													\emph{expression$_{true}$} \texttt{else} 
+													\emph{expression$_{false}$}
+\end{grammar}
+When the value of \emph{expression$_{boolean}$} evaluates to true, \emph{expression$_{true}$} 
+is evaluated, otherwise \emph{expression$_{false}$} is evaluated. \emph{expression$_{boolean}$}
+must have type \texttt{Bool}. Conditional expressions do not have newline restrictions.
 
 \subsection{Let Expressions}
 \begin{grammar}
-<let-exp> $\rightarrow$ let <decls> in <expression>
+<let-exp> $\rightarrow$ \texttt{let} <decls>+ \texttt{in} <expression>
 \end{grammar}
-Let expressions have the form \emph{let \{} $d_1;...;d_n$ \} \emph{in e}, where $d_n$ is the nth declaration and \emph{e} is an expression. Note that the scope of $d_n$ is in \emph{e}.
+Let expressions have the form \texttt{let} \emph{decls} \texttt{in} \emph{e}, where 
+\emph{decls} is a list of one or more declarations and \emph{e} is an expression. 
+The scope of these declarations is discussed in section \ref{sec:declarations}.
 
-% are pattern bindings matched lazily?
+The declarations in a let expression can be separated by an \& symbol and also by a newline character. For example:
 
-\subsection{Pattern Matching}
+\begin{verbatim}
+let x = 2 & y = 4 & z = 8 
+in x + y + z
+\end{verbatim}
 
-Patterns can be found in function definitions, pattern bindings, and list operations. Patterns are matched with values. Matching a pattern can either be successful or it can fail. A successful match will return  a binding for the variables in the pattern. 
+The previous code is equivalent to the following:
 
-\subsection{Guards}
+\begin{verbatim}
+let x = 2
+    y = 4
+    z = 8
+in x + y + z
+\end{verbatim}
+
+If the first code snippet were written without the \& symbol and no newlines in between the
+declarations, a compile-time error would be raised.
+
+\subsection{Function application expressions}
+
 \begin{grammar}
-<guard> $\rightarrow$  let <decls> | <infixexp>          
+<function-app-expression> $\rightarrow$ <identifier> <expression>+
 \end{grammar}
 
-There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
+A function gets called by invoking its name and supplying any necessary arguments. 
+Functions can only be called if they have been declared in the same scope where the call occurs,
+or in a higher scope. Functions may be called recursively. Function application associates 
+from left to right. Parentheses can be used to change the precedence from the default.
+The following evaluates function \emph{funct1} with argument \emph{b} then evaluates function
+\emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
+    
+    \emph{funct2 a (funct1 b)}\\ \\
+If the parentheses were not included, a compile-time error would be generated, as it would imply
+that \emph{funct2} would be called with \emph{a} as
+its first argument and \emph{funct1} as its second argument, which is illegal based on the description
+of function types in section \ref{sec:structtype}.
 
+A function call may be used in the right-hand side of a binding just like any other expression. 
+For example:
+\begin{verbatim}
+let a = double 10 
+in a
+\end{verbatim}
+evaluates to 20, where \texttt{double} is a function that takes a single integer argument and
+returns that integer multiplied by two. 
+
+%\subsection{Guards}
+%\begin{grammar}
+%<guard> $\rightarrow$  let <decls> | <infixexp>          
+%\end{grammar}
+%
+%There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
+%

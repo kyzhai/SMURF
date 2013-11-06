@@ -1,176 +1,125 @@
 \section{Lexical Conventions}
-\subsection{A High Level Description of SMURF Programs}
-SMURF is a functional language that allows a composer to create serialist music
-based on twelve-tone composition. In general, serialism is a musical composition
-technique where a set of values, chosen through some methodical progress,
-generates a sequence of musical elements. SMURF is based on the
-functional syntax and semantics set forth by Haskell. The backend of
-SMURF generates MIDIs corresponding to the uses's initial program in
-SMURF. 
+SMURF programs are lexically composed of three elements: comments, tokens, and whitespace.
 
-\subsection{Tokens}
-SMURF has 5 kinds of tokens: identifiers, keywords, constants, operators and whitespaces.
-
-\subsubsection{Identifiers}
-\label{sec:identifiers}
-An identifier consists of a letter followed by other letters and
-digits. The letters are the ascii characters \texttt{a-z, A-Z} and \texttt{\_}. Digits are ascii
-characters \texttt{0-9}. SMURF is case sensitive.
-\begin{verbatim}
-letter -> [`a'-`z' `A'-`Z']
-digit -> [`0'-`9']
-identifiers -> letter (letter | digit | `_')*
-\end{verbatim}
-
-\subsubsection{Keywords}
-This is a list of reserved keywords in SMURF. The keywords are used by the
-language, thus are not avaliable for re-definition or overloading.
-\begin{table} [H]
-	\centering
-    \begin{tabularx}{0.9\textwidth}{l@{\hskip 3cm}l}
-    \hline\hline
-    Keywords & Descriptions \\ 
-    \hline\hline
-      \texttt{let} & Specify variables and functions  \\ \hline
-      \texttt{in} & Allow local variable binding in expression \\ \hline
-      \texttt{if, then, else} & Specify conditional expression, else compulsory  \\ \hline
-      \texttt{True, False} & Specify boolean logic \\ \hline
-      \texttt{otherwise} & Specify conditional expression used with guards \\ \hline 
-      %genScore & Generate musical score given list of measures as argument  \\ \hline
-    \end{tabularx}
-\end{table}
-
-
-\subsubsection{Constants}
-\label{sec:constants}
-In SMURF, constants are expressions with a fixed value. Integer literials and
-boolean keywords are the constants of SMURF. 
-
-\begin{verbatim}
-letter -> [`a'-`z' `A'-`Z']
-digit -> [`0'-`9']
-constants -> -? [`1'-`9'] digit* | True | False
-\end{verbatim}
-
-
-\subsubsection{Operators}
-Operators in SMURF can be classied into comment operators, arithmetic operators, comparision
-operators, boolean operators, list operators and function operators. 
-
+\subsection{Comments}
 SMURF allows nested, multiline comments in addition to single line comments.
 \begin{table} [H]
 \centering
 \begin{tabularx}{\textwidth}{lXl}
 \hline\hline
-Comment Operator & Description & Example \\
+Comment Symbols & Description & Example \\
 \hline\hline
-  \texttt{/* */} & Multiline comments, nesting allowed & /* This /* is all */ commented */ \\ \hline
-  \texttt{//} & Single-line comment & // This is a comment \\ \hline
-\end{tabularx}
-\end{table}
-
-SMURF allows assignment and addition, subtraction, and modulus on expressions that evaluate to integers. These operators are all infix. The modulus operator ignores negatives e.g. 
-\begin{verbatim} 13 % 12 is equal to -13 % 12 \end{verbatim}
-\begin{table} [H]
-\centering
-\begin{tabularx}{\textwidth}{lXX}
-\hline\hline
-Arithmetic Operator & Description & Example \\
-\hline\hline
-  = & Assignment operator & a = 4 \\ \hline
-  + & Integer arithmetic: plus  & a + 2 \\ \hline
-  $-$ & Integer arithmetic: minus  & 5 $-$ a \\ \hline 
-  \% & Integer arithmetic: modulus, ignores negatives  & 14 \% 12 \\ \hline
-  $\wedge+$ & Beat add operator & 2 $\wedge+$ 2 = 1 (The add of two half notes evaluates one whole note) \\ \hline
-  $\wedge-$ & Beat substract operator & 1 $\wedge-$ 2 = 2 (One whole note substracts one half note evaluates one half note) \\ \hline
-\end{tabularx}
-\end{table}
-
-SMURF allows comparison operations between expressions that evaluate to integers.
-\begin{table} [H]
-\centering
-\begin{tabular}{lll}
-\hline\hline
-Comparison Operator & Description & Example \\
-\hline\hline
-  \textless  & Less than & if a \textless\space  5 then True else False \\ \hline
-  \textgreater  & Greater than & if a \textgreater\space  5 then True else False  \\ \hline
-  \textless=  & Less than or equal to & if a \textless= 5 then True else False \\ \hline
-  \textgreater= & Greater than or equal to & if a \textgreater= 5 then True else False \\ \hline
-\end{tabular}
-\end{table}
-
-
-SMURF allows logical negation, conjunction, and disjunction, in addition to structural comparison and boolean notation for use with guards.
-\begin{table} [H]
-\centering
-\begin{tabular}{lll}
-\hline\hline
-Boolean Operator & Description & Example \\
-\hline\hline
-   == & Structural comparison & if a == 5 then a = True else a = False \\ \hline
-   \textcolor{red}{not} & Logical negation & if not a == 5 then True else False \\ \hline
-   \&\& & Logical conjunction & if b \&\& c  then True else False \\ \hline
-   \textbar\textbar & Logical disjunction & if b \textbar\textbar\space   c  then True else False \\ \hline
- \end{tabular}
-\end{table}
-
-SMURF allows concatenation and construction of lists.
-\begin{table} [H]
-\centering
-\begin{tabular}{lll}
-\hline\hline
-List Operator & Description & Example \\
-\hline\hline
-   ++ & Concatenation: concat & [1,2,3] ++ [4,5,6] (result is [1,2,3,4,5,6]) \\ \hline
-   : & Construction: cons & 1 : [2,3,4] (result is [1,2,3,4]) \\ \hline
-   $[]$ & List constructor & $[]$ (result is an empty list) \\ \hline
-\end{tabular}
-\end{table}
-
-
-SMURF allows type, argument, and function return type specificatio in addition
-to concatenation and construction operations.
-\begin{table} [H]
-\centering
-\begin{tabularx}{\textwidth}{lXl}
-\hline\hline
-Function Operator & Description & Example \\
-\hline\hline
-   :: & Type specification & returnIntFunc :: Int \\ \hline
-   \textendash\textgreater & Argument and function return type specification
-     & isPositiveNum :: Int \textendash\textgreater\space Bool  \\ \hline
-   \textbar & Boolean operator used with guards & isSeven num :: [Int] \textendash\textgreater\space Bool\\ 
-     && \textbar\space (num == 7) = True \\
-     && \textbar\space otherwise = False\\ \hline
-\end{tabularx}
-\end{table}
-
-SMURF allows 3 transformation operations to tone rows: inversion, retrograde and
-transposition.
-\begin{table} [H]
-\centering
-\begin{tabularx}{0.9\textwidth}{llX}
-\hline\hline
-Tone Row Operator & Description & Example \\
-\hline\hline
-   $\sim$ & Inversion & $\sim$ \texttt{row} (returns the inversion of \texttt{row})\\ \hline
-   \textless\textgreater & Retrograde & \textless\textgreater~\texttt{row} (returns the
-           retrograde of \texttt{row})\\ \hline
-   $\wedge\wedge$ & Transposition & $\wedge\wedge$ \texttt{row} 3 (transposes \texttt{row} by 3
-           semitones)\\ \hline
+  \texttt{/* */} & Multiline comments, nesting allowed & \texttt{/* This /* is all */ commented */} \\ \hline
+  \texttt{//} & Single-line comment & \texttt{// This is a comment} \\ \hline
 \end{tabularx}
 \end{table}
 
 
-\subsubsection{Whitespace}
-Blanks, tabs and newlines are referred to as whitespaces in SMURF. SMURF treats
-\texttt{newlines} as tokens and ignores others whitespaces. 
+\subsection{Tokens}
+In SMURF, a token is a string of one or more characters that is significant as a group.
+SMURF has 6 kinds of tokens: {\it identifiers}, {\it keywords}, {\it constants},
+      {\it operators},
+{\it separators} and {\it newlines}.
+
+\subsubsection{Identifiers}
+\label{sec:identifiers}
+An identifier consists of a letter followed by other letters, 
+digits and underscores. The letters are the ASCII characters \texttt{a}-\texttt{z} and
+\texttt{A}-\texttt{Z}. Digits are ASCII characters \texttt{0}-\texttt{9}. SMURF is case sensitive.
+
+\begin{grammar}
+<letter> $\rightarrow$ [`a'-`z' `A'-`Z'] 
+
+<digit> $\rightarrow$ [`0'-`9'] 
+
+<underscore> $\rightarrow$ {`_'} 
+
+<identifier> $\rightarrow$ <letter> (<letter> | <digit> | <underscore>)*
+\end{grammar}
+
+\subsubsection{Keywords}
+\label{sec:keywords}
+Keywords in SMURF are identifiers reserved by the language. Thus, they are not available for
+re-definition or overloading by users. 
+
+\begin{table} [H]
+	\centering
+    \begin{tabular}{ll}
+    \hline\hline
+    Keywords & Descriptions \\ 
+    \hline\hline
+      \texttt{Bool} & Boolean data type \\ \hline
+      \texttt{Int} & Integer data type \\ \hline
+      \texttt{Note} & Atomic musical data type \\ \hline
+      \texttt{Beat} & Note duration data type\\ \hline
+      \texttt{Chord} & Data type equivalent to \texttt{[Note]} type \\ \hline
+      \texttt{System} & Data type equivalent to \texttt{[Chord]} type \\ \hline
+      \texttt{True, False} & Boolean constants \\ \hline
+      \texttt{let, in} & Allow local bindings in expressions  \\ \hline
+      \texttt{if, then, else} & Specify conditional expression, else compulsory  \\ \hline
+      \texttt{random} & Generate random numbers \\ \hline
+      \texttt{print} & Print information to standard output \\ \hline
+      \texttt{main} & Specify the value of a SMURF program\\ \hline
+    \end{tabular}
+\end{table}
 
 
-\subsection{Separators}
-SMURF uses separators to seperate tokens. The separators of SMURF include:
-\begin{verbatim} 
-    ,   :   ;   {   }   whitespaces
-\end{verbatim}
+\subsubsection{Constants}
+\label{sec:constants}
+In SMURF, constants are expressions with a fixed value. Integer literals and
+Boolean keywords are the constants of SMURF. 
+
+\setlength{\grammarindent}{6em}
+\begin{grammar}
+<digit> $\rightarrow$ [`0'-`9'] 
+
+<constant> $\rightarrow$ \texttt{-}? [`1'-`9'] <digit>* \\
+												 \texttt{0} <digit>* \\
+												\texttt{True} \\
+												\texttt{False}
+\end{grammar}
+
+\subsubsection{Operators}
+SMURF permits arithmetic, comparison, boolean, list, declaration, and row operations, all of which
+are carried out through the use of specific operators. The syntax and semantics of all of these
+operators are described in sections \ref{sec:postfixop}, \ref{sec:prefixop}, and \ref{sec:binaryop},
+except for declaration operators, which are described in section \ref{sec:declarations}.
+
+
+\subsubsection{Newlines}
+SMURF uses newlines to signify the end of a declaration, except
+when preceded by the \texttt{\textbackslash} token. In the latter case, the newline is ignored by the compiler 
+(see example below). If no such token precedes a newline, then the compiler will treat the newline as
+a token being used to terminate a declaration.
+
+\subsubsection{Separators}
+
+\begin{grammar}
+<separator> $\rightarrow$ \texttt{,} \\
+												  \texttt{\&} \\
+													\texttt{\textbackslash}
+\end{grammar}
+
+Separators in SMURF are special tokens used to separate other tokens. 
+Commas are used to separate elements in a list.
+The \texttt{\&} symbol can be used in place of a newline. That is, the compiler
+will replace all \texttt{\&} characters with newlines. The
+\texttt{\textbackslash} token, when followed by a newline token,
+may be used to splice two lines. E.g.
+\begin{lstlisting}
+genAltChords (x:y:ys) = [(x,Time 4,1)]   \
+                        :[(y,Time 4,-1)]:genAltChords ys
+\end{lstlisting}
+is the same as 
+\begin{lstlisting}
+genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:genAltChords ys
+\end{lstlisting}
+
+
+\subsection{Whitespace}
+\label{sec:whitespaces}
+{\it Whitespace} consists of any sequence of {\it blank} and {\it tab} characters.
+Whitespace is used to
+separate tokens and format programs. All whitespace is ignored by the
+SMURF compiler. As a result, indentations are not significant in SMURF.
 

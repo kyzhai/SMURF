@@ -1,71 +1,113 @@
 \section{Meaning of Identifiers}
-In SMURF, identifiers refer to functions and variables.
+In SMURF, an identifier is either a keyword or a name for a variable or a function. 
+The naming rules for identifiers are defined in section~\ref{sec:identifiers}. This section outlines
+the use and possible types of non-keyword identifiers.
 
-\subsection{What Are They Need For}
+
+\subsection{Purpose}
 \subsubsection{Functions}
-Functions in SMURF enable us to structure our programs in a more modular way. 
-A function is a group of statements that is executed when it is called from some
-point of the program. 
+Functions in SMURF enable users to structure programs in a more modular way. 
+Each function has at least one argument and exactly one return value, whose types need to be 
+explicitly defined by the programmer. The function describes how to produce the return value,
+given a certain set of arguments.
+SMURF is a side effect free language, which means
+that if provided with the same arguments, a function is guaranteed to return the same value. 
 
-\subsubsection{variables}
-In SMURF, a variable is an abstraction of a computer memory cell or a collection
-of memory cells. 
-SMURF is a strongly typed programming language, which means the type of a variable can't
-be changed once declared. Each variable has a static type which is automatically
-deduced by the SMURF compiler. The variables in SMURF are immutable.
+
+\subsubsection{Variables}
+In SMURF, a variable is an identifier that is bound to a constant value
+or to an expression. Any use of a variable within the scope of its definition
+refers to the value or expression to which the variable was bound.
+Each variable has a static type which can be automatically
+deduced by the SMURF compiler, or explicitly defined by users. The variables in SMURF are immutable.
+
 
 \subsection{Scope and Lifetime}
-In SMURF, a variable is bound in its scope to a value using constructs like
-\texttt{let} or list comprehensions. A variable is visible within its scope.
-There is no global variables in SMURF. A variable becomes invalid after the 
-ending of its scope.
+The lexical scope of a top-level binding in a SMURF program is the whole program itself.
+As a result of this fact, a top-level binding can refer to any other top-level variable or function
+on its right-hand side, regardless of which bindings occur first in the program.
+Local bindings may also occur
+with the \texttt{let} \emph{declarations} \texttt{in} \emph{expression} construct, and the
+scope of a binding in \emph{declarations} is \emph{expression} and the right hand side of any other bindings in
+\emph{declarations}. A variable or function is only visible within its scope.
+An identifier becomes invalid after the ending of its scope. E.g.
+
+\begin{lstlisting}
+prime = [2,0,4,6,8,10,1,3,5,7,9,11] 
+main = let prime = [0,2,4,6,8,10,1,3,5,7,9,11]
+           p3 = (head prime) + 3
+       in print (p3)
+\end{lstlisting}
+
+In line 1, \texttt{prime} is bound to a list of integers in a top-level definition, so it
+has global scope.
+In line 2, the \texttt{main} identifier (a special keyword described in \ref{sec:main}) 
+is bound to a \texttt{let} expression. The \texttt{let} expression declares two local variables,
+\texttt{prime} and \texttt{p3}. In line 3, the \texttt{head} function looks for a definition
+of prime in the closest scope, and thus uses the binding in line 2. So the result
+to be printed in line 4 should be 3. After line 4, the locally defined \texttt{prime} and
+\texttt{p3} variables will be invalid and can't be accessed anymore.
 
 \subsection{Basic Types}
-There are two fundamental types in SMURF: int and bool. 
+\label{sec:basictype}
+There are three fundamental types in SMURF: \texttt{Int}, \texttt{Bool} and \texttt{Beat}. 
 \begin{itemize}
-\item Integer: \texttt{int}, used to represent integers.
-\item Boolean: \texttt{bool}, used to represent boolean values.
+\item \texttt{Int}: integer type
+\item \texttt{Bool}: boolean type
+\item \texttt{Beat}: beat type, used to represent the duration of a note. A constant of type
+			\texttt{Beat} is any power of 2 ranging from 1 to 16.
 \end{itemize}
 
 \subsection{Structured Types}
-Structured types hold groups of elements. There are three structured types in
-SMURF: tuples, lists and functions.
+\label{sec:structtype}
+Structured types use special syntactic constructs and other types to describe new types. 
+There are two structured types in SMURF: {\it list} types and {\it function} types.
 
-Tuples have the format of 
-\begin{verbatim}
-(a, ..., n)
-\end{verbatim}
-where items \texttt{a - n} are elements in the tuple. Elements
-of tuples can have different types.
+A {\it list} type has the format \texttt{[}\emph{t}\texttt{]} where \emph{t} is a type that specifies the type
+of all elements of the list. Thus, all elements of a list of type \texttt{[}\emph{t}\texttt{]}
+must themselves have type \emph{t}. Note that \emph{t} itself may be a list type.
 
-Lists have the format of 
-\begin{verbatim}
-[a, ..., n]
-\end{verbatim}
-where items \texttt{a - n} are elements in the list. Elements
-of lists must have the same type.
-
-Functions have the format of 
-\begin{verbatim}
-arg1 -> arg2 -> ... -> argk -> return-value
-\end{verbatim}
-where \texttt{arg1 - argk} are the types of arguments of function.
+A {\it function} type has the format \emph{t$_1$} \texttt{->} \emph{t$_2$} \texttt {->}
+\dots \texttt{->} \emph {t$_n$} \texttt{->} \emph{t$_{ret}$} which specifies a function type
+that takes $n$ arguments, where the $kth$ argument has type \emph{t$_k$}, and returns an expression
+of type \emph{t$_{ret}$}. Any type may be used to define a function type, except for a function
+type itself. In other words, functions may not be passed as arguments to other functions, nor may
+a function return another function.
 
 
 \subsection{Derived Types}
-SMURF has a derived type of \texttt{note}, which has the format of 
-\begin{verbatim}
-(pc, reg)^k[.]*
-\end{verbatim}
-where \texttt{pc} is an integer in the range from -1 to 11. When \texttt{pc} 
-has a value of -1, the note is a rest, other it represents the pitch class of 
-the note. 
-\texttt{reg} is an integer in the range of 0-3, representing the register of the 
-note. The register of the note is Bass 1, Bass 2, Treble 1 and Treble 2 for the
-\texttt{reg} value from 0 to 3 repectively.
-\texttt{k} is an integer of the power of 2, ranging from 1 to 16. 
-Periods following \texttt{k} are optional. Users can add dots until the added duration
-gets down to 16th note.
+\label{sec:derivedtype}
+Besides the basic types, SMURF also has several derived types. 
+
+Expressions of type \texttt{Note} are used to represent musical notes in SMURF.
+The note type can be written as
+
+\vspace{1em}
+\texttt{(Int,Int)\$Beat}[\texttt{.}]* 
+\vspace{1em}
+
+The first expression of type \texttt{Int} must evaluate to an integer in the range from -1 to 11,
+representing a pitch class or a rest. 
+When this expression evaluates to -1, the note is a rest, otherwise it represents the pitch class of 
+the note. The second expression of type \texttt{Int} must evaluate to an integer in the range of 0-3,
+representing the register of the note, where the integer values and corresponding registers are given below.
+\begin{itemize}
+    \item 1: Bass clef, B directly below middle C to first C below middle C
+    \item 0: Bass clef, next lowest B to next lowest C
+    \item 2: Treble clef, middle C to the first B above middle C
+    \item 3: Treble clef, first C above middle C to next highest B
+\end{itemize}
+The expression of type \texttt{Beat} refers to the duration of the note, and may be followed by
+optional dots. The dot is a postfix operator described in section \ref{sec:postfixop}.
+Using this format, a quarter note on middle C could be written as \texttt{(0,2)\$4}.
+
+The \texttt{Chord} type is used to represent several notes to be played simultaneously.
+It is equivalent to the list type \texttt{[Note]}.
+The compiler will check to make sure all the notes in a chord have the same time duration.
+
+The \texttt{System} type is used to represent a list of chords to be played sequentially.
+It is equivalent to the list type \texttt{[Chord]}.
+
 
 \begin{comment}
 
