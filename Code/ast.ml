@@ -1,11 +1,11 @@
 type operator = Add | Sub | Mul | Div | Mod | BeatDiv | BeatMul | BeatAdd | BeatSub | PCAdd | PCSub |
-                BoolEq | And | Or | Less | Leq | Greater | Geq | BeatLess | 
-                BeatLeq | BeatGreater | BeatGeq | PCLess | PCLeq | PCGreater | 
-                PCGeq | Concat | Cons | Equal | TypeSpec | ArgTypeSpec
+                BoolEq | And | Or | Less | Leq | Greater | Geq | BeatLess |
+                BeatLeq | BeatGreater | BeatGeq | PCLess | PCLeq | PCGreater |
+                PCGeq | Concat | Cons | Equal | Trans
 
 type unary_operator = Not
 
-type row_operator = Inv | Retro | Trans
+type row_operator = Inv | Retro
 
 (* Not sure if these should be here...doing it for type signature definition *)
 type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types
@@ -13,8 +13,8 @@ type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types
 type expr =                                 (* Expressions *)
     Literal of int                          (* 42 *)
     | Variable of string                    (* bar *)
-    | Beat of int * int                     (* 2. *)
-    | Note of int * int * expr              (* (11, 2)^4. *)
+    | Beat of expr * int                    (* 2. *)
+    | Note of  expr * expr * expr           (* (11, 2)^4. *)
     | Binop of expr * operator * expr       (* a + 2 *)
     | Unop of unary_operator * expr         (* ! a == 4 *)
     | Rowop of row_operator * expr          (* ~[1,2,3,4,5,6] *)
@@ -60,8 +60,8 @@ let rec string_of_expr = function
       | Concat -> "++" | Cons -> ":" | m -> "OP" ) 
       ^ " " ^ string_of_expr e2
   | If(e1, e2, e3) -> "if " ^ string_of_expr e1 ^ " then " ^ string_of_expr e2 ^ " else " ^ string_of_expr e3
-  | Beat(i1, i2) -> "Beat => " ^ string_of_int i1 ^ "_" ^ string_of_int i2
-  | Note(pc, reg, Beat(i1, i2)) -> "Note => (" ^ string_of_int pc ^ ", " ^ string_of_int reg ^ ")$" ^ (string_of_expr (Beat(i1, i2)))
+  | Beat(i1, i2) -> "Beat => " ^ string_of_expr i1 ^ "_" ^ string_of_int i2
+  | Note(pc, reg, Beat(i1, i2)) -> "Note => (" ^ string_of_expr pc ^ ", " ^ string_of_expr reg ^ ")$" ^ (string_of_expr (Beat(i1, i2)))
   | List(el) -> "List => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | Chord(el) -> "Chord => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | System(el) -> "System => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"

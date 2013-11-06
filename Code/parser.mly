@@ -6,7 +6,7 @@
 %token LPAREN RPAREN LLIST RLIST COMMA 
 %token TYPE FUNC GUARD
 %token PLUS MINUS TIMES DIV MOD BTIMES BDIV BPLUS BMINUS PCPLUS PCMINUS
-%token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE PLT PGT PLE PGE
+%token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE
 %token CONCAT CONS BIND
 %token INV RET TRANS
 %token WILD
@@ -20,11 +20,12 @@
 %left OR 
 %left AND
 %nonassoc NOT
-%left EQ LT LE GT GE BLT BGT BLE BGE PLT PGT PLE PGE
+%left EQ LT LE GT GE BLT BGT BLE BGE
 %right CONS CONCAT BIND
 %left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
 %left TIMES DIV BTIMES BDIV MOD
-%nonassoc INV RET TRANS DOLLAR PERIOD 
+%nonassoc INV RET TRANS DOLLAR
+%left PERIOD
 %nonassoc LPAREN RPAREN
 
 %start program
@@ -32,7 +33,8 @@
 
 %%
 
-program:                                        /* List of declarations, possibly surrounded by NL */
+/* List of declarations, possibly surrounded by NL */
+program:
     /* nothing */                   { [] }
 |   newlines                        { [] }
 |   decs                            { List.rev $1 }
@@ -46,15 +48,16 @@ newlines:
 
 decs:
     dec                             { [$1] }
-|   decs newlines dec               { $3 :: $1 }            /* declarations are separated by >= 1 newline */
+|   decs newlines dec               { $3 :: $1 }  /* declarations are separated by >= 1 newline */
 
 dec:
-    VARIABLE TYPE types             { Tysig($1, [$3]) }             /* variable type-sig only have one type */
-|   VARIABLE TYPE func_types        { Tysig($1, List.rev $3)   }    /* function type-sig have >= 2 types */
+    VARIABLE TYPE types             { Tysig($1, [$3]) }  /* variable type-sig only have one type */
+|   VARIABLE TYPE func_types        { Tysig($1, List.rev $3) }  /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr              { Vardef($1, $3) }
 |   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
 
-types:                                                           /* types for vars */
+/* types for vars */
+types:
     INT                             { TInt }
 |   BOOL                            { TBool }
 |   NOTE                            { TNote }
@@ -63,7 +66,8 @@ types:                                                           /* types for va
 |   SYSTEM                          { TSystem }
 |   LLIST types RLIST               { TList($2) }
 
-func_types:                                                     /* types for functions */
+/* types for functions */
+func_types:
     types FUNC types                { $3 :: [$1] }
 |   func_types FUNC types           { $3 :: $1 }
 
@@ -83,76 +87,71 @@ comma_patterns:
     /* empty */                     { [] }
 |   comma_patterns COMMA pattern    { $3 :: $1 }
 
-dots:
-    PERIOD      { 1 }
-    | dots PERIOD { $1+1 }
-
 expr:
-  expr PLUS expr        { Binop($1, Add, $3) }
-| expr MINUS expr       { Binop($1, Sub, $3) }
-| expr TIMES expr       { Binop($1, Mul, $3) }
-| expr DIV expr         { Binop($1, Div, $3) }
-| expr MOD expr         { Binop($1, Mod, $3) }
-| expr BDIV expr        { Binop($1, BeatDiv, $3) }
-| expr BTIMES expr      { Binop($1, BeatMul, $3) }
-| expr BPLUS expr       { Binop($1, BeatAdd, $3) }
-| expr BMINUS expr      { Binop($1, BeatSub, $3) }
-| expr PCPLUS expr      { Binop($1, PCAdd, $3) }
-| expr PCMINUS expr     { Binop($1, PCSub, $3) }
-| expr LT expr          { Binop($1, Less, $3) }
-| expr GT expr          { Binop($1, Greater, $3) }
-| expr LE expr          { Binop($1, Leq, $3) }
-| expr GE expr          { Binop($1, Geq, $3) }
-| expr BLT expr         { Binop($1, BeatLess, $3) }
-| expr BGT expr         { Binop($1, BeatGreater, $3) }
-| expr BLE expr         { Binop($1, BeatLeq, $3) }
-| expr BGE expr         { Binop($1, BeatGeq, $3) }
-| expr PLT expr         { Binop($1, PCLess, $3) }    
-| expr PGT expr         { Binop($1, PCGreater, $3) }
-| expr PLE expr         { Binop($1, PCLeq, $3) }
-| expr PGE expr         { Binop($1, PCGeq, $3) }
-| expr CONCAT expr      { Binop($1, Concat, $3) }
-| expr CONS expr        { Binop($1, Cons, $3) }
-| expr EQ expr          { Binop($1, BoolEq, $3) }
-| expr AND expr         { Binop($1, And, $3) }
-| expr OR expr          { Binop($1, Or, $3) }
+    LITERAL                { Literal($1) }
+|   VARIABLE               { Variable($1) }
+|   LPAREN expr RPAREN     { $2 }
 
-| NOT expr              { Unop(Not, $2) }
+|   expr PLUS expr         { Binop($1, Add, $3) }
+|   expr MINUS expr        { Binop($1, Sub, $3) }
+|   expr TIMES expr        { Binop($1, Mul, $3) }
+|   expr DIV expr          { Binop($1, Div, $3) }
+|   expr MOD expr          { Binop($1, Mod, $3) }
+|   expr BDIV expr         { Binop($1, BeatDiv, $3) }
+|   expr BTIMES expr       { Binop($1, BeatMul, $3) }
+|   expr BPLUS expr        { Binop($1, BeatAdd, $3) }
+|   expr BMINUS expr       { Binop($1, BeatSub, $3) }
+|   expr PCPLUS expr       { Binop($1, PCAdd, $3) }
+|   expr PCMINUS expr      { Binop($1, PCSub, $3) }
 
-| INV expr              { Rowop(Inv, $2) } 
-| RET expr              { Rowop(Retro, $2) } 
-| TRANS expr            { Rowop(Trans, $2) } 
+|   expr LT expr           { Binop($1, Less, $3) }
+|   expr GT expr           { Binop($1, Greater, $3) }
+|   expr LE expr           { Binop($1, Leq, $3) }
+|   expr GE expr           { Binop($1, Geq, $3) }
+|   expr BLT expr          { Binop($1, BeatLess, $3) }
+|   expr BGT expr          { Binop($1, BeatGreater, $3) }
+|   expr BLE expr          { Binop($1, BeatLeq, $3) }
+|   expr BGE expr          { Binop($1, BeatGeq, $3) }
 
-| LPAREN expr RPAREN    { $2 }
-| VARIABLE              { Variable($1) }
-| LITERAL               { Literal($1) }
-| LITERAL dots          { Beat($1, $2) }
-| LPAREN 
-  LITERAL COMMA LITERAL
-  RPAREN
-  DOLLAR LITERAL dots   { Note($2, $4, Beat($7, $8))  }
-| LPAREN 
-  LITERAL COMMA LITERAL
-  RPAREN
-  DOLLAR LITERAL        { Note($2, $4, Beat($7, 0))  }
+|   expr TRANS expr        { Binop($1, Trans, $3) }
+|   expr CONCAT expr       { Binop($1, Concat, $3) }
+|   expr CONS expr         { Binop($1, Cons, $3) }
 
-| IF expr 
-  THEN expr ELSE expr   { If($2, $4, $6) }
-| LLIST expr_list RLIST { match (List.hd $2) with 
+|   expr EQ expr           { Binop($1, BoolEq, $3) }
+|   expr AND expr          { Binop($1, And, $3) }
+|   expr OR expr           { Binop($1, Or, $3) }
+|   NOT expr               { Unop(Not, $2) }
+
+|   INV expr               { Rowop(Inv, $2) }
+|   RET expr               { Rowop(Retro, $2) }
+
+|   expr dots              { Beat($1, $2) }
+|   LPAREN
+    expr COMMA expr
+    RPAREN
+    DOLLAR expr            { Note($2, $4, Beat($7, 0))  }
+
+|   IF expr
+    THEN expr ELSE expr    { If($2, $4, $6) }
+|   LLIST expr_list RLIST  { match (List.hd $2) with
                             Note(_,_,_) -> Chord($2)
                           | Chord(_) -> System($2)
                           | _ -> List($2) }
 
+dots:
+    PERIOD        { 1 }
+|   PERIOD dots   { $2+1 }
+
 expr_list:
-  /* Nothing */  { [] }
-| expr_list_back { List.rev $1 }
+    /* Nothing */  { [] }
+|   expr_list_back { List.rev $1 }
 
 expr_list_back:
-  expr                       { [$1] }
-| expr_list_back COMMA expr  { $3 :: $1 }
+    expr                       { [$1] }
+|   expr_list_back COMMA expr  { $3 :: $1 }
 
 /*
 stmt: 
-  expr                         { Expr($1) }
-| IF expr THEN stmt ELSE stmt  { If($2, $4, $6) } 
+    expr                         { Expr($1) }
+|   IF expr THEN stmt ELSE stmt  { If($2, $4, $6) }
 */

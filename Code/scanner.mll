@@ -1,6 +1,6 @@
 { open Parser
     let cc = [|0|]
- }                                                                                  (* Get the Token types *)
+}                          (* Get the Token types *)
 (* Optional Definitions *)
 
 (* Rules *)
@@ -17,45 +17,45 @@ whitespace                  { token lexbuf } (* White space *)
 | "/*"                      { cc.(0)<-cc.(0)+1; nc1 lexbuf }
 | '\\'                      { continue lexbuf } 
 | '\n'                      { NL }
-| '&'                       { NL } 
-| '['                       { LLIST }           
-| ']'                       { RLIST } 
-| '+'                       { PLUS }            
-| '-'                       { MINUS }           
+| '&'                       { NL }
+| '['                       { LLIST }
+| ']'                       { RLIST }
+| '+'                       { PLUS }
+| '-'                       { MINUS }
 | '*'                       { TIMES }
 | '/'                       { DIV }
-| '%'                       { MOD }             
-| '<'                       { LT }  
+| '%'                       { MOD }
+| '<'                       { LT }
 | '>'                       { GT }
 | "<="                      { LE }
 | ">="                      { GE }
-| "$+"                      { BPLUS }           
-| "$-"                      { BMINUS }      
-| "$*"                      { BTIMES }      
-| "$/"                      { BDIV }            
+| "$+"                      { BPLUS }
+| "$-"                      { BMINUS }
+| "$*"                      { BTIMES }
+| "$/"                      { BDIV }
 | "$<"                      { BLT }
 | "$>"                      { BGT }
 | "$<="                     { BLE }
 | "$>="                     { BGE }
 | "%+"                      { PCPLUS }
 | "%-"                      { PCMINUS }
-| "=="                      { EQ }              
-| '!'                       { NOT }             
+| "=="                      { EQ }
+| '!'                       { NOT }
 | "&&"                      { AND }
-| "||"                      { OR }              
+| "||"                      { OR }
 | "++"                      { CONCAT }
-| ':'                       { CONS }            
+| ':'                       { CONS }
 | "::"                      { TYPE }
-| "->"                      { FUNC }            
+| "->"                      { FUNC }
 | '|'                       { GUARD }
-| '='                       { BIND }            
+| '='                       { BIND }
 | "^^"                      { TRANS }
-| '~'                       { INV }             
+| '~'                       { INV }
 | "<>"                      { RET }
-| '('                       { LPAREN }      
-| ')'                       { RPAREN }  
-| ','                       { COMMA }   
-| '.'                       { PERIOD }  
+| '('                       { LPAREN }
+| ')'                       { RPAREN }
+| ','                       { COMMA }
+| '.'                       { PERIOD }
 | '$'                       { DOLLAR }
 | '_'                       { WILD }
 | "let"                     { LET }
@@ -76,14 +76,14 @@ whitespace                  { token lexbuf } (* White space *)
 | "print"                   { PRINT }
 | "random"                  { RANDOM }
 | identifier as id          { VARIABLE(id) }
-| '-'?(digit)+ as num       { LITERAL(int_of_string num) } 
-| eof                       { EOF } 
+| '-'?(digit)+ as num       { LITERAL(int_of_string num) }
+| eof                       { EOF }
 | _ as char { raise (Failure("Illegal character: " ^ Char.escaped char)) }
 
 
 and nlcomment = parse
 '\n'            { token lexbuf }
-| _             { nlcomment lexbuf }    
+| _             { nlcomment lexbuf }
 
 
 and continue = parse
@@ -101,8 +101,8 @@ and nc2 = parse
 
 and nc3 = parse 
 '/'             { if(cc.(0) = 1) 
-                    then (cc.(0) <- cc.(0)-1;token lexbuf) 
-                    else (cc.(0)<-cc.(0)-1; nc1 lexbuf) 
+                    then (cc.(0) <- cc.(0)-1;token lexbuf)
+                    else (cc.(0)<-cc.(0)-1; nc1 lexbuf)
                 }
 | '*'           { nc3 lexbuf }
-| _             { nc1 lexbuf } 
+| _             { nc1 lexbuf }
