@@ -7,3 +7,9 @@ e :: System
 f :: [Beat]
 g :: Int -> [Chord] -> [[Bool]]
 
+
+h :: a -> a -> b
+
+g :: cucumber -> Int
+
+i :: hippo

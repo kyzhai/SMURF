@@ -8,7 +8,7 @@ type unary_operator = Not
 type row_operator = Inv | Retro
 
 (* Not sure if these should be here...doing it for type signature definition *)
-type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types
+type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types | TPoly of string
     
 type expr =                                 (* Expressions *)
     Literal of int                          (* 42 *)
@@ -29,7 +29,8 @@ type expr =                                 (* Expressions *)
 type pattern =                              (* Patterns *)
     Patconst of int                         (* integer *)
 		| Patbool of bool												(* boolean *)
-    | Patvar of string                      (* identifier or wildcard *)
+    | Patvar of string                      (* identifier*)
+    | Patwild                               (* wildcard *)
     | Patcomma of pattern list              (* [pattern, pattern, pattern, ... ] or [] *)
     | Patcons of pattern * pattern          (* pattern : pattern *)
 
@@ -75,7 +76,8 @@ let rec string_of_expr = function
 
 let rec string_of_patterns  = function
     Patconst(l) -> string_of_int l
-		| Patbool(b) -> string_of_bool b
+    | Patbool(b) -> string_of_bool b
+    | Patwild -> "_"
     | Patvar(s) -> s
     | Patcomma(p) -> "[" ^ (String.concat ", " (List.map string_of_patterns p)) ^ "]"
     | Patcons(p1, p2) -> (string_of_patterns p1) ^ " : " ^ (string_of_patterns p2)
@@ -83,7 +85,7 @@ let rec string_of_patterns  = function
 let rec string_of_types  = function
     TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
     | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
-    | TList(t) -> "[" ^ string_of_types t ^ "]"
+    | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v
 
 let string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^ "\n"

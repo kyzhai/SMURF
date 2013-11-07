@@ -66,6 +66,7 @@ types:
 |   CHORD                           { TChord }
 |   SYSTEM                          { TSystem }
 |   LLIST types RLIST               { TList($2) }
+|   VARIABLE                        { TPoly($1) }
 
 /* types for functions */
 func_types:
@@ -80,12 +81,13 @@ pattern:
     LITERAL                         { Patconst($1) }
 |   BOOLEAN                         { Patbool($1) }
 |   VARIABLE                        { Patvar($1) }
-|   WILD                            { Patvar("_") }
+|   WILD                            { Patwild }
 |   LLIST comma_patterns RLIST      { Patcomma(List.rev $2) }
 |   pattern CONS pattern            { Patcons($1, $3) }
 
 comma_patterns:
     /* empty */                     { [] }
+|   pattern                         { [$1] }
 |   comma_patterns COMMA pattern    { $3 :: $1 }
 
 expr:
