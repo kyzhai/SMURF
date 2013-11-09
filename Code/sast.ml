@@ -19,16 +19,16 @@ type env =
 	| Child of var list * env * env list
 
 type s_func_decl = {
-	fname : string; 
+	s_fname : string; 
 	type_sig : types list;
-	args :  pattern list;
-	value : expr;
-	symtab : env;
+	s_args :  pattern list;
+	s_value : expr;
+	scope : env;
 }
 
 type s_dec = 
 	(*	STypeSig of string * types list // don't need anymore *)
-	  SFuncdec of func_decl
+	  SFuncdec of s_func_decl
 	| SVardef of string * expr
 	| SMain of expr 
 
@@ -112,23 +112,31 @@ let walk_decl prog = function
 					then raise (Multiple_declarations id)
 				else {decls = prog.decls; symtab = (add_var func prog.symtab)}
 	| Vardef(id, expr) -> (*print_string "var definition\n"; *)
-				(*if( is_declared_here id scope) 
+				if( is_declared_here id prog.symtab) 
 					then raise (Multiple_declarations id)
-				else add_var {name=id; v_type = [get_type expr]} scope *)
-				prog
+				else 
+					{ decls = prog.decls @ [SVardef(id, expr)];
+					symtab = (add_var 
+						{name=id; v_type = [get_type expr]} prog.symtab) }
 	| Funcdec(fdec) ->  (*print_string "function declaration\n";*)
-		(*let new_scope = Child([], scope, []) in
+		let new_scope = Child([], prog.symtab, []) in
 			let f_vars = collect_pat_vars fdec.args in 
 			let new_scope = add_ids new_scope f_vars in
-			(add_child new_scope scope) *)
-			prog
+			let global = (add_child new_scope prog.symtab) in 
+			let funcdef = SFuncdec({s_fname = fdec.fname; 
+											type_sig = [Unknown];
+											s_args = fdec.args;
+											s_value = fdec.value;
+											scope = new_scope;}) in 
+				{ decls = prog.decls @ [funcdef]; symtab = global }
 	| Main(expr) -> (* print_string "main\n"; *)
-		(* match scope with 
-			Parent(l, c) -> if( is_declared "main" scope ) 
+		match prog.symtab with 
+			Parent(l, c) -> if( is_declared "main" prog.symtab ) 
 				then raise (Multiple_declarations "main")
-				else add_var {name="main"; v_type = [Unknown]} scope
-			| Child(l,p, c) -> raise Main_wrong_scope *)
-			prog
+				else
+						{ decls= prog.decls @ [SMain(expr)]; 
+						symtab = add_var {name="main"; v_type = [Unknown]} prog.symtab}
+			| Child(l,p, c) -> raise Main_wrong_scope
 
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
