@@ -1,0 +1,8 @@
+f :: Int -> Int
+
+
+f x = x 
+
+main 3
+
+main 1

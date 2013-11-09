@@ -33,7 +33,7 @@ scanner scanner.cmo: scanner.ml
 	ocamlc -c scanner.ml
 
 clean:
-	rm *.cmi *.cmo parser.ml scanner.ml *.output parser.mli $(TARGET)
+	rm *.cmi *.cmo parser.ml scanner.ml *.output parser.mli $(TARGET) smurf
 
 TestDir = ./parser-tests
 cases = $(shell find $(TestDir) -name "*.sm" | sort)
