@@ -1,8 +1,8 @@
 f :: Int -> Int
 
+b = 2..
 
-f x = x 
+f x = x + b
 
-main 3
 
 main 1
