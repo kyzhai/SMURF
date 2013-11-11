@@ -1,4 +1,6 @@
-%{ open Ast %}
+%{ open Ast 
+   open Util  
+%}
 
 %token NL LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
 %token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT 
@@ -55,7 +57,7 @@ dec:
 |   VARIABLE TYPE func_types        { Tysig($1, List.rev $3) }  /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr              { Vardef($1, $3) }
 |   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
-|   MAIN expr												{ Main($2) }
+|   MAIN expr                                               { Main($2) }
 
 /* types for vars */
 types:
@@ -134,9 +136,9 @@ expr:
     RPAREN
     DOLLAR expr             { Note($2, $4, Beat($7, 0))  }
 
-|   BOOLEAN 							  { Boolean($1) }
-|   PRINT expr						  { Print($2) }
-|   RANDOM								  { Random }
+|   BOOLEAN                 { Boolean($1) }
+|   PRINT expr              { Print($2) }
+|   RANDOM                  { Random }
 
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
@@ -147,7 +149,7 @@ expr:
 
 dots:
     PERIOD        { 1 }
-|   PERIOD dots   { $2+1 }
+|   dots PERIOD   { $1+1 }
 
 expr_list:
     /* Nothing */  { [] }
