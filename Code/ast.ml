@@ -25,6 +25,7 @@ type expr =                                 (* Expressions *)
     | List of expr list                     (* [1,2,3,4] *)
     | Chord of expr list                    (* [Note1, Note2]*)
     | System of expr list                   (* [Chord1, Chord2]*)
+    | Call of expr * expr                   (* foo a *)
 
 type pattern =                              (* Patterns *)
     Patconst of int                         (* integer *)

@@ -93,11 +93,7 @@ comma_patterns:
 |   comma_patterns COMMA pattern    { $3 :: $1 }
 
 expr:
-    LITERAL                 { Literal($1) }
-|   VARIABLE                { Variable($1) }
-|   LPAREN expr RPAREN      { $2 }
-
-|   expr PLUS expr          { Binop($1, Add, $3) }
+    expr PLUS expr          { Binop($1, Add, $3) }
 |   expr MINUS expr         { Binop($1, Sub, $3) }
 |   expr TIMES expr         { Binop($1, Mul, $3) }
 |   expr DIV expr           { Binop($1, Div, $3) }
@@ -136,7 +132,6 @@ expr:
     RPAREN
     DOLLAR expr             { Note($2, $4, Beat($7, 0))  }
 
-|   BOOLEAN                 { Boolean($1) }
 |   PRINT expr              { Print($2) }
 |   RANDOM                  { Random }
 
@@ -146,6 +141,18 @@ expr:
                                 Note(_,_,_) -> Chord($2)
                               | Chord(_) -> System($2)
                               | _ -> List($2) }
+
+|   callexpr                { $1 }
+
+callexpr:
+    callexpr cexpr          { Call($1,$2) }
+|   cexpr                   { $1 }
+
+cexpr:
+    LITERAL                 { Literal($1) }
+|   VARIABLE                { Variable($1) }
+|   BOOLEAN                 { Boolean($1) }
+|   LPAREN expr RPAREN      { $2 }
 
 dots:
     PERIOD        { 1 }
