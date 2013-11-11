@@ -1,5 +1,5 @@
 open Printf
 
-let mytrace s = function 
+let trace s = function 
     a -> (printf "*** %s\n" s); (a)
 

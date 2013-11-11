@@ -102,7 +102,7 @@ let rec get_type = function
     | Variable(s) -> Unknown (* look up in symbol table? *)
     | Binop(e1, o, e2) -> Unknown (* Check type of operator *)
     | If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
-        let te1 = mytrace ("m1") get_type e1 in 
+        let te1 = get_type e1 in 
         if te1 <> TBool then 
             type_error (string_of_expr e1 ^ " has type " ^ string_of_types te1 ^ " but is used as if it has type Bool")
         else let te2 = get_type e2 in 
@@ -145,7 +145,7 @@ let walk_decl prog = function
                 if (is_declared_here id prog.symtab) 
                     then raise (Multiple_declarations id)
                 else {decls = prog.decls; symtab = (add_var func prog.symtab)}
-    | Vardef(id, expr) -> print_string "var definition\n"; 
+    | Vardef(id, expr) -> (* print_string "var definition\n"; *)
                 if( is_declared_here id prog.symtab) 
                     then raise (Multiple_declarations id)
                 else 

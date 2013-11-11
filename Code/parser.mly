@@ -27,7 +27,7 @@
 %left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
 %left TIMES DIV BTIMES BDIV MOD
 %nonassoc INV RET TRANS DOLLAR
-%left PERIOD
+%right PERIOD
 %nonassoc LPAREN RPAREN
 
 %start program
@@ -149,7 +149,7 @@ expr:
 
 dots:
     PERIOD        { 1 }
-|   dots PERIOD   { $1+1 }
+|   PERIOD dots   { $2+1 }
 
 expr_list:
     /* Nothing */  { [] }
