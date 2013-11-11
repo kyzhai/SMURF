@@ -2,6 +2,7 @@ open Ast
 open Util
 
 exception Multiple_declarations of string
+exception Multiple_type_sigs of string
 exception Main_wrong_scope
 
 exception Type_error of string
@@ -31,8 +32,8 @@ type s_func_decl = {
 }
 
 type s_dec = 
-    (*  STypeSig of string * types list // don't need anymore *)
-      SFuncdec of s_func_decl
+      STypeSig of string * types list
+    | SFuncdec of s_func_decl
     | SVardef of string * expr
     | SMain of expr 
 
