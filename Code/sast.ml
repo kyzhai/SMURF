@@ -56,9 +56,9 @@ let rec string_of_env = function
 
 let type_mismatch var = function
     Parent(vlist, _) -> let v = List.find (fun n -> n.name = var.name) vlist
-                        in v.v_type != var.v_type
+                        in v.v_type <> var.v_type
     | Child(vlist,_,_) -> let v = List.find (fun n-> n.name = var.name) vlist
-                        in v.v_type != var.v_type
+                        in v.v_type <> var.v_type
 
 
 (* Check if there are multiple type signatures for an id in the same scope *)
