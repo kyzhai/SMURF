@@ -11,12 +11,10 @@ type var = {
 
 (* Symbol Table *)
 (* Used a list but might want to use a Map module for lookup time *)
-(* Doubly linked list needed right now *)
-(* Parent(variables, children) *)
-(* Child(variables, parent, children *)
+(* Doubly linked list needed right now for printing *)
 type env =
-	Parent of var list * env list
-	| Child of var list * env * env list
+	Parent of var list * env list     		(* Parent(variables, children) *)
+	| Child of var list * env * env list	(* Child(variables, parent, children *)
 
 type s_func_decl = {
 	s_fname : string; 
@@ -47,6 +45,20 @@ let rec string_of_env = function
 		String.concat "\n\t" (List.map string_of_env c) ^ "\n"
 	| Child(v,p, c) -> (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
 		String.concat "\n\t" (List.map string_of_var v) ^"\n\t"
+
+let string_of_s_func_decl func = 
+	"Function " ^ func.s_fname ^ " :: " ^ String.concat "->" 
+		(List.map Ast.string_of_types func.type_sig) ^ "\n\tArgs: " ^ 
+		String.concat " " (List.map Ast.string_of_patterns func.s_args) ^ 
+		"\n\tExpr: " ^ Ast.string_of_expr func.s_value ^ "\n" ^ 
+			string_of_env func.scope 
+
+let string_of_s_dec = function
+	  SFuncdec(f) -> string_of_s_func_decl f
+	| SVardef(id, e) -> id ^ " = " ^ Ast.string_of_expr e
+	| SMain(e) -> "Main: " ^ Ast.string_of_expr e
+
+let string_of_program prog = "PROGRAM: \n\t" ^ String.concat "\n\t" (List.map string_of_s_dec prog.decls) ^ "\n===========================\n" ^ string_of_env prog.symtab
 
 (* Checks if an id is in list of vars *)
 let rec in_list x = function
@@ -90,6 +102,9 @@ let rec add_ids scope = function
 	[] -> scope
 	| (h::tl) -> let v = {name=h; v_type=[Unknown]} in 
 							add_ids (add_var v scope) tl 
+
+
+
 (* Returns a type from an expression*)
 let rec get_type = function
 		Literal(l) -> Unknown (* TInt or TBeat *)
@@ -141,7 +156,7 @@ let walk_decl prog = function
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
 		let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
-			in (print_string (string_of_env program.symtab));program
+			in (print_string (string_of_program program));program
 
 let walk_decl_2 scope = function
 	_ -> scope
