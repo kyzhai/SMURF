@@ -3,6 +3,7 @@ open Util
 
 exception Multiple_declarations of string
 exception Multiple_type_sigs of string
+exception Type_mismatch of string
 exception Main_wrong_scope
 
 exception Type_error of string
@@ -32,7 +33,7 @@ type s_func_decl = {
 }
 
 type s_dec = 
-      STypeSig of string * types list
+      STypesig of string * types list
     | SFuncdec of s_func_decl
     | SVardef of string * expr
     | SMain of expr 
@@ -52,6 +53,19 @@ let rec string_of_env = function
         String.concat "\n\t" (List.map string_of_env c) ^ "\n"
     | Child(v,p, c) -> (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
         String.concat "\n\t" (List.map string_of_var v) ^"\n\t"
+
+let type_mismatch var = function
+    Parent(vlist, _) -> let v = List.find (fun n -> n.name = var.name) vlist
+                        in v.v_type != var.v_type
+    | Child(vlist,_,_) -> let v = List.find (fun n-> n.name = var.name) vlist
+                        in v.v_type != var.v_type
+
+
+(* Check if there are multiple type signatures for an id in the same scope *)
+let rec mult_typesig id = function
+    [] -> false
+    | STypesig(x, _) :: rest -> if x = id then true else mult_typesig id rest
+    | _ :: rest -> mult_typesig id rest
 
 (* Checks if an id is in list of vars *)
 let rec in_list x = function
@@ -141,11 +155,19 @@ let rec get_type = function
 
 (* First pass walk_decl -> Try to construct a symbol table *)
 let walk_decl prog = function
-        Tysig(id,types) -> (*print_string "type signature\n"; *)
+    Tysig(id,types) -> (*print_string "type signature\n"; *)
                 let func = {name=id; v_type = types} in 
-                if (is_declared_here id prog.symtab) 
-                    then raise (Multiple_declarations id)
-                else {decls = prog.decls; symtab = (add_var func prog.symtab)}
+                (*Check if we already have a type signature for this identifier in the current scope *)
+                if (mult_typesig id prog.decls)
+                    then raise (Multiple_type_sigs id)
+                (* Check if we have bound this identifier to an expression whose type contradicts this signature *)
+                else if (is_declared_here id prog.symtab && type_mismatch func prog.symtab)
+                    then raise (Type_mismatch id)
+                (* If type of signature matches that of bound expr, do nothing *)
+                else if (is_declared_here id prog.symtab)
+                    then {decls = prog.decls; symtab = prog.symtab}
+                (* If identifier doesn't exist in current scope, add this type signature to the environment *)
+                else {decls = prog.decls @ [STypesig(id, types)]; symtab = (add_var func prog.symtab)}
     | Vardef(id, expr) -> (* print_string "var definition\n"; *)
                 if( is_declared_here id prog.symtab) 
                     then raise (Multiple_declarations id)
