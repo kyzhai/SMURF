@@ -17,7 +17,7 @@ type var = {
 (* Used a list but might want to use a Map module for lookup time *)
 (* Doubly linked list needed right now *)
 (* Parent(variables, children) *)
-(* Child(variables, parent, children *)
+(* Child(variables, parent, children) *)
 type env =
     Parent of var list * env list
     | Child of var list * env * env list
