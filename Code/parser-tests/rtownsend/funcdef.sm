@@ -1,0 +1,5 @@
+
+plusThree 0 n = 1
+plusThree :: Int -> Bool -> Int & x n = True
+
+plusThree x m = x + 3

@@ -121,16 +121,14 @@ let walk_decl prog = function
                 to the environment *)
                 else {decls = prog.decls @ [STypesig(func)];
                 symtab = (add_var func prog.symtab)}
-    | _ -> prog
-                (*
-    | Ast.Vardef(id, expr) -> (* print_string "var definition\n"; *)
+    | Ast.Vardef(id, expr) -> 
+                let var = {name=id; v_type = [get_type expr]} in
                 if( is_declared_here id prog.symtab) 
                     then raise (Multiple_declarations id)
                 else 
-                    { decls = prog.decls @ [SVardef(id, expr)];
-                    symtab = (add_var 
-                        {name=id; v_type = [get_type expr]} prog.symtab) } 
-                    *)
+                    { decls = prog.decls @ [SVardef(var, expr)];
+                    symtab = (add_var var prog.symtab) } 
+    | _ -> prog
                     (*
     | Funcdec(fdec) ->  (*print_string "function declaration\n";*)
         let new_scope = Child([], prog.symtab, []) in
