@@ -26,6 +26,7 @@ type expr =                                 (* Expressions *)
     | Chord of expr list                    (* [Note1, Note2]*)
     | System of expr list                   (* [Chord1, Chord2]*)
     | Call of expr * expr                   (* foo a *)
+    | Let of string * expr * expr           (* let x = 4 in x + 2 *)
 
 type pattern =                              (* Patterns *)
     Patconst of int                         (* integer *)
@@ -77,6 +78,8 @@ let rec string_of_expr = function
   | List(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | Chord(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | System(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | Let(decl, exp1, exp2) -> "let " ^ decl ^ " = " ^ string_of_expr exp1 ^ " in " ^ string_of_expr exp2
+  | Call(exp1,exp2) -> string_of_expr exp1 ^ " " ^ string_of_expr exp2
   | x -> "other expr"
 
 let rec string_of_patterns  = function
