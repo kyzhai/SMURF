@@ -1,11 +1,9 @@
 open Sast
 open Util
 
-let type_mismatch var = function
-    Parent(vlist, _) -> let v = List.find (fun n -> n.name = var.name) vlist
-                        in v.v_type <> var.v_type
-    | Child(vlist,_,_) -> let v = List.find (fun n-> n.name = var.name) vlist
-                        in v.v_type <> var.v_type
+let type_mismatch var symtab = 
+    let v = List.find (fun n -> n.name = var.name) symtab.identifiers
+    in v.v_type <> var.v_type
 
 
 (* Check if there are multiple type signatures for an id in the same scope *)
@@ -20,26 +18,22 @@ let rec in_list x = function
     | h::tl -> if x = h.name then true else in_list x tl
 
 (* Only checks current scope (might not be needed) *)
-let is_declared_here id = function
-    Parent(l, c) -> in_list id l
-    | Child(l, p, c) -> in_list id l
+let is_declared_here id symtab = List.find (fun (name, _) -> name = id) symtab.identifiers
 
 (* checks all scopes if id has been declared *)
-let rec is_declared id = function
-    Parent(l, c) -> in_list id l
-    | Child(l, p, c) -> if (in_list id l) then true else is_declared id p 
+let rec is_declared id symtab =
+    try 
+        List.find (fun (name, _) -> name = id) symtab.identifiers
+    with Not_found ->
+        match symtab.parent with
+            Some(parent) -> is_declared id parent
+        |   _ -> false
 
 (* Adds a var to a scope *)
-let add_var v = function
-    Parent(l, c) -> Parent(v :: l, c)
-    | Child(l, p, c) -> Child(v :: l, p, c)
-
-let add_child child = function
-    Parent(l, c) -> Parent(l, child::c)
-    | Child(l, p, c) -> Child(l, p, child::c)
+let add_var v symtab = symtab.identifiers <- v :: symtab.identifiers
 
 (* Start with an empty symbol table *)
-let global_env = Parent([], [])
+let global_env = { identifiers = [] } 
 
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
@@ -122,6 +116,7 @@ let walk_decl prog = function
                     { decls = prog.decls @ [SVardef(id, expr)];
                     symtab = (add_var 
                         {name=id; v_type = [get_type expr]} prog.symtab) } 
+                    (*
     | Funcdec(fdec) ->  (*print_string "function declaration\n";*)
         let new_scope = Child([], prog.symtab, []) in
             let f_vars = collect_pat_vars fdec.args in 
@@ -133,6 +128,8 @@ let walk_decl prog = function
                                             s_value = fdec.value;
                                             scope = new_scope;}) in 
                 { decls = prog.decls @ [funcdef]; symtab = global }
+                *)
+                    (*
     | Main(expr) -> print_string "main\n"; 
         match prog.symtab with 
             Parent(l, c) -> if( is_declared "main" prog.symtab ) 
@@ -141,11 +138,11 @@ let walk_decl prog = function
                         { decls= prog.decls @ [SMain(expr)]; 
                         symtab = add_var {name="main"; v_type = [Unknown]} prog.symtab}
             | Child(l,p, c) -> raise Main_wrong_scope
-
+            *)
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
         let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
-            in (print_string (string_of_env program.symtab)); program
+            in  program
 
 let walk_decl_2 scope = function
     _ -> scope
