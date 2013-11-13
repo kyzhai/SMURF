@@ -14,10 +14,9 @@ type s_ids = {
 	v_type : types list;
 }
 	
-
 type symbol_table = {
     parent : symbol_table option;
-    identifies : s_ids list; 
+    identifers : s_ids list; 
 }
 
 type s_func_decl = {
@@ -39,15 +38,14 @@ type s_program = {
     symtab : symbol_table;
 }
 
-let string_of_var v = 
-    "Var: " ^ v.name ^ " :: " ^ String.concat " -> " (List.map Ast.string_of_types v.v_type) ^ "\n"
+let string_of_s_ids i = 
+    "ID: " ^ i.name ^ " :: " ^ String.concat " -> " (List.map Ast.string_of_types i.v_type) ^ "\n"
 
 
-let rec string_of_env symtab = match symtab.parent
-    if symtab.parent "Global Scope: \n\t" ^ 
-        String.concat "\t" (List.map string_of_var v) ^ "\n\t" ^
-        String.concat "\n\t" (List.map string_of_env c) ^ "\n"
-    | Child(v,p, c) -> (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
+let rec string_of_symbol_table symtab = 
+    if symtab.parent = None then "Global Scope: \n\t" ^ 
+        String.concat "\t" (List.map string_of_var v) ^ "\n"
+    else (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
         String.concat "\n\t" (List.map string_of_var v) ^"\n\t"
 
 let type_mismatch var = function
