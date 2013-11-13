@@ -42,9 +42,8 @@ let string_of_var v =
     "Var: " ^ v.name ^ " :: " ^ String.concat " -> "
     (List.map Ast.string_of_types v.v_type) ^ "\n"
 
-
 let rec string_of_symbol_table symtab = 
-    if symtab.parent = None then "Global Scope: \n\t" ^ 
+    if symtab.parent = None then "Global Scope: \n\t" ^
         String.concat "\t" (List.map string_of_var v) ^ "\n"
     else (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
         String.concat "\n\t" (List.map string_of_var v) ^"\n\t"
@@ -110,11 +109,17 @@ let rec get_type = function
     Literal(l) -> Unknown (* TInt or TBeat *)
     | Boolean(b) -> TBool
     | Variable(s) -> Unknown (* look up in symbol table? *)
-    | Binop(e1, o, e2) -> (* Check type of operator *)
-        let te1 = get_type e1 in
+    | Binop(e1, o, e2) -> Unknown (* Check type of operator *)
+       (* let te1 = get_type e1 in
         if te1 <> TInt then
             type_error (string_of_expr e1 ^ " has type " ^ string_of_types te1 ^
             " but is used as if it has type Int"
+        let te2 = get_type e2 in
+        if te2 <> TInt then
+            type_error (string_of_expr e2 " has type " ^ string_of_types te2 ^
+            " but is used as if it has type Int"
+        let toper = get_type o in
+        if toper <> *)
     | If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
         if te1 <> TBool then 
