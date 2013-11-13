@@ -9,10 +9,15 @@ exception Main_wrong_scope
 exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
+type s_ids = {
+	name : string;
+	v_type : types list;
+}
+	
+
 type symbol_table = {
     parent : symbol_table option;
-    variables : s_var_decl list;
-    functions : s_func_decl list;
+    identifies : s_ids list; 
 }
 
 type s_func_decl = {
