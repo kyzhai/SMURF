@@ -48,45 +48,8 @@ let rec string_of_symbol_table symtab =
     else (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
         String.concat "\n\t" (List.map string_of_var v) ^"\n\t"
 
-let type_mismatch var = function
-    Parent(vlist, _) -> let v = List.find (fun n -> n.name = var.name) vlist
-                        in v.v_type <> var.v_type
-    | Child(vlist,_,_) -> let v = List.find (fun n-> n.name = var.name) vlist
-                        in v.v_type <> var.v_type
 
 
-(* Check if there are multiple type signatures for an id in the same scope *)
-let rec mult_typesig id = function
-    [] -> false
-    | STypesig(x, _) :: rest -> if x = id then true else mult_typesig id rest
-    | _ :: rest -> mult_typesig id rest
-
-(* Checks if an id is in list of vars *)
-let rec in_list x = function
-    [] -> false
-    | h::tl -> if x = h.name then true else in_list x tl
-
-(* Only checks current scope (might not be needed) *)
-let is_declared_here id = function
-    Parent(l, c) -> in_list id l
-    | Child(l, p, c) -> in_list id l
-
-(* checks all scopes if id has been declared *)
-let rec is_declared id = function
-    Parent(l, c) -> in_list id l
-    | Child(l, p, c) -> if (in_list id l) then true else is_declared id p 
-
-(* Adds a var to a scope *)
-let add_var v = function
-    Parent(l, c) -> Parent(v :: l, c)
-    | Child(l, p, c) -> Child(v :: l, p, c)
-
-let add_child child = function
-    Parent(l, c) -> Parent(l, child::c)
-    | Child(l, p, c) -> Child(l, p, child::c)
-
-(* Start with an empty symbol table *)
-let global_env = Parent([], [])
 
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function

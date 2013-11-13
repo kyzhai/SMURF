@@ -95,22 +95,21 @@ let rec get_type = function
     | _ -> Unknown
 
 (* First pass walk_decl -> Try to construct a symbol table *)
-let walk_decl prog = function
-    Tysig(id,types) -> (*print_string "type signature\n"; *)
-                let func = {name=id; v_type = types} in 
+let rec first_dec symtab = function
+    Tysig(id,types) ->  let ident = {name=id; v_type = types} in 
                 (*Check if we already have a type signature for this identifier in the current scope *)
-                if (mult_typesig id prog.decls)
+                if (mult_typesig ident symtab)
                     then raise (Multiple_type_sigs id)
                 (* Check if we have bound this identifier to an expression whose type contradicts this signature *)
-                else if (is_declared_here id prog.symtab && type_mismatch func prog.symtab)
+                else if (is_declared_here id symtab && type_mismatch ident symtab)
                     then raise (Type_mismatch id)
                 (* If type of signature matches that of bound expr, do nothing *)
-                else if (is_declared_here id prog.symtab)
-                    then {decls = prog.decls; symtab = prog.symtab}
+                else if (is_declared_here id symtab)
+                    then symtab
                 (* If identifier doesn't exist in current scope, add this type signature to the environment *)
-                else {decls = prog.decls @ [STypesig(id, types)]; symtab = (add_var func prog.symtab)}
+                else add_var ident symtab
     | Vardef(id, expr) -> (* print_string "var definition\n"; *)
-                if( is_declared_here id prog.symtab) 
+                if( is_declared_here id prog) 
                     then raise (Multiple_declarations id)
                 else 
                     { decls = prog.decls @ [SVardef(id, expr)];
@@ -139,16 +138,4 @@ let walk_decl prog = function
                         symtab = add_var {name="main"; v_type = [Unknown]} prog.symtab}
             | Child(l,p, c) -> raise Main_wrong_scope
             *)
-(* Right now gets called by smurf *)
-let first_pass list_decs = 
-        let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
-            in  program
-
-let walk_decl_2 scope = function
-    _ -> scope
-
-
-let second_pass list_decs current_env =
-    let current_env = List.fold_left walk_decl_2 current_env list_decs
-     in print_string ((string_of_env current_env)^ "\n"); current_env
 
