@@ -9,27 +9,18 @@ exception Main_wrong_scope
 exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
-(* entry in symbol table *)
-type var = {
-        name : string;
-        v_type : Ast.types list;
-    }
-
-(* Symbol Table *)
-(* Used a list but might want to use a Map module for lookup time *)
-(* Doubly linked list needed right now *)
-(* Parent(variables, children) *)
-(* Child(variables, parent, children *)
-type env =
-    Parent of var list * env list
-    | Child of var list * env * env list
+type symbol_table = {
+    parent : symbol_table option;
+    variables : s_var_decl list;
+    functions : s_func_decl list;
+}
 
 type s_func_decl = {
     s_fname : string; 
     type_sig : types list;
     s_args :  pattern list;
     s_value : expr;
-    scope : env;
+    scope : symbol_table;
 }
 
 type s_dec = 
@@ -38,17 +29,17 @@ type s_dec =
     | SVardef of string * expr
     | SMain of expr 
 
-type program = {
+type s_program = {
     decls : s_dec list;
-    symtab : env;
+    symtab : symbol_table;
 }
 
 let string_of_var v = 
     "Var: " ^ v.name ^ " :: " ^ String.concat " -> " (List.map Ast.string_of_types v.v_type) ^ "\n"
 
 
-let rec string_of_env = function
-    Parent(v, c) -> "Global Scope: \n\t" ^ 
+let rec string_of_env symtab = match symtab.parent
+    if symtab.parent "Global Scope: \n\t" ^ 
         String.concat "\t" (List.map string_of_var v) ^ "\n\t" ^
         String.concat "\n\t" (List.map string_of_env c) ^ "\n"
     | Child(v,p, c) -> (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
