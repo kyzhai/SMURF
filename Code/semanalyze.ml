@@ -1,58 +1,5 @@
-open Ast
+open Sast
 open Util
-
-exception Multiple_declarations of string
-exception Multiple_type_sigs of string
-exception Type_mismatch of string
-exception Main_wrong_scope
-
-exception Type_error of string
-let type_error msg = raise (Type_error msg)
-
-(* entry in symbol table *)
-type var = {
-        name : string;
-        v_type : Ast.types list;
-    }
-
-(* Symbol Table *)
-(* Used a list but might want to use a Map module for lookup time *)
-(* Doubly linked list needed right now *)
-(* Parent(variables, children) *)
-(* Child(variables, parent, children *)
-type env =
-    Parent of var list * env list
-    | Child of var list * env * env list
-
-type s_func_decl = {
-    s_fname : string; 
-    type_sig : types list;
-    s_args :  pattern list;
-    s_value : expr;
-    scope : env;
-}
-
-type s_dec = 
-      STypesig of string * types list
-    | SFuncdec of s_func_decl
-    | SVardef of string * expr
-    | SMain of expr 
-
-type program = {
-    decls : s_dec list;
-    symtab : env;
-}
-
-let string_of_var v = 
-    "Var: " ^ v.name ^ " :: " ^ String.concat " -> " (List.map Ast.string_of_types v.v_type) ^ "\n"
-
-
-let rec string_of_env = function
-    Parent(v, c) -> "Global Scope: \n\t" ^ 
-        String.concat "\t" (List.map string_of_var v) ^ "\n\t" ^
-        String.concat "\n\t" (List.map string_of_env c) ^ "\n"
-    | Child(v,p, c) -> (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
-        String.concat "\n\t" (List.map string_of_var v) ^"\n\t"
 
 let type_mismatch var = function
     Parent(vlist, _) -> let v = List.find (fun n -> n.name = var.name) vlist
