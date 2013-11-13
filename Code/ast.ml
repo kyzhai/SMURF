@@ -11,13 +11,13 @@ type row_operator = Inv | Retro
 type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types | TPoly of string | Unknown
     
 type expr =                                 (* Expressions *)
-    Literal of int                          (* 42 *)
-		| Boolean of bool												(* True *)
+      Literal of int                        (* 42 *)
+    | Boolean of bool                       (* True *)
     | Variable of string                    (* bar *)
     | Beat of expr * int                    (* 2. *)
     | Note of  expr * expr * expr           (* (11, 2)^4. *)
-		| Print of expr 												(* print 3+4 *)
-		| Random 																(* random *)
+    | Print of expr                         (* print 3+4 *)
+    | Random                                (* random *)
     | Binop of expr * operator * expr       (* a + 2 *)
     | Unop of unary_operator * expr         (* ! a == 4 *)
     | Rowop of row_operator * expr          (* ~[1,2,3,4,5,6] *)
@@ -25,10 +25,11 @@ type expr =                                 (* Expressions *)
     | List of expr list                     (* [1,2,3,4] *)
     | Chord of expr list                    (* [Note1, Note2]*)
     | System of expr list                   (* [Chord1, Chord2]*)
+    | Call of expr * expr                   (* foo a *)
 
 type pattern =                              (* Patterns *)
     Patconst of int                         (* integer *)
-		| Patbool of bool												(* boolean *)
+    | Patbool of bool                       (* boolean *)
     | Patvar of string                      (* identifier*)
     | Patwild                               (* wildcard *)
     | Patcomma of pattern list              (* [pattern, pattern, pattern, ... ] or [] *)
@@ -44,7 +45,7 @@ type dec =                                  (* Declarations *)
     Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
     | Funcdec of func_decl                  (* f x y = x + y *)
     | Vardef of string * expr               (* x = (2 + 5) : [1,2,3] *)
-		| Main of expr													(* main (f x) + (g x) *)
+        | Main of expr                                                  (* main (f x) + (g x) *)
 
 type program = dec list                     (* A program is a list of declarations *)
 
@@ -56,22 +57,26 @@ type stmt =                                 (* Statements *)
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
-	| Boolean(b) -> string_of_bool b
+  | Boolean(b) -> string_of_bool b
   | Variable(s) -> s
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
       ( match o with
-	    Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/"
+        Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/"
       | BoolEq -> "==" 
       | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=" 
       | Concat -> "++" | Cons -> ":" | m -> "OP" ) 
       ^ " " ^ string_of_expr e2
   | If(e1, e2, e3) -> "if " ^ string_of_expr e1 ^ " then " ^ string_of_expr e2 ^ " else " ^ string_of_expr e3
-  | Beat(i1, i2) -> "Beat => " ^ string_of_expr i1 ^ "_" ^ string_of_int i2
-  | Note(pc, reg, Beat(i1, i2)) -> "Note => (" ^ string_of_expr pc ^ ", " ^ string_of_expr reg ^ ")$" ^ (string_of_expr (Beat(i1, i2)))
-  | List(el) -> "List => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
-  | Chord(el) -> "Chord => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
-  | System(el) -> "System => [" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | Beat(i1, i2) -> string_of_expr i1 ^ 
+        let rec repeat n s = 
+            if n>0 then 
+                repeat (n-1) ("." ^ s)
+            else s in repeat i2 ""
+  | Note(pc, reg, Beat(i1, i2)) -> " (" ^ string_of_expr pc ^ ", " ^ string_of_expr reg ^ ")$" ^ (string_of_expr (Beat(i1, i2)))
+  | List(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | Chord(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | System(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | x -> "other expr"
 
 let rec string_of_patterns  = function
@@ -85,15 +90,15 @@ let rec string_of_patterns  = function
 let rec string_of_types  = function
     TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
     | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
-    | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v	
-		| Unknown -> "Type Unknown"
+    | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v    
+        | Unknown -> "Type Unknown"
 
 let string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^ "\n"
   | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
   | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " (List.map string_of_patterns fdec.args) ^
     " = " ^ string_of_expr fdec.value ^ "\n"
-	| Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
+    | Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)

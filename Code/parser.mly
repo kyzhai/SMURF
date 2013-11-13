@@ -1,4 +1,6 @@
-%{ open Ast %}
+%{ open Ast 
+   open Util  
+%}
 
 %token NL LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
 %token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT 
@@ -25,7 +27,7 @@
 %left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
 %left TIMES DIV BTIMES BDIV MOD
 %nonassoc INV RET TRANS DOLLAR
-%left PERIOD
+%right PERIOD
 %nonassoc LPAREN RPAREN
 
 %start program
@@ -55,7 +57,7 @@ dec:
 |   VARIABLE TYPE func_types        { Tysig($1, List.rev $3) }  /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr              { Vardef($1, $3) }
 |   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
-|   MAIN expr												{ Main($2) }
+|   MAIN expr                                               { Main($2) }
 
 /* types for vars */
 types:
@@ -91,11 +93,7 @@ comma_patterns:
 |   comma_patterns COMMA pattern    { $3 :: $1 }
 
 expr:
-    LITERAL                 { Literal($1) }
-|   VARIABLE                { Variable($1) }
-|   LPAREN expr RPAREN      { $2 }
-
-|   expr PLUS expr          { Binop($1, Add, $3) }
+    expr PLUS expr          { Binop($1, Add, $3) }
 |   expr MINUS expr         { Binop($1, Sub, $3) }
 |   expr TIMES expr         { Binop($1, Mul, $3) }
 |   expr DIV expr           { Binop($1, Div, $3) }
@@ -134,9 +132,8 @@ expr:
     RPAREN
     DOLLAR expr             { Note($2, $4, Beat($7, 0))  }
 
-|   BOOLEAN 							  { Boolean($1) }
-|   PRINT expr						  { Print($2) }
-|   RANDOM								  { Random }
+|   PRINT expr              { Print($2) }
+|   RANDOM                  { Random }
 
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
@@ -144,6 +141,18 @@ expr:
                                 Note(_,_,_) -> Chord($2)
                               | Chord(_) -> System($2)
                               | _ -> List($2) }
+
+|   callexpr                { $1 }
+
+callexpr:
+    callexpr cexpr          { Call($1,$2) }
+|   cexpr                   { $1 }
+
+cexpr:
+    LITERAL                 { Literal($1) }
+|   VARIABLE                { Variable($1) }
+|   BOOLEAN                 { Boolean($1) }
+|   LPAREN expr RPAREN      { $2 }
 
 dots:
     PERIOD        { 1 }

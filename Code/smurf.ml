@@ -1,4 +1,5 @@
-(*open Sast *)
+open Sast 
+open Util
 
 let _ =
 	let lexbuf = Lexing.from_channel stdin in 
