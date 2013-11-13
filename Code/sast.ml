@@ -17,7 +17,7 @@ type s_ids = {
 
 type symbol_table = {
     parent : symbol_table option;
-    identifies : s_ids list; 
+    identifiers : s_ids list; 
 }
 
 type s_func_decl = {
