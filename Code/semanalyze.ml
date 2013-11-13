@@ -18,91 +18,93 @@ let rec in_list x = function
     | h::tl -> if x = h.name then true else in_list x tl
 
 (* Only checks current scope (might not be needed) *)
-let is_declared_here id symtab = List.find (fun v -> v.name = id) symtab.identifiers
+let is_declared_here id symtab = List.exists (fun v -> v.name = id) symtab.identifiers
 
 (* checks all scopes if id has been declared *)
 let rec is_declared id symtab =
     try 
-        List.find (fun v -> v.name = id) symtab.identifiers
+        List.exists (fun v -> v.name = id) symtab.identifiers
     with Not_found ->
         match symtab.parent with
             Some(parent) -> is_declared id parent
-        |   _ ->  
+        |   _ -> false
 
 (* Adds a var to a scope *)
-let add_var v symtab = symtab.identifiers <- v :: symtab.identifiers
+let add_var v symtab = let s = v :: symtab.identifiers in
+                       let symresult = {parent = symtab.parent; identifiers = s} in symresult
 
 (* Start with an empty symbol table *)
-let global_env = { identifiers = [] } 
+let global_env = { identifiers = []; parent = None } 
 
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
     [] -> []
     | (h::tl) -> match h with 
-            Patvar(s) -> [s]
-        | Patcomma(pl) -> collect_pat_vars pl
-        | Patcons(pl1, pl2) -> 
+            Ast.Patvar(s) -> [s]
+        | Ast.Patcomma(pl) -> collect_pat_vars pl
+        | Ast.Patcons(pl1, pl2) -> 
             (collect_pat_vars [pl1]) @ (collect_pat_vars [pl2])
         | _ -> []
         @ collect_pat_vars tl
 
+(*
 let rec add_ids scope = function
     [] -> scope
-    | (h::tl) -> let v = {name=h; v_type=[Unknown]} in 
+    | (h::tl) -> let v = {name=h; v_type=[Ast.Unknown]} in 
                             add_ids (add_var v scope) tl 
-
+*)
 (* Returns a type from an expression*)
 let rec get_type = function
-        Literal(l) -> Unknown (* TInt or TBeat *)
-    | Boolean(b) -> TBool
-    | Variable(s) -> Unknown (* look up in symbol table? *)
-    | Binop(e1, o, e2) -> Unknown (* Check type of operator *)
-    | If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
+      Ast.Literal(l) -> Ast.Unknown (* TInt or TBeat *)
+    | Ast.Boolean(b) -> Ast.TBool
+    | Ast.Variable(s) -> Ast.Unknown (* look up in symbol table? *)
+    | Ast.Binop(e1, o, e2) -> Ast.Unknown (* Check type of operator *)
+    | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
-        if te1 <> TBool then 
-            type_error (string_of_expr e1 ^ " has type " ^ string_of_types te1 ^
+        if te1 <> Ast.TBool then 
+            type_error (" has type " ^
             " but is used as if it has type Bool")
         else let te2 = get_type e2 in 
              let te3 = get_type e3 in 
              if te2 <> te3 then
-                type_error (string_of_expr e2 ^ " has type " ^ string_of_types te2 ^
-                " but " ^ string_of_expr e3 ^ " has type " ^ string_of_types te3)
+                type_error ( " has type "  ^
+                " but " ^ " has type " )
                 else te2
-    | Beat(i1, i2) -> TBeat
-    | Note(pc, reg, b) -> TNote
-    | List(el) -> (* Check all elements have same type*)
+    | Ast.Beat(i1, i2) -> Ast.TBeat
+    | Ast.Note(pc, reg, b) -> Ast.TNote
+    | Ast.List(el) -> (* Check all elements have same type*)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
                     then type_error ("elements in list have different types")
-                else () in List.iter (match_type_or_fail hd) el; TList(get_type(hd))
-    | Chord(el) -> (* Check all elements have type of TNote *)
+                else () in List.iter (match_type_or_fail hd) el; Ast.TList(get_type(hd))
+    | Ast.Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
                     then type_error ("elements in Chord should all have type of " ^
-                    string_of_types TNote ^ " but the element of " ^ string_of_expr y ^
-                    " has type of " ^ string_of_types ty)
-                else () in List.iter (match_type_or_fail hd) el; TChord
-    | System(el) -> (* Check all elements have type of TChord *)
+                    " but the element of "  ^
+                    " has type of " )
+                else () in List.iter (match_type_or_fail hd) el; Ast.TChord
+    | Ast.System(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
                     then type_error ("elements in System should all have type of " ^ 
-                    string_of_types TChord ^ " but the element of " ^ string_of_expr y ^
-                    " has type of " ^ string_of_types ty)
-                else () in List.iter (match_type_or_fail hd) el; TSystem
-    | _ -> Unknown
+                     " but the element of "  ^
+                    " has type of " )
+                else () in List.iter (match_type_or_fail hd) el; Ast.TSystem
+    | _ -> Ast.Unknown
 
 (* First pass walk_decl -> Try to construct a symbol table *)
 let walk_decl prog = function
-    Tysig(id,types) -> (*print_string "type signature\n"; *)
+    Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
                 let func = {name=id; v_type = types} in 
                 (*Check if we already have a type signature for this identifier in the
                 current scope *)
@@ -117,15 +119,17 @@ let walk_decl prog = function
                     then {decls = prog.decls; symtab = prog.symtab}
                 (* If identifier doesn't exist in current scope, add this type signature
                 to the environment *)
-                else {decls = prog.decls @ [STypesig(id, types)];
+                else {decls = prog.decls @ [STypesig(func)];
                 symtab = (add_var func prog.symtab)}
-    | Vardef(id, expr) -> (* print_string "var definition\n"; *)
-                if( is_declared_here id prog) 
+                (*
+    | Ast.Vardef(id, expr) -> (* print_string "var definition\n"; *)
+                if( is_declared_here id prog.symtab) 
                     then raise (Multiple_declarations id)
                 else 
                     { decls = prog.decls @ [SVardef(id, expr)];
                     symtab = (add_var 
                         {name=id; v_type = [get_type expr]} prog.symtab) } 
+                    *)
                     (*
     | Funcdec(fdec) ->  (*print_string "function declaration\n";*)
         let new_scope = Child([], prog.symtab, []) in

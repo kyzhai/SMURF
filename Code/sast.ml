@@ -48,7 +48,6 @@ let rec string_of_symbol_table symtab =
     else (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
         String.concat "\n\t" (List.map string_of_s_ids symtab.identifiers) ^"\n\t"
 
-
 let string_of_s_func_decl f = 
         "Function: " ^ f.s_fname ^ " " ^ String.concat " " 
         (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
@@ -66,5 +65,4 @@ let string_of_s_program p =
     "Program: " ^ String.concat "\n\t" 
     (List.map string_of_s_dec p.decls) ^ "\n" ^
     string_of_symbol_table p.symtab
-
 
