@@ -10,10 +10,10 @@ exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
 type s_ids = {
-	name : string;
-	v_type : types list;
+        name : string;
+        v_type : types list;
 }
-	
+        
 type symbol_table = {
     parent : symbol_table option;
     identifiers : s_ids list; 
@@ -42,7 +42,6 @@ let string_of_s_ids i =
     "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
     (List.map Ast.string_of_types i.v_type) ^ "\n"
 
-
 let rec string_of_symbol_table symtab = 
     if symtab.parent = None then "Global Scope: \n\t" ^ 
         String.concat "\t" (List.map string_of_s_ids symtab.identifiers) ^ "\n"
@@ -50,5 +49,22 @@ let rec string_of_symbol_table symtab =
         String.concat "\n\t" (List.map string_of_s_ids symtab.identifiers) ^"\n\t"
 
 
+let string_of_s_func_decl f = 
+        "Function: " ^ f.s_fname ^ " " ^ String.concat " " 
+        (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
+        String.concat " -> " (List.map Ast.string_of_types f.type_sig) ^ " =\n" 
+        ^ Ast.string_of_expr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
+        
+
+let string_of_s_dec = function
+      STypesig(i) -> "STypesig: " ^ string_of_s_ids i
+    | SFuncdec(f) -> "SFuncdec: " ^ string_of_s_func_decl f
+    | SVardef(i, e) -> "SVardef: \n" ^ string_of_s_ids i ^ "\n\t" ^ Ast.string_of_expr e
+    | SMain(e) -> "SMain: " ^ Ast.string_of_expr e
+
+let string_of_s_program p = 
+    "Program: " ^ String.concat "\n\t" 
+    (List.map string_of_s_dec p.decls) ^ "\n" ^
+    string_of_symbol_table p.symtab
 
 
