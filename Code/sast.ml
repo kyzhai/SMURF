@@ -112,18 +112,20 @@ let rec add_ids scope = function
 
 (* Returns a type from an expression*)
 let rec get_type = function
-        Literal(l) -> Unknown (* TInt or TBeat *)
+      Literal(l) -> Unknown (* TInt or TBeat *)
     | Boolean(b) -> TBool
     | Variable(s) -> Unknown (* look up in symbol table? *)
     | Binop(e1, o, e2) -> Unknown (* Check type of operator *)
     | If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
         if te1 <> TBool then 
-            type_error (string_of_expr e1 ^ " has type " ^ string_of_types te1 ^ " but is used as if it has type Bool")
+            type_error (string_of_expr e1 ^ " has type " ^ string_of_types te1 
+                    ^ " but is used as if it has type Bool")
         else let te2 = get_type e2 in 
              let te3 = get_type e3 in 
              if te2 <> te3 then
-                type_error (string_of_expr e2 ^ " has type " ^ string_of_types te2 ^ " but " ^ string_of_expr e3 ^ " has type " ^ string_of_types te3)
+                type_error (string_of_expr e2 ^ " has type " ^ string_of_types te2 
+                        ^ " but " ^ string_of_expr e3 ^ " has type " ^ string_of_types te3)
                 else te2
     | Beat(i1, i2) -> TBeat
     | Note(pc, reg, b) -> TNote
@@ -133,7 +135,7 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in list have different types")
+                    then type_error ("Elements in list have different types")
                 else () in List.iter (match_type_or_fail hd) el; TList(get_type(hd))
     | Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
@@ -141,15 +143,26 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in Chord should all have type of " ^ string_of_types TNote ^ " but the element of " ^ string_of_expr y ^ " has type of " ^ string_of_types ty)
-                else () in List.iter (match_type_or_fail hd) el; TChord
+                    then type_error ("Elements in Chord should all have type of " 
+                            ^ string_of_types TNote ^ " but the element of " ^ string_of_expr y 
+                            ^ " has type of " ^ string_of_types ty)
+                else () in List.iter (match_type_or_fail hd) el; 
+        let hd = List.hd el in 
+            let match_duration_or_fail x y = match x, y with
+                 Note(p1,r1,bt1), Note(p2,r2,bt2) -> (if (string_of_expr bt1) <> (string_of_expr bt2) 
+                        then type_error ("The time durating of " ^ string_of_expr bt1 
+                            ^ " is not the same as that of " ^ string_of_expr bt2) else ())
+               | _,_ -> type_error ("Not expected exception")
+        in List.iter (match_duration_or_fail hd) el; TChord
     | System(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in System should all have type of " ^ string_of_types TChord ^ " but the element of " ^ string_of_expr y ^ " has type of " ^ string_of_types ty)
+                    then type_error ("Elements in System should all have type of " 
+                            ^ string_of_types TChord ^ " but the element of " ^ string_of_expr y 
+                            ^ " has type of " ^ string_of_types ty)
                 else () in List.iter (match_type_or_fail hd) el; TSystem
     | _ -> Unknown
 

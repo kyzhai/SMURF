@@ -74,7 +74,7 @@ let rec string_of_expr = function
             if n>0 then 
                 repeat (n-1) ("." ^ s)
             else s in repeat i2 ""
-  | Note(pc, reg, Beat(i1, i2)) -> " (" ^ string_of_expr pc ^ ", " ^ string_of_expr reg ^ ")$" ^ (string_of_expr (Beat(i1, i2)))
+  | Note(pc, reg, bt) -> " (" ^ string_of_expr pc ^ ", " ^ string_of_expr reg ^ ")$" ^ (string_of_expr bt)
   | List(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | Chord(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | System(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
