@@ -1,8 +1,0 @@
-f :: [a] -> a -> a
-
-f l 0 = 0
-f [] _ = True
-f [True] False = False
-f x:y:rest 3 = 5
-f [x:y:rest] [] = [3]
-f [1,2,3] x = 4

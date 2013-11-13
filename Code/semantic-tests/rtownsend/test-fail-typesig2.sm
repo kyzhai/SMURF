@@ -1,4 +1,0 @@
-/* Multiple conflicting type signatures for an identifier aren't allowed */
-
-a :: Int
-a :: Bool -> Int
