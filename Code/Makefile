@@ -1,5 +1,6 @@
 OBJ=ast.cmo \
 	sast.cmo \
+	semanalyze.cmo \
 	scanner.cmo \
 	parser.cmo \
 	util.cmo \
@@ -10,7 +11,7 @@ SMURF=smurf
 
 $(SMURF): $(OBJ)
 	ocamlc -o test util.cmo parser.cmo scanner.cmo ast.cmo test.cmo
-	ocamlc -o smurf util.cmo parser.cmo scanner.cmo ast.cmo sast.cmo smurf.cmo 
+	ocamlc -o smurf util.cmo parser.cmo scanner.cmo ast.cmo sast.cmo semanalyze.cmo smurf.cmo 
 
 .SUFFIXES: .ml .cmo .cmi .mll .mly .mli
 .PRECIOUS: %.ml %.mli %.cmo
@@ -45,6 +46,8 @@ parser.cmx : util.cmx ast.cmx parser.cmi
 parser.cmi : util.cmo ast.cmo
 sast.cmo : util.cmo ast.cmo
 sast.cmx : util.cmx ast.cmx
+semanalyze.cmo : sast.cmo util.cmo
+semanalyze.cmx : sast.cmx util.cmx
 scanner.cmo : util.cmo parser.cmi
 scanner.cmx : util.cmx parser.cmx
 smurf.cmo : util.cmo scanner.cmo sast.cmo parser.cmi
