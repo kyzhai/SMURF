@@ -28,9 +28,9 @@ type s_func_decl = {
 }
 
 type s_dec = 
-      STypesig of string * types list
+      STypesig of s_ids 
     | SFuncdec of s_func_decl
-    | SVardef of string * expr
+    | SVardef of s_ids * expr
     | SMain of expr 
 
 type s_program = {
