@@ -9,7 +9,7 @@ let type_mismatch var symtab =
 (* Check if there are multiple type signatures for an id in the same scope *)
 let rec mult_typesig id = function
     [] -> false
-    | STypesig(x, _) :: rest -> if x = id then true else mult_typesig id rest
+    | STypesig(x) :: rest -> if x.name = id then true else mult_typesig id rest
     | _ :: rest -> mult_typesig id rest
 
 (* Checks if an id is in list of vars *)
@@ -18,16 +18,16 @@ let rec in_list x = function
     | h::tl -> if x = h.name then true else in_list x tl
 
 (* Only checks current scope (might not be needed) *)
-let is_declared_here id symtab = List.find (fun (name, _) -> name = id) symtab.identifiers
+let is_declared_here id symtab = List.find (fun v -> v.name = id) symtab.identifiers
 
 (* checks all scopes if id has been declared *)
 let rec is_declared id symtab =
     try 
-        List.find (fun (name, _) -> name = id) symtab.identifiers
+        List.find (fun v -> v.name = id) symtab.identifiers
     with Not_found ->
         match symtab.parent with
             Some(parent) -> is_declared id parent
-        |   _ -> false
+        |   _ ->  
 
 (* Adds a var to a scope *)
 let add_var v symtab = symtab.identifiers <- v :: symtab.identifiers
