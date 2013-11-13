@@ -16,7 +16,7 @@
 %token <bool> BOOLEAN
 %token <string> VARIABLE
 
-%nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT 
+%nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT LET IN
 %nonassoc LLIST RLIST COMMA
 %nonassoc TYPE FUNC
 %left OR 
@@ -141,6 +141,7 @@ expr:
                                 Note(_,_,_) -> Chord($2)
                               | Chord(_) -> System($2)
                               | _ -> List($2) }
+|   LET VARIABLE BIND expr IN expr { Let($2, $4, $6) }
 
 |   callexpr                { $1 }
 
