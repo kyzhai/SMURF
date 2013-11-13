@@ -38,8 +38,9 @@ type s_program = {
     symtab : symbol_table;
 }
 
-let string_of_s_ids i = 
-    "ID: " ^ i.name ^ " :: " ^ String.concat " -> " (List.map Ast.string_of_types i.v_type) ^ "\n"
+let string_of_var v = 
+    "Var: " ^ v.name ^ " :: " ^ String.concat " -> "
+    (List.map Ast.string_of_types v.v_type) ^ "\n"
 
 
 let rec string_of_symbol_table symtab = 
@@ -48,4 +49,4 @@ let rec string_of_symbol_table symtab =
     else "\tChild Scope: " ^ 
         String.concat "\n\t" (List.map string_of_var v) ^"\n"
 
-
+    
