@@ -1,4 +1,5 @@
 open Sast
+open Ast
 open Util
 
 let type_mismatch var symtab = 
@@ -40,19 +41,18 @@ let global_env = { identifiers = []; parent = None }
 let rec collect_pat_vars = function
     [] -> []
     | (h::tl) -> match h with 
-            Ast.Patvar(s) -> [s]
+          Ast.Patvar(s) -> [s]
         | Ast.Patcomma(pl) -> collect_pat_vars pl
         | Ast.Patcons(pl1, pl2) -> 
             (collect_pat_vars [pl1]) @ (collect_pat_vars [pl2])
         | _ -> []
         @ collect_pat_vars tl
 
-(*
 let rec add_ids scope = function
     [] -> scope
     | (h::tl) -> let v = {name=h; v_type=[Ast.Unknown]} in 
                             add_ids (add_var v scope) tl 
-*)
+
 (* Returns a type from an expression*)
 let rec get_type = function
       Ast.Literal(l) -> Ast.Unknown (* TInt or TBeat *)
@@ -128,10 +128,8 @@ let walk_decl prog = function
                 else 
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 
-    | _ -> prog
-                    (*
-    | Funcdec(fdec) ->  (*print_string "function declaration\n";*)
-        let new_scope = Child([], prog.symtab, []) in
+    | Ast.Funcdec(fdec) ->  
+            let new_scope = {parent = Some(prog.symtab); identifiers = []} in
             let f_vars = collect_pat_vars fdec.args in 
             let new_scope = add_ids new_scope f_vars in
             let global = (add_child new_scope prog.symtab) in 
@@ -141,7 +139,7 @@ let walk_decl prog = function
                                             s_value = fdec.value;
                                             scope = new_scope;}) in 
                 { decls = prog.decls @ [funcdef]; symtab = global }
-                *)
+    | _ -> prog
                     (*
     | Main(expr) -> print_string "main\n"; 
         match prog.symtab with 
