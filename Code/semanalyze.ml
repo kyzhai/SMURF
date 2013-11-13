@@ -121,6 +121,7 @@ let walk_decl prog = function
                 to the environment *)
                 else {decls = prog.decls @ [STypesig(func)];
                 symtab = (add_var func prog.symtab)}
+    | _ -> prog
                 (*
     | Ast.Vardef(id, expr) -> (* print_string "var definition\n"; *)
                 if( is_declared_here id prog.symtab) 
@@ -154,3 +155,8 @@ let walk_decl prog = function
             | Child(l,p, c) -> raise Main_wrong_scope
             *)
 
+(* Right now gets called by smurf *)
+
+let first_pass list_decs = 
+    let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
+    in (print_string (string_of_s_program program)); program
