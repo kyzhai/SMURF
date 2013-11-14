@@ -27,7 +27,7 @@
 %left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
 %left TIMES DIV BTIMES BDIV MOD
 %nonassoc INV RET TRANS DOLLAR
-%left PERIOD
+%right PERIOD
 %nonassoc LPAREN RPAREN
 
 %start program
@@ -130,7 +130,7 @@ expr:
 |   LPAREN
     expr COMMA expr
     RPAREN
-    DOLLAR expr             { Note($2, $4, Beat($7, 0))  }
+    DOLLAR expr             { Note($2, $4, Beat($7, 0)) }
 
 |   PRINT expr              { Print($2) }
 |   RANDOM                  { Random }
