@@ -73,8 +73,8 @@ whitespace                  { token lexbuf } (* White space *)
 | "Chord"                   { CHORD }
 | "System"                  { SYSTEM }
 | "main"                    { MAIN }
-| "print"                   { PRINT }
-| "random"                  { RANDOM }
+(*| "print"                   { PRINT }
+| "random"                  { RANDOM } *)
 | identifier as id          { VARIABLE(id) }
 | '-'?(digit)+ as num       { LITERAL(int_of_string num) }
 | eof                       { EOF }

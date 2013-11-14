@@ -35,7 +35,9 @@ let add_var v symtab = let s = v :: symtab.identifiers in
                        let symresult = {parent = symtab.parent; identifiers = s} in symresult
 
 (* Start with an empty symbol table *)
-let global_env = { identifiers = []; parent = None } 
+let print_var = { name="print"; v_type = [Ast.Unknown] }
+let random_var = { name = "random"; v_type = [Ast.Unknown] }
+let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
