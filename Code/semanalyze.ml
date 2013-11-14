@@ -64,13 +64,14 @@ let rec get_type = function
     | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
         if te1 <> Ast.TBool then 
-            type_error (" has type " ^
-            " but is used as if it has type Bool")
+            type_error (Ast.string_of_expr e1 ^ " has type " ^ Ast.string_of_types te1
+            ^ " but is used as if it has type " ^ Ast.string_of_types Ast.TBool)
         else let te2 = get_type e2 in 
              let te3 = get_type e3 in 
              if te2 <> te3 then
-                type_error ( " has type "  ^
-                " but " ^ " has type " )
+                type_error (Ast.string_of_expr e2 ^ " has type " ^ Ast.string_of_types te2 
+                ^ " but " ^ Ast.string_of_expr e3 ^ " has type " ^ Ast.string_of_types te3 
+                ^ " which is not allowed in conditional statement")
                 else te2
     | Ast.Beat(i1, i2) -> Ast.TBeat
     | Ast.Note(pc, reg, b) -> Ast.TNote
@@ -80,7 +81,10 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in list have different types")
+                    then type_error (Ast.string_of_expr x ^ " has type of "
+                        ^ Ast.string_of_types tx ^ " but "
+                        ^ Ast.string_of_expr y ^ " has type " 
+                        ^ Ast.string_of_types ty ^ " in a same list")
                 else () in List.iter (match_type_or_fail hd) el; Ast.TList(get_type(hd))
     | Ast.Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
@@ -88,19 +92,27 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in Chord should all have type of " ^
-                    " but the element of "  ^
-                    " has type of " )
-                else () in List.iter (match_type_or_fail hd) el; Ast.TChord
+                    then type_error ("Elements in Chord should all have type of " 
+                    ^ Ast.string_of_types Ast.TNote ^ " but the element of " 
+                    ^ Ast.string_of_expr y ^ " has type of " ^ Ast.string_of_types ty)
+                else () in List.iter (match_type_or_fail hd) el; 
+        let hd = List.hd el in 
+            let match_duration_or_fail x y = match x, y with
+                 Ast.Note(p1,r1,bt1), Ast.Note(p2,r2,bt2) -> 
+                    (if (Ast.string_of_expr bt1) <> (Ast.string_of_expr bt2) 
+                        then type_error ("The time durating of " ^ Ast.string_of_expr bt1 
+                        ^ " is not the consistent with that of " ^ Ast.string_of_expr bt2) else ())
+               | _,_ -> type_error ("Not Expected Exception")
+        in List.iter (match_duration_or_fail hd) el; Ast.TChord
     | Ast.System(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in System should all have type of " ^ 
-                     " but the element of "  ^
-                    " has type of " )
+                    then type_error ("Elements in Chord should all have type of " 
+                    ^ Ast.string_of_types Ast.TChord ^ " but the element of " 
+                    ^ Ast.string_of_expr y ^ " has type of " ^ Ast.string_of_types ty)
                 else () in List.iter (match_type_or_fail hd) el; Ast.TSystem
     | _ -> Ast.Unknown
 
