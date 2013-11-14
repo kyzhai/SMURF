@@ -142,18 +142,27 @@ let walk_decl prog = function
                 else 
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 
-    | Ast.Funcdec(fdec) ->  
+
+    | _ -> prog
+    (*
+    | Ast.Funcdec(fdec) ->
+            
             let new_scope = {parent = Some(prog.symtab); identifiers = []} in
             let f_vars = collect_pat_vars fdec.args in 
             let new_scope = add_ids new_scope f_vars in
-            let global = (add_child new_scope prog.symtab) in 
+            let types = if is_declared_here fdec.fname prog.symtab (* Currently checking this scope
+                                                                      need to check higher too *)
+                        then get_func_type fdec.fname prog.symtab
+                        else [Ast.Unknown] (* Need to get types of args and expr *)
+                        in 
             let funcdef = SFuncdec({s_fname = fdec.fname; 
-                                            type_sig = [Unknown];
+                                            type_sig = types;
                                             s_args = fdec.args;
                                             s_value = fdec.value;
                                             scope = new_scope;}) in 
+            let var = {name = funcdef.s_fname; v_type = funcdef.type_sig} in
                 { decls = prog.decls @ [funcdef]; symtab = global }
-    | _ -> prog
+                *)
                     (*
     | Main(expr) -> print_string "main\n"; 
         match prog.symtab with 
