@@ -132,8 +132,8 @@ expr:
     RPAREN
     DOLLAR expr             { Note($2, $4, Beat($7, 0))  }
 
-|   PRINT expr              { Print($2) }
-|   RANDOM                  { Random }
+/*|   PRINT expr              { Print($2) }
+|   RANDOM                  { Random } */
 
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
