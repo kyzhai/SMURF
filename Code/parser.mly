@@ -141,7 +141,7 @@ expr:
                                 Note(_,_,_) -> Chord($2)
                               | Chord(_) -> System($2)
                               | _ -> List($2) }
-|   LET VARIABLE BIND expr IN expr { Let($2, $4, $6) }
+|   LET program IN expr     { Let($2, $4) }
 
 |   callexpr                { $1 }
 
