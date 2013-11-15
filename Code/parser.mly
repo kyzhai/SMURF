@@ -1,11 +1,11 @@
-%{ open Ast 
-   open Util  
+%{ open Ast
+   open Util
 %}
 
 %token NL LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
-%token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT 
+%token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT
 %token PERIOD DOLLAR
-%token LPAREN RPAREN LLIST RLIST COMMA 
+%token LPAREN RPAREN LLIST RLIST COMMA
 %token TYPE FUNC GUARD
 %token PLUS MINUS TIMES DIV MOD BTIMES BDIV BPLUS BMINUS PCPLUS PCMINUS
 %token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE
@@ -104,7 +104,6 @@ expr:
 |   expr BMINUS expr        { Binop($1, BeatSub, $3) }
 |   expr PCPLUS expr        { Binop($1, PCAdd, $3) }
 |   expr PCMINUS expr       { Binop($1, PCSub, $3) }
-
 |   expr LT expr            { Binop($1, Less, $3) }
 |   expr GT expr            { Binop($1, Greater, $3) }
 |   expr LE expr            { Binop($1, Leq, $3) }
@@ -114,13 +113,13 @@ expr:
 |   expr BLE expr           { Binop($1, BeatLeq, $3) }
 |   expr BGE expr           { Binop($1, BeatGeq, $3) }
 
-|   expr TRANS expr         { Binop($1, Trans, $3) }
-|   expr CONCAT expr        { Binop($1, Concat, $3) }
-|   expr CONS expr          { Binop($1, Cons, $3) }
-
-|   expr EQ expr            { Binop($1, BoolEq, $3) }
 |   expr AND expr           { Binop($1, And, $3) }
 |   expr OR expr            { Binop($1, Or, $3) }
+|   expr EQ expr            { Binop($1, BoolEq, $3) }
+
+|   expr CONCAT expr        { Binop($1, Concat, $3) }
+|   expr CONS expr          { Binop($1, Cons, $3) }
+|   expr TRANS expr         { Binop($1, Trans, $3) }
 
 |   NOT expr                { Prefix(Not, $2) }
 |   INV expr                { Prefix(Inv, $2) }

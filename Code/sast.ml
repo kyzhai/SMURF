@@ -13,7 +13,7 @@ type s_ids = {
         name : string;
         v_type : types list;
 }
-        
+
 type symbol_table = {
     parent : symbol_table option;
     identifiers : s_ids list; 
@@ -53,7 +53,6 @@ let string_of_s_func_decl f =
         (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
         String.concat " -> " (List.map Ast.string_of_types f.type_sig) ^ " =\n" 
         ^ Ast.string_of_expr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
-        
 
 let string_of_s_dec = function
       STypesig(i) -> "STypesig: " ^ string_of_s_ids i
@@ -65,4 +64,3 @@ let string_of_s_program p =
     "Program: " ^ String.concat "\n\t" 
     (List.map string_of_s_dec p.decls) ^ "\n" ^
     string_of_symbol_table p.symtab
-

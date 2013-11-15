@@ -60,7 +60,91 @@ let rec get_type = function
       Ast.Literal(l) -> Ast.Unknown (* TInt or TBeat *)
     | Ast.Boolean(b) -> Ast.TBool
     | Ast.Variable(s) -> Ast.Unknown (* look up in symbol table? *)
-    | Ast.Binop(e1, o, e2) -> Ast.Unknown (* Check type of operator *)
+    | Ast.Binop(e1, o, e2) ->  (* Check type of operator *)
+        let te1 = get_type e1
+        and te2 = get_type e2 in
+            (match o with
+                Ast.Add | Ast.Sub | Ast.Mul | Ast.Div | Ast. Mod |
+                Ast.Less | Ast.Leq | Ast.Greater | Ast.Geq |
+                Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul |
+                Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq |
+                Ast.PCAdd | Ast.PCSub -> (* Arithmetic and Comparison Operators *)
+                    if te1 <> Ast.TInt
+                        then type_error ("First element of this binary operation " ^
+                            "must be of type Int")
+                    else
+                        if te2 <> Ast.TInt
+                            then type_error ("Second element of this binary operation " ^
+                                "must be of type Int")
+                        else Ast.TInt
+                | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
+                    if te1 <> Ast.TBool
+                        then type_error ("First element of this binary operation " ^
+                            "must be of type Bool")
+                    else
+                        if te2 <> Ast.TBool
+                            then type_error ("Second element of this binary operation " ^
+                                "must be of type Bool")
+                        else Ast.TBool
+                | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
+                    if te1 <> te2
+                        then type_error ("Elements must be of same type for " ^
+                            "structural comparison")
+                    else te1
+                | Ast.Concat -> (* Concat: List ++ List *)
+                  Ast.Unknown (*
+                    if te1 <> Ast.TList(get_type(List.hd e1))
+                    (* if te1 <> Ast.TList(get_type(e1))*)
+                        then type_error ("First element in a Concat expression " ^
+                            "must be of type List")
+                    else
+                        if te2 <> Ast.TList(get_type(e2))
+                            then type_error ("Second element in a Concat expression " ^
+                                "must be of type List")
+                        else
+                            if te2 <> te1
+                                then type_error ("First and second element of a Concat " ^
+                                    "expression must be Lists of same type")
+                            else te1
+            *)
+                | Ast.Cons -> (* Cons: Element : List *)
+                  Ast.Unknown (*
+                    if te2 <> Ast.TList(get_type(e2))
+                        then type_error ("Second element in a Cons expression " ^
+                            "must be of type List")
+                    else
+                        if te1 <> get_type(List.hd e2)
+                            then type_error ("First element in a Cons expression " ^
+                                "must be of same type as List in second element")
+            *)
+                | Ast.Trans -> (* Trans: Int ^^ List *)
+                  Ast.Unknown (*
+                    if te1 <> Ast.TInt
+                        then type_error ("First element in a Trans expression " ^
+                            "must be of type Int")
+                    else
+                        if te2 <> Ast.TList(get_type(List.hd e2))
+                            then type_error ("Second element in a Trans expression " ^
+                                "must be of type List")
+                        else
+                            if te2 <> Ast.TList(get_type(Ast.TInt))
+                                then type_error ("Second element in a Trans " ^
+                                    "expression must be a List of type Int")
+            *)
+            )
+    | Ast.Prefix(o, e) -> (* Prefix Operators *)
+        let te = get_type e in
+        (match o with
+            Ast.Not -> (* Not: ! Bool *)
+                if te <> Ast.TBool
+                    then type_error ("Element in Not operation but be of type Bool")
+                else te
+            | Ast.Inv | Ast.Retro -> (* Row Inversion: ~ List, Row Retrograde: <> List*)
+                if te <> Ast.TList(Ast.TInt)
+                    then type_error ("Element in Prefix operation " ^
+                        "must be a List of type Int")
+                else te
+        )
     | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
         if te1 <> Ast.TBool then 
@@ -100,8 +184,9 @@ let rec get_type = function
             let match_duration_or_fail x y = match x, y with
                  Ast.Note(p1,r1,bt1), Ast.Note(p2,r2,bt2) -> 
                     (if (Ast.string_of_expr bt1) <> (Ast.string_of_expr bt2) 
-                        then type_error ("The time durating of " ^ Ast.string_of_expr bt1 
-                        ^ " is not the consistent with that of " ^ Ast.string_of_expr bt2) else ())
+                        then type_error ("The time durating of " ^ Ast.string_of_expr bt1
+                        ^ " is not the consistent with that of " ^ Ast.string_of_expr bt2)
+                        else ())
                | _,_ -> type_error ("Not Expected Exception")
         in List.iter (match_duration_or_fail hd) el; Ast.TChord
     | Ast.System(el) -> (* Check all elements have type of TChord *)
@@ -150,8 +235,8 @@ let walk_decl prog = function
             let new_scope = {parent = Some(prog.symtab); identifiers = []} in
             let f_vars = collect_pat_vars fdec.args in 
             let new_scope = add_ids new_scope f_vars in
-            let types = if is_declared_here fdec.fname prog.symtab (* Currently checking this scope
-                                                                      need to check higher too *)
+            let types = if is_declared_here fdec.fname prog.symtab 
+            (* Currently checking this scope need to check higher too *)
                         then get_func_type fdec.fname prog.symtab
                         else [Ast.Unknown] (* Need to get types of args and expr *)
                         in 
