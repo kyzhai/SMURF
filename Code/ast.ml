@@ -9,7 +9,7 @@ type prefix_operator = Not | Inv | Retro
 
 (* Not sure if these should be here...doing it for type signature definition *)
 type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types |
-              TPoly of string | Unknown
+              TPoly of string 
 
 type expr =                                 (* Expressions *)
       Literal of int                        (* 42 *)
@@ -98,7 +98,6 @@ and string_of_types  = function
     TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
   | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
   | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v
-  | Unknown -> "Type Unknown"
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
