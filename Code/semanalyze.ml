@@ -1,4 +1,5 @@
 open Sast
+open Ast
 open Util
 
 let type_mismatch var symtab = 
@@ -34,25 +35,26 @@ let add_var v symtab = let s = v :: symtab.identifiers in
                        let symresult = {parent = symtab.parent; identifiers = s} in symresult
 
 (* Start with an empty symbol table *)
-let global_env = { identifiers = []; parent = None } 
+let print_var = { name="print"; v_type = [Ast.Unknown] }
+let random_var = { name = "random"; v_type = [Ast.Unknown] }
+let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
     [] -> []
     | (h::tl) -> match h with 
-            Ast.Patvar(s) -> [s]
+          Ast.Patvar(s) -> [s]
         | Ast.Patcomma(pl) -> collect_pat_vars pl
         | Ast.Patcons(pl1, pl2) -> 
             (collect_pat_vars [pl1]) @ (collect_pat_vars [pl2])
         | _ -> []
         @ collect_pat_vars tl
 
-(*
 let rec add_ids scope = function
     [] -> scope
     | (h::tl) -> let v = {name=h; v_type=[Ast.Unknown]} in 
                             add_ids (add_var v scope) tl 
-*)
+
 (* Returns a type from an expression*)
 let rec get_type = function
       Ast.Literal(l) -> Ast.Unknown (* TInt or TBeat *)
@@ -62,13 +64,14 @@ let rec get_type = function
     | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
         if te1 <> Ast.TBool then 
-            type_error (" has type " ^
-            " but is used as if it has type Bool")
+            type_error (Ast.string_of_expr e1 ^ " has type " ^ Ast.string_of_types te1
+            ^ " but is used as if it has type " ^ Ast.string_of_types Ast.TBool)
         else let te2 = get_type e2 in 
              let te3 = get_type e3 in 
              if te2 <> te3 then
-                type_error ( " has type "  ^
-                " but " ^ " has type " )
+                type_error (Ast.string_of_expr e2 ^ " has type " ^ Ast.string_of_types te2 
+                ^ " but " ^ Ast.string_of_expr e3 ^ " has type " ^ Ast.string_of_types te3 
+                ^ " which is not allowed in conditional statement")
                 else te2
     | Ast.Beat(i1, i2) -> Ast.TBeat
     | Ast.Note(pc, reg, b) -> Ast.TNote
@@ -78,7 +81,10 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("Elements in list have different types")
+                    then type_error (Ast.string_of_expr x ^ " has type of "
+                        ^ Ast.string_of_types tx ^ " but "
+                        ^ Ast.string_of_expr y ^ " has type " 
+                        ^ Ast.string_of_types ty ^ " in a same list")
                 else () in List.iter (match_type_or_fail hd) el; Ast.TList(get_type(hd))
     | Ast.Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
@@ -86,19 +92,27 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("Elements in Chord should all have type of " ^
-                    " but the element of "  ^
-                    " has type of " )
-                else () in List.iter (match_type_or_fail hd) el; Ast.TChord
+                    then type_error ("Elements in Chord should all have type of " 
+                    ^ Ast.string_of_types Ast.TNote ^ " but the element of " 
+                    ^ Ast.string_of_expr y ^ " has type of " ^ Ast.string_of_types ty)
+                else () in List.iter (match_type_or_fail hd) el; 
+        let hd = List.hd el in 
+            let match_duration_or_fail x y = match x, y with
+                 Ast.Note(p1,r1,bt1), Ast.Note(p2,r2,bt2) -> 
+                    (if (Ast.string_of_expr bt1) <> (Ast.string_of_expr bt2) 
+                        then type_error ("The time durating of " ^ Ast.string_of_expr bt1 
+                        ^ " is not the consistent with that of " ^ Ast.string_of_expr bt2) else ())
+               | _,_ -> type_error ("Not Expected Exception")
+        in List.iter (match_duration_or_fail hd) el; Ast.TChord
     | Ast.System(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("Elements in System should all have type of " ^ 
-                     " but the element of "  ^
-                    " has type of " )
+                    then type_error ("Elements in Chord should all have type of " 
+                    ^ Ast.string_of_types Ast.TChord ^ " but the element of " 
+                    ^ Ast.string_of_expr y ^ " has type of " ^ Ast.string_of_types ty)
                 else () in List.iter (match_type_or_fail hd) el; Ast.TSystem
     | _ -> Ast.Unknown
 
@@ -121,26 +135,32 @@ let walk_decl prog = function
                 to the environment *)
                 else {decls = prog.decls @ [STypesig(func)];
                 symtab = (add_var func prog.symtab)}
-                (*
-    | Ast.Vardef(id, expr) -> (* print_string "var definition\n"; *)
+    | Ast.Vardef(id, expr) -> 
+                let var = {name=id; v_type = [get_type expr]} in
                 if( is_declared_here id prog.symtab) 
                     then raise (Multiple_declarations id)
                 else 
-                    { decls = prog.decls @ [SVardef(id, expr)];
-                    symtab = (add_var 
-                        {name=id; v_type = [get_type expr]} prog.symtab) } 
-                    *)
-                    (*
-    | Funcdec(fdec) ->  (*print_string "function declaration\n";*)
-        let new_scope = Child([], prog.symtab, []) in
+                    { decls = prog.decls @ [SVardef(var, expr)];
+                    symtab = (add_var var prog.symtab) } 
+
+    | _ -> prog
+    (*
+    | Ast.Funcdec(fdec) ->
+            
+            let new_scope = {parent = Some(prog.symtab); identifiers = []} in
             let f_vars = collect_pat_vars fdec.args in 
             let new_scope = add_ids new_scope f_vars in
-            let global = (add_child new_scope prog.symtab) in 
+            let types = if is_declared_here fdec.fname prog.symtab (* Currently checking this scope
+                                                                      need to check higher too *)
+                        then get_func_type fdec.fname prog.symtab
+                        else [Ast.Unknown] (* Need to get types of args and expr *)
+                        in 
             let funcdef = SFuncdec({s_fname = fdec.fname; 
-                                            type_sig = [Unknown];
+                                            type_sig = types;
                                             s_args = fdec.args;
                                             s_value = fdec.value;
                                             scope = new_scope;}) in 
+            let var = {name = funcdef.s_fname; v_type = funcdef.type_sig} in
                 { decls = prog.decls @ [funcdef]; symtab = global }
                 *)
                     (*
@@ -154,3 +174,8 @@ let walk_decl prog = function
             | Child(l,p, c) -> raise Main_wrong_scope
             *)
 
+(* Right now gets called by smurf *)
+
+let first_pass list_decs = 
+    let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
+    in (print_string (string_of_s_program program)); program
