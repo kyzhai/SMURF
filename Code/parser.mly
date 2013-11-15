@@ -121,10 +121,10 @@ expr:
 |   expr EQ expr            { Binop($1, BoolEq, $3) }
 |   expr AND expr           { Binop($1, And, $3) }
 |   expr OR expr            { Binop($1, Or, $3) }
-|   NOT expr                { Unop(Not, $2) }
 
-|   INV expr                { Rowop(Inv, $2) }
-|   RET expr                { Rowop(Retro, $2) }
+|   NOT expr                { Prefix(Not, $2) }
+|   INV expr                { Prefix(Inv, $2) }
+|   RET expr                { Prefix(Retro, $2) }
 
 |   expr dots               { Beat($1, $2) }
 |   LPAREN

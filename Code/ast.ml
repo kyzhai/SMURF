@@ -3,9 +3,7 @@ type operator = Add | Sub | Mul | Div | Mod | BeatDiv | BeatMul | BeatAdd | Beat
                 BeatLeq | BeatGreater | BeatGeq | PCLess | PCLeq | PCGreater | PCGeq |
                 Concat | Cons | Equal | Trans
 
-type unary_operator = Not
-
-type row_operator = Inv | Retro
+type prefix_operator = Not | Inv | Retro
 
 (* Not sure if these should be here...doing it for type signature definition *)
 type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types |
@@ -20,12 +18,11 @@ type expr =                                 (* Expressions *)
     | Print of expr                         (* print 3+4 *)
     | Random                                (* random *)
     | Binop of expr * operator * expr       (* a + 2 *)
-    | Unop of unary_operator * expr         (* ! a == 4 *)
-    | Rowop of row_operator * expr          (* ~[1,2,3,4,5,6] *)
+    | Prefix of prefix_operator * expr      (* ! a == 4 *)
     | If of expr * expr * expr              (* if b == 4 then True else False *)
     | List of expr list                     (* [1,2,3,4] *)
-    | Chord of expr list                    (* [Note1, Note2]*)
-    | System of expr list                   (* [Chord1, Chord2]*)
+    | Chord of expr list                    (* [(11,3)$4., (5,2)$4.]*)
+    | System of expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
     | Call of expr * expr                   (* foo a *)
     | Let of string * expr * expr           (* let x = 4 in x + 2 *)
 

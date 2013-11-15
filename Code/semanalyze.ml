@@ -78,7 +78,7 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in list have different types")
+                    then type_error ("Elements in list have different types")
                 else () in List.iter (match_type_or_fail hd) el; Ast.TList(get_type(hd))
     | Ast.Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
@@ -86,7 +86,7 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in Chord should all have type of " ^
+                    then type_error ("Elements in Chord should all have type of " ^
                     " but the element of "  ^
                     " has type of " )
                 else () in List.iter (match_type_or_fail hd) el; Ast.TChord
@@ -96,7 +96,7 @@ let rec get_type = function
                 let tx = (get_type x) in 
                 let ty = (get_type y) in 
                 if tx <> ty 
-                    then type_error ("elements in System should all have type of " ^ 
+                    then type_error ("Elements in System should all have type of " ^ 
                      " but the element of "  ^
                     " has type of " )
                 else () in List.iter (match_type_or_fail hd) el; Ast.TSystem
