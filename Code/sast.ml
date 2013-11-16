@@ -9,11 +9,14 @@ exception Main_wrong_scope
 exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
+type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
+              Poly of string | Unknown | Num
+
 type s_ids = {
         name : string;
-        v_type : types list;
+        v_type : s_type list;
 }
-        
+
 type symbol_table = {
     parent : symbol_table option;
     identifiers : s_ids list; 
@@ -21,7 +24,7 @@ type symbol_table = {
 
 type s_func_decl = {
     s_fname : string; 
-    type_sig : types list;
+    type_sig : s_type list;
     s_args :  pattern list;
     s_value : expr;
     scope : symbol_table;
@@ -38,9 +41,21 @@ type s_program = {
     symtab : symbol_table;
 }
 
+let rec string_of_s_type = function
+      Int -> "Int"
+    | Bool -> "Bool"
+    | Note -> "Note"
+    | Beat -> "Beat"
+    | Chord -> "Chord"
+    | System -> "System"
+    | List(t) -> "[" ^ string_of_s_type t ^ "]"
+    | Poly(s) -> s
+    | Unknown -> "Unknown"
+    | Num -> "Num"
+
 let string_of_s_ids i = 
     "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
-    (List.map Ast.string_of_types i.v_type) ^ "\n"
+    (List.map string_of_s_type i.v_type) ^ "\n"
 
 let rec string_of_symbol_table symtab = 
     if symtab.parent = None then "Global Scope: \n\t" ^ 
@@ -51,9 +66,8 @@ let rec string_of_symbol_table symtab =
 let string_of_s_func_decl f = 
         "Function: " ^ f.s_fname ^ " " ^ String.concat " " 
         (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
-        String.concat " -> " (List.map Ast.string_of_types f.type_sig) ^ " =\n" 
+        String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " =\n" 
         ^ Ast.string_of_expr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
-        
 
 let string_of_s_dec = function
       STypesig(i) -> "STypesig: " ^ string_of_s_ids i
@@ -65,4 +79,3 @@ let string_of_s_program p =
     "Program: " ^ String.concat "\n\t" 
     (List.map string_of_s_dec p.decls) ^ "\n" ^
     string_of_symbol_table p.symtab
-

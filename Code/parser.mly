@@ -1,11 +1,11 @@
-%{ open Ast 
-   open Util  
+%{ open Ast
+   open Util
 %}
 
 %token NL LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
-%token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT 
+%token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT
 %token PERIOD DOLLAR
-%token LPAREN RPAREN LLIST RLIST COMMA 
+%token LPAREN RPAREN LLIST RLIST COMMA
 %token TYPE FUNC GUARD
 %token PLUS MINUS TIMES DIV MOD BTIMES BDIV BPLUS BMINUS PCPLUS PCMINUS
 %token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE
@@ -104,7 +104,6 @@ expr:
 |   expr BMINUS expr        { Binop($1, BeatSub, $3) }
 |   expr PCPLUS expr        { Binop($1, PCAdd, $3) }
 |   expr PCMINUS expr       { Binop($1, PCSub, $3) }
-
 |   expr LT expr            { Binop($1, Less, $3) }
 |   expr GT expr            { Binop($1, Greater, $3) }
 |   expr LE expr            { Binop($1, Leq, $3) }
@@ -114,17 +113,17 @@ expr:
 |   expr BLE expr           { Binop($1, BeatLeq, $3) }
 |   expr BGE expr           { Binop($1, BeatGeq, $3) }
 
-|   expr TRANS expr         { Binop($1, Trans, $3) }
-|   expr CONCAT expr        { Binop($1, Concat, $3) }
-|   expr CONS expr          { Binop($1, Cons, $3) }
-
-|   expr EQ expr            { Binop($1, BoolEq, $3) }
 |   expr AND expr           { Binop($1, And, $3) }
 |   expr OR expr            { Binop($1, Or, $3) }
-|   NOT expr                { Unop(Not, $2) }
+|   expr EQ expr            { Binop($1, BoolEq, $3) }
 
-|   INV expr                { Rowop(Inv, $2) }
-|   RET expr                { Rowop(Retro, $2) }
+|   expr CONCAT expr        { Binop($1, Concat, $3) }
+|   expr CONS expr          { Binop($1, Cons, $3) }
+|   expr TRANS expr         { Binop($1, Trans, $3) }
+
+|   NOT expr                { Prefix(Not, $2) }
+|   INV expr                { Prefix(Inv, $2) }
+|   RET expr                { Prefix(Retro, $2) }
 
 |   expr dots               { Beat($1, $2) }
 |   LPAREN
@@ -132,8 +131,8 @@ expr:
     RPAREN
     DOLLAR expr             { Note($2, $4, $7) }
 
-|   PRINT expr              { Print($2) }
-|   RANDOM                  { Random }
+/*|   PRINT expr              { Print($2) }
+|   RANDOM                  { Random } */
 
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
@@ -141,7 +140,7 @@ expr:
                                 Note(_,_,_) -> Chord($2)
                               | Chord(_) -> System($2)
                               | _ -> List($2) }
-|   LET VARIABLE BIND expr IN expr { Let($2, $4, $6) }
+|   LET program IN expr     { Let($2, $4) }
 
 |   callexpr                { $1 }
 

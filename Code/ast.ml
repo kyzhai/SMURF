@@ -1,15 +1,15 @@
-type operator = Add | Sub | Mul | Div | Mod | BeatDiv | BeatMul | BeatAdd | BeatSub |
-                PCAdd | PCSub | BoolEq | And | Or | Less | Leq | Greater | Geq | BeatLess |
-                BeatLeq | BeatGreater | BeatGeq | PCLess | PCLeq | PCGreater | PCGeq |
-                Concat | Cons | Equal | Trans
+type operator = Add | Sub | Mul | Div | Mod |
+                Less | Leq | Greater | Geq |
+                BeatAdd | BeatSub | BeatDiv | BeatMul |
+                BeatLess | BeatLeq | BeatGreater | BeatGeq |
+                PCAdd | PCSub |
+                BoolEq | And | Or | Concat | Cons | Trans
 
-type unary_operator = Not
-
-type row_operator = Inv | Retro
+type prefix_operator = Not | Inv | Retro
 
 (* Not sure if these should be here...doing it for type signature definition *)
 type types = TInt | TBool | TNote | TBeat | TChord | TSystem | TList of types |
-              TPoly of string | Unknown
+              TPoly of string 
 
 type expr =                                 (* Expressions *)
       Literal of int                        (* 42 *)
@@ -20,16 +20,27 @@ type expr =                                 (* Expressions *)
     | Print of expr                         (* print 3+4 *)
     | Random                                (* random *)
     | Binop of expr * operator * expr       (* a + 2 *)
-    | Unop of unary_operator * expr         (* ! a == 4 *)
-    | Rowop of row_operator * expr          (* ~[1,2,3,4,5,6] *)
+    | Prefix of prefix_operator * expr      (* ! a == 4 *)
     | If of expr * expr * expr              (* if b == 4 then True else False *)
     | List of expr list                     (* [1,2,3,4] *)
-    | Chord of expr list                    (* [Note1, Note2]*)
-    | System of expr list                   (* [Chord1, Chord2]*)
+    | Chord of expr list                    (* [(11,3)$4., (5,2)$4.]*)
+    | System of expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
     | Call of expr * expr                   (* foo a *)
-    | Let of string * expr * expr           (* let x = 4 in x + 2 *)
+    | Let of dec list * expr                (* let x = 4 in x + 2 *)
 
-type pattern =                              (* Patterns *)
+and dec =                                   (* Declarations *)
+    Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
+    | Funcdec of func_decl                  (* f x y = x + y *)
+    | Vardef of string * expr               (* x = (2 + 5) : [1,2,3] *)
+    | Main of expr                          (* main (f x) + (g x) *)
+
+and func_decl = {                      (* Function Declaration *)
+    fname : string;                         (* Function name *)
+    args : pattern list;                    (* Pattern arguments *)
+    value : expr;                           (* Expression bound to function *)
+}
+
+and pattern =                          (* Patterns *)
     Patconst of int                         (* integer *)
     | Patbool of bool                       (* boolean *)
     | Patvar of string                      (* identifier*)
@@ -37,25 +48,7 @@ type pattern =                              (* Patterns *)
     | Patcomma of pattern list              (* [pattern, pattern, pattern, ... ] or [] *)
     | Patcons of pattern * pattern          (* pattern : pattern *)
 
-type func_decl = {                          (* Function Declaration *)
-    fname : string;                         (* Function name *)
-    args : pattern list;                    (* Pattern arguments *)
-    value : expr;                           (* Expression bound to function *)
-}
-
-type dec =                                  (* Declarations *)
-    Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
-    | Funcdec of func_decl                  (* f x y = x + y *)
-    | Vardef of string * expr               (* x = (2 + 5) : [1,2,3] *)
-    | Main of expr                          (* main (f x) + (g x) *)
-
 type program = dec list                     (* A program is a list of declarations *)
-
-    (*
-type stmt =                                 (* Statements *)
-    Expr of expr                            (* c = 4 : [3,2,1] *)
-    | If of expr * stmt * stmt              (* if b == 4 then True else False *)
-    *)
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
@@ -80,32 +73,32 @@ let rec string_of_expr = function
   | List(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | Chord(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | System(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
-  | Let(decl, exp1, exp2) -> "let " ^ decl ^ " = " ^ string_of_expr exp1 ^ " in " ^
-    string_of_expr exp2
   | Call(exp1,exp2) -> string_of_expr exp1 ^ " " ^ string_of_expr exp2
+  | Let(decl, exp) -> "let " ^ (String.concat " " (List.map string_of_dec decl)) ^ 
+                      " in " ^ string_of_expr exp
   | x -> "other expr"
 
-let rec string_of_patterns  = function
-    Patconst(l) -> string_of_int l
-    | Patbool(b) -> string_of_bool b
-    | Patwild -> "_"
-    | Patvar(s) -> s
-    | Patcomma(p) -> "[" ^ (String.concat ", " (List.map string_of_patterns p)) ^ "]"
-    | Patcons(p1, p2) -> (string_of_patterns p1) ^ " : " ^ (string_of_patterns p2)
-
-let rec string_of_types  = function
-    TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
-    | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
-    | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v
-    | Unknown -> "Type Unknown"
-
-let string_of_dec  = function
+and string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^
       "\n"
-    | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
-    | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " 
+  | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
+  | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " 
       (List.map string_of_patterns fdec.args) ^ " = " ^ string_of_expr fdec.value ^ "\n"
-    | Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
+  | Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
+
+and string_of_patterns  = function
+    Patconst(l) -> string_of_int l
+  | Patbool(b) -> string_of_bool b
+  | Patwild -> "_"
+  | Patvar(s) -> s
+  | Patcomma(p) -> "[" ^ (String.concat ", " (List.map string_of_patterns p)) ^ "]"
+  | Patcons(p1, p2) -> (string_of_patterns p1) ^ " : " ^ (string_of_patterns p2)
+
+and string_of_types  = function
+    TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
+  | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
+  | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
+
