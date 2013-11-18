@@ -3,10 +3,8 @@
 \setlength{\grammarindent}{4em}
 
 This section of the LRM describes the syntax and informal semantics of
-declarations in SMURF. A program in SMURF, at its top-most level, is a series of declarations
-separated by newline tokens.
-Declarations may also occur inside of
-\texttt{let} expressions (but still must be separated with newline tokens).
+declarations in SMURF. Declarations may occur at the top-level of a SMURF program or inside of
+\texttt{let} expressions, with each declaration being separated from others with newline tokens.
 The scoping of such declarations is described 
 in this section. There are three types of declarations in SMURF: 
 type signatures, definitions, and function declarations.
@@ -28,7 +26,7 @@ Declaration Operator & Description & Example \\
 
 \begin{grammar}
 
-<type-sig> $\rightarrow$ <identifier> \texttt{::} (<type>|<function-type>) <newline>
+<type-sig> $\rightarrow$ <identifier> \texttt{::} (<type>|<function-type>)
 
 <function-type> $\rightarrow$ <type> \texttt{->} <type> (\texttt{->} <type>)*
 
@@ -102,7 +100,7 @@ in different scopes. There are three categories of types in SMURF: basic,  struc
 
 \begin{grammar}
 
-<definition> $\rightarrow$ <identifier> $=$ <expression> <newline>
+<definition> $\rightarrow$ <identifier> $=$ <expression>
 
 \end{grammar}
 
@@ -132,7 +130,7 @@ A type signature may be given for a definition but is not required.
 \setlength{\grammarindent}{5em}
 \begin{grammar}
 
-<fun-dec> $\rightarrow$ <identifier> <args> $=$ <expression> <newline> (<fun-dec>)*
+<fun-dec> $\rightarrow$ <identifier> <args> $=$ <expression>
 
 <args> $\rightarrow$ <pattern> \\ <pattern> <args> 
 
