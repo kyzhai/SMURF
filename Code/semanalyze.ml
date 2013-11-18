@@ -12,16 +12,45 @@ let rec types_to_s_type = function
     | TList(l) -> Sast.List(types_to_s_type l)
     | TPoly(s) -> Sast.Poly(s)
 
+let equiv_type v1 = match v1 with
+      Sast.Num -> [Sast.Int; Sast.Beat; Sast.Num]
+    | Sast.Chord -> [Sast.List(Sast.Note); Sast.Chord]
+    | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
+    | x -> [x]
+
+let rec diff_types v1 v2 = match v1, v2 with
+    | x::t1, y::t2 -> if ((List.mem x (equiv_type y)) || (List.mem y (equiv_type x)))
+                      then diff_types t1 t2 else true
+    | [], [] -> false
+    | [], _::_ -> true
+    | _::_, [] -> true
+
 let type_mismatch var symtab = 
-    let v = List.find (fun n -> n.name = var.name) symtab.identifiers
-    in v.v_type <> var.v_type
+    let v = List.find (fun n -> n.name = var.name) symtab.identifiers in
+    let v1 = v.v_type in
+    let v2 = var.v_type in
+    let is_poly t = match t with
+        | Sast.Poly(_) -> true
+        | _ -> false
+    in
+    let poly_check = is_poly (List.hd v1) || is_poly (List.hd v2) in
+    if (List.length v1 = 1 && List.length v2 = 1 && poly_check)
+    then false
+    else diff_types v1 v2
 
 
-(* Check if there are multiple type signatures for an id in the same scope *)
-let rec mult_typesig id = function
+(* Check if a type signatures exists for an id in the current scope *)
+let rec exists_typesig id = function
     [] -> false
-    | STypesig(x) :: rest -> if x.name = id then true else mult_typesig id rest
-    | _ :: rest -> mult_typesig id rest
+    | STypesig(x) :: rest -> if x.name = id then true else exists_typesig id rest
+    | _ :: rest -> exists_typesig id rest
+
+(* Check if a definition exists for an id in the current scope *)
+let rec exists_dec id = function
+    [] -> false
+    | SVardef(x, _) :: rest -> if x.name = id then true else exists_dec id rest
+    | SFuncdec(f) :: rest -> if f.s_fname = id then true else exists_dec id rest
+    | _ :: rest -> exists_dec id rest
 
 (* Checks if an id is in list of vars *)
 let rec in_list x = function
@@ -217,25 +246,22 @@ let rec get_type = function
 let walk_decl prog = function
     Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
                 let func = {name=id; v_type = (List.map types_to_s_type types)} in 
-                (*Check if we already have a type signature for this identifier in the
-                current scope *)
-                if (mult_typesig id prog.decls)
+                if (exists_typesig id prog.decls)
                     then raise (Multiple_type_sigs id)
                 (* Check if we have bound this identifier to an expression whose type
                 contradicts this signature *)
                 else if (is_declared_here id prog.symtab && type_mismatch func prog.symtab)
                     then raise (Type_mismatch id)
-                (* If type of signature matches that of bound expr, do nothing *)
-                else if (is_declared_here id prog.symtab)
-                    then {decls = prog.decls; symtab = prog.symtab}
-                (* If identifier doesn't exist in current scope, add this type signature
-                to the environment *)
+                (* Add type signature to current environment *)
                 else {decls = prog.decls @ [STypesig(func)];
-                symtab = (add_var func prog.symtab)}
+                      symtab = (add_var func prog.symtab)}
     | Ast.Vardef(id, expr) -> 
                 let var = {name=id; v_type = [get_type expr]} in
-                if( is_declared_here id prog.symtab) 
+                if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
+                (* Only worry if tysig given in same scope doesn't match this var's type *)
+                else if(is_declared_here id prog.symtab && type_mismatch var prog.symtab)
+                    then raise (Type_mismatch id)
                 else 
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 
