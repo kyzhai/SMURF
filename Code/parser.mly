@@ -57,7 +57,7 @@ dec:
 |   VARIABLE TYPE func_types        { Tysig($1, List.rev $3) }  /* function type-sig have >= 2 types */
 |   VARIABLE BIND expr              { Vardef($1, $3) }
 |   VARIABLE patterns BIND expr     { Funcdec{ fname = $1; args = List.rev $2; value = $4 } }
-|   MAIN expr                                               { Main($2) }
+|   MAIN BIND expr                  { Main($3) }
 
 /* types for vars */
 types:
