@@ -108,83 +108,70 @@ let rec get_type = function
                 Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul |
                 Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq |
                 Ast.PCAdd | Ast.PCSub -> (* Arithmetic and Comparison Operators *)
-                    if te1 <> Num (*Ast.TInt*)
-                        then type_error ("First element of this binary operation " ^
+                    if te1 <> Sast.Int 
+                    then type_error ("First element of this binary operation " ^
+                        "must be of type Int")
+                    else
+                        if te2 <> Sast.Int
+                        then type_error ("Second element of this binary operation " ^
                             "must be of type Int")
-                    else
-                        if te2 <> Num (*Ast.TInt*)
-                            then type_error ("Second element of this binary operation " ^
-                                "must be of type Int")
-                        else Num (*Ast.TInt*)
+                        else Sast.Int
                 | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
-                    if te1 <> Bool
-                        then type_error ("First element of this binary operation " ^
-                            "must be of type Bool")
+                    if te1 <> Sast.Bool
+                    then type_error ("First element of this binary operation " ^
+                        "must be of type Bool")
                     else
-                        if te2 <> Bool
-                            then type_error ("Second element of this binary operation " ^
-                                "must be of type Bool")
-                        else Bool
+                        if te2 <> Sast.Bool
+                        then type_error ("Second element of this binary operation " ^
+                            "must be of type Bool")
+                        else Sast.Bool
                 | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
                     if te1 <> te2
-                        then type_error ("Elements must be of same type for " ^
-                            "structural comparison")
+                    then type_error ("Elements must be of same type for " ^
+                        "structural comparison")
                     else te1
                 | Ast.Concat -> (* Concat: List ++ List *)
-                  Unknown (*
-                    if te1 <> Ast.TList(get_type(List.hd e1))
-                    (* if te1 <> Ast.TList(get_type(e1))*)
-                        then type_error ("First element in a Concat expression " ^
-                            "must be of type List")
+                    (* Not sure this checks the correct thing *)
+                    if te1 <> Sast.List(get_type e1)
+                    then type_error ("First element in a Concat expression " ^
+                        "must be of type List")
                     else
-                        if te2 <> Ast.TList(get_type(e2))
-                            then type_error ("Second element in a Concat expression " ^
-                                "must be of type List")
+                        (* Not sure this checks the correct thing *)
+                        if te2 <> Sast.List(get_type e2)
+                        then type_error ("Second element in a Concat expression " ^
+                            "must be of type List")
                         else
                             if te2 <> te1
-                                then type_error ("First and second element of a Concat " ^
-                                    "expression must be Lists of same type")
+                            then type_error ("First and second element of a Concat " ^
+                                "expression must be Lists of same type")
                             else te1
-            *)
                 | Ast.Cons -> (* Cons: Element : List *)
-                  Unknown (*
-                    if te2 <> Ast.TList(get_type(e2))
-                        then type_error ("Second element in a Cons expression " ^
-                            "must be of type List")
-                    else
-                        if te1 <> get_type(List.hd e2)
-                            then type_error ("First element in a Cons expression " ^
-                                "must be of same type as List in second element")
-            *)
+                    if te2 <> Sast.List(te1)
+                    then type_error ("First element in a Cons expression " ^
+                        "must be of same type as List in second element")
+                    else te2
                 | Ast.Trans -> (* Trans: Int ^^ List *)
-                  Unknown (*
-                    if te1 <> Ast.TInt
-                        then type_error ("First element in a Trans expression " ^
-                            "must be of type Int")
+                    if te1 <> Sast.Int
+                    then type_error ("First element in a Trans expression " ^
+                        "must be of type Int")
                     else
-                        if te2 <> Ast.TList(get_type(List.hd e2))
-                            then type_error ("Second element in a Trans expression " ^
-                                "must be of type List")
-                        else
-                            if te2 <> Ast.TList(get_type(Ast.TInt))
-                                then type_error ("Second element in a Trans " ^
-                                    "expression must be a List of type Int")
-            *)
+                        if te2 <> Sast.List(Sast.Int)
+                        then type_error ("Second element in a Trans " ^
+                            "expression must be a List of type Int")
+                        else te2
             )
     | Ast.Prefix(o, e) -> (* Prefix Operators *)
         let te = get_type e in
         (match o with
             Ast.Not -> (* Not: ! Bool *)
-                if te <> Bool
+                if te <> Sast.Bool
                     then type_error ("Element in Not operation but be of type Bool")
                 else te
             | Ast.Inv | Ast.Retro -> (* Row Inversion: ~ List, Row Retrograde: <> List*)
-               Unknown (*
-                if te <> Ast.TList(Ast.TInt)
+                if te <> Sast.List(Sast.Int)
                     then type_error ("Element in Prefix operation " ^
                         "must be a List of type Int")
                 else te
-                *)
         )
     | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 

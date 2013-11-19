@@ -129,7 +129,7 @@ expr:
 |   LPAREN
     expr COMMA expr
     RPAREN
-    DOLLAR expr             { Note($2, $4, Beat($7, 0)) }
+    DOLLAR expr             { Note($2, $4, $7) }
 
 /*|   PRINT expr              { Print($2) }
 |   RANDOM                  { Random } */
