@@ -38,6 +38,7 @@ let type_mismatch var symtab =
     then false
     else diff_types v1 v2
 
+    
 
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
@@ -102,6 +103,11 @@ let rec collect_pat_vars = function
         | _ -> []
         @ collect_pat_vars tl
 
+
+(* Set up a new scope given a set of variables to put into scope *)
+let rec gen_new_scope = function
+    [] -> []
+    | pat :: rest -> {name = pat; v_type = [Unknown]; v_expr = None} :: gen_new_scope rest
 
 (* Returns a type from an expression*)
 let rec get_type = function
@@ -312,49 +318,53 @@ let rec get_type = function
     | _ -> Sast.Unknown
 
 (* First pass walk_decl -> Try to construct a symbol table *)
-let walk_decl prog = function
+let rec walk_decl prog = function
     Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
                 let func = {name=id; v_type = (List.map types_to_s_type types); v_expr = None} in 
                 if (exists_typesig id prog.symtab.identifiers)
                     then raise (Multiple_type_sigs id)
                 else {decls = prog.decls; symtab = mod_var func prog.symtab}
     | Ast.Vardef(id, expr) -> 
-                let var = {name=id; v_type = [get_type expr]; v_expr = Some(expr)} in
+                let var = {name=id; v_type = [Unknown]; v_expr = Some(expr)} in
                 if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
                 else 
-                    { decls = prog.decls @ [SVardef(var, expr)];
+                    { decls = SVardef(var, (to_sexpr prog.symtab expr)) :: prog.decls ;
                     symtab = (mod_var var prog.symtab) } 
-
-    (*
     | Ast.Funcdec(fdec) ->
-            
-            let new_scope = {parent = Some(prog.symtab); identifiers = []} in
             let f_vars = collect_pat_vars fdec.args in 
-            let new_scope = add_ids new_scope f_vars in
-            let types = if is_declared_here fdec.fname prog.symtab 
-            (* Currently checking this scope need to check higher too *)
-                        then get_func_type fdec.fname prog.symtab
-                        else [Ast.Unknown] (* Need to get types of args and expr *)
-                        in 
+            let new_scope = {parent=Some(prog.symtab); identifiers = gen_new_scope f_vars} in
             let funcdef = SFuncdec({s_fname = fdec.fname; 
-                                            type_sig = types;
+                                            type_sig = [Unknown];
                                             s_args = fdec.args;
-                                            s_value = fdec.value;
+                                            s_value = to_sexpr prog.symtab fdec.value;
                                             scope = new_scope;}) in 
-            let var = {name = funcdef.s_fname; v_type = funcdef.type_sig} in
-                { decls = prog.decls @ [funcdef]; symtab = global }
-                *)
-                    
+            let var = {name = fdec.fname; v_type = [Unknown]; v_expr = Some(fdec.value)} in
+                { decls = funcdef :: prog.decls; symtab = (mod_var var prog.symtab)  }
     | Main(expr) -> 
         if(prog.symtab.parent = None) 
 					then if( is_declared "main" prog.symtab)
 						then raise (Multiple_declarations "main")
-					else { decls = prog.decls @ [SMain(expr)];
+					else { decls = prog.decls @ [SMain(to_sexpr prog.symtab expr)];
 								symtab = (mod_var {name = "main"; v_type = [Unknown]; v_expr = Some(expr)} prog.symtab)}
 				else raise Main_wrong_scope
-    | _ -> prog
 
+and to_sexpr symbol = function
+    | Ast.Literal(i) -> SLiteral(i)
+    | Ast.Boolean(b) -> SBoolean(b)
+    | Ast.Variable(s) -> SVariable(s)
+    | Ast.Beat(e, i) -> SBeat(to_sexpr symbol e, i) 
+    | Ast.Note(e1, e2, e3) -> SNote(to_sexpr symbol e1, to_sexpr symbol e2, to_sexpr symbol e3)
+    | Ast.Binop(e1, op, e2) -> SBinop(to_sexpr symbol e1, op, to_sexpr symbol e2)
+    | Ast.Prefix(pop, e) -> SPrefix(pop, to_sexpr symbol e)
+    | Ast.If(e1,e2,e3) -> SIf(to_sexpr symbol e1, to_sexpr symbol e2, to_sexpr symbol e3)
+    | Ast.List(elist) -> SList(List.map (fun s -> to_sexpr symbol s) elist)
+    | Ast.Chord(elist) -> SChord(List.map (fun s -> to_sexpr symbol s) elist)
+    | Ast.System(elist) -> SSystem(List.map (fun s -> to_sexpr symbol s) elist)
+    | Ast.Call(e1, e2) -> SCall(to_sexpr symbol e1, to_sexpr symbol e2)
+    | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in
+                           let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs
+                           in SLet(to_sexpr symbol e, nested_prog)
 (* Right now gets called by smurf *)
 
 let first_pass list_decs = 

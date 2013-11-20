@@ -23,24 +23,44 @@ type symbol_table = {
     identifiers : s_ids list; 
 }
 
-type s_func_decl = {
-    s_fname : string; 
-    type_sig : s_type list;
-    s_args :  pattern list;
-    s_value : expr;
-    scope : symbol_table;
-}
 
-type s_dec = 
-      STypesig of s_ids 
-    | SFuncdec of s_func_decl
-    | SVardef of s_ids * expr
-    | SMain of expr 
 
 type s_program = {
     decls : s_dec list;
     symtab : symbol_table;
 }
+
+and s_expr =
+      SLiteral of int                        (* 42 *)
+    | SBoolean of bool                       (* True *)
+    | SVariable of string                    (* bar *)
+    | SBeat of s_expr * int                    (* 2. *)
+    | SNote of  s_expr * s_expr * s_expr           (* (11, 2)^4. *)
+    | SBinop of s_expr * operator * s_expr       (* a + 2 *)
+    | SPrefix of prefix_operator * s_expr      (* ! a == 4 *)
+    | SIf of s_expr * s_expr * s_expr              (* if b == 4 then True else False *)
+    | SList of s_expr list                     (* [1,2,3,4] *)
+    | SChord of s_expr list                    (* [(11,3)$4., (5,2)$4.]*)
+    | SSystem of s_expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
+    | SCall of s_expr * s_expr                   (* foo a *)
+    | SLet of s_expr * s_program               (* let x = 4 in x + 2 *)
+
+and s_dec = 
+      STypesig of s_ids 
+    | SFuncdec of s_func_decl
+    | SVardef of s_ids * s_expr
+    | SMain of s_expr 
+
+and  s_func_decl = {
+    s_fname : string; 
+    type_sig : s_type list;
+    s_args :  pattern list;
+    s_value : s_expr;
+    scope : symbol_table;
+}
+
+let string_of_sexpr = function
+    | _ -> "Need to fix this"
 
 let rec string_of_s_type = function
       Int -> "Int"
@@ -69,13 +89,13 @@ let string_of_s_func_decl f =
         "Function: " ^ f.s_fname ^ " " ^ String.concat " " 
         (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
         String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " =\n" 
-        ^ Ast.string_of_expr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
+        ^ string_of_sexpr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
 
 let string_of_s_dec = function
       STypesig(i) -> "STypesig: " ^ string_of_s_ids i
     | SFuncdec(f) -> "SFuncdec: " ^ string_of_s_func_decl f
-    | SVardef(i, e) -> "SVardef: \n" ^ string_of_s_ids i ^ "\n\t" ^ Ast.string_of_expr e
-    | SMain(e) -> "SMain: " ^ Ast.string_of_expr e
+    | SVardef(i, e) -> "SVardef: \n" ^ string_of_s_ids i ^ "\n\t" ^ string_of_sexpr e
+    | SMain(e) -> "SMain: " ^ string_of_sexpr e
 
 let string_of_s_program p = 
     "Program: " ^ String.concat "\n\t" 
