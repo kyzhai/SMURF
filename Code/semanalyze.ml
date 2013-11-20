@@ -12,16 +12,45 @@ let rec types_to_s_type = function
     | TList(l) -> Sast.List(types_to_s_type l)
     | TPoly(s) -> Sast.Poly(s)
 
+let equiv_type v1 = match v1 with
+      Sast.Num -> [Sast.Int; Sast.Beat; Sast.Num]
+    | Sast.Chord -> [Sast.List(Sast.Note); Sast.Chord]
+    | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
+    | x -> [x]
+
+let rec diff_types v1 v2 = match v1, v2 with
+    | x::t1, y::t2 -> if ((List.mem x (equiv_type y)) || (List.mem y (equiv_type x)))
+                      then diff_types t1 t2 else true
+    | [], [] -> false
+    | [], _::_ -> true
+    | _::_, [] -> true
+
 let type_mismatch var symtab = 
-    let v = List.find (fun n -> n.name = var.name) symtab.identifiers
-    in v.v_type <> var.v_type
+    let v = List.find (fun n -> n.name = var.name) symtab.identifiers in
+    let v1 = v.v_type in
+    let v2 = var.v_type in
+    let is_poly t = match t with
+        | Sast.Poly(_) -> true
+        | _ -> false
+    in
+    let poly_check = is_poly (List.hd v1) || is_poly (List.hd v2) in
+    if (List.length v1 = 1 && List.length v2 = 1 && poly_check)
+    then false
+    else diff_types v1 v2
 
 
-(* Check if there are multiple type signatures for an id in the same scope *)
-let rec mult_typesig id = function
+(* Check if a type signatures exists for an id in the current scope *)
+let rec exists_typesig id = function
     [] -> false
-    | STypesig(x) :: rest -> if x.name = id then true else mult_typesig id rest
-    | _ :: rest -> mult_typesig id rest
+    | STypesig(x) :: rest -> if x.name = id then true else exists_typesig id rest
+    | _ :: rest -> exists_typesig id rest
+
+(* Check if a definition exists for an id in the current scope *)
+let rec exists_dec id = function
+    [] -> false
+    | SVardef(x, _) :: rest -> if x.name = id then true else exists_dec id rest
+    | SFuncdec(f) :: rest -> if f.s_fname = id then true else exists_dec id rest
+    | _ :: rest -> exists_dec id rest
 
 (* Checks if an id is in list of vars *)
 let rec in_list x = function
@@ -79,83 +108,70 @@ let rec get_type = function
                 Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul |
                 Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq |
                 Ast.PCAdd | Ast.PCSub -> (* Arithmetic and Comparison Operators *)
-                    if te1 <> Num (*Ast.TInt*)
-                        then type_error ("First element of this binary operation " ^
+                    if te1 <> Sast.Int 
+                    then type_error ("First element of this binary operation " ^
+                        "must be of type Int")
+                    else
+                        if te2 <> Sast.Int
+                        then type_error ("Second element of this binary operation " ^
                             "must be of type Int")
-                    else
-                        if te2 <> Num (*Ast.TInt*)
-                            then type_error ("Second element of this binary operation " ^
-                                "must be of type Int")
-                        else Num (*Ast.TInt*)
+                        else Sast.Int
                 | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
-                    if te1 <> Bool
-                        then type_error ("First element of this binary operation " ^
-                            "must be of type Bool")
+                    if te1 <> Sast.Bool
+                    then type_error ("First element of this binary operation " ^
+                        "must be of type Bool")
                     else
-                        if te2 <> Bool
-                            then type_error ("Second element of this binary operation " ^
-                                "must be of type Bool")
-                        else Bool
+                        if te2 <> Sast.Bool
+                        then type_error ("Second element of this binary operation " ^
+                            "must be of type Bool")
+                        else Sast.Bool
                 | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
                     if te1 <> te2
-                        then type_error ("Elements must be of same type for " ^
-                            "structural comparison")
+                    then type_error ("Elements must be of same type for " ^
+                        "structural comparison")
                     else te1
                 | Ast.Concat -> (* Concat: List ++ List *)
-                  Unknown (*
-                    if te1 <> Ast.TList(get_type(List.hd e1))
-                    (* if te1 <> Ast.TList(get_type(e1))*)
-                        then type_error ("First element in a Concat expression " ^
-                            "must be of type List")
+                    (* Not sure this checks the correct thing *)
+                    if te1 <> Sast.List(get_type e1)
+                    then type_error ("First element in a Concat expression " ^
+                        "must be of type List")
                     else
-                        if te2 <> Ast.TList(get_type(e2))
-                            then type_error ("Second element in a Concat expression " ^
-                                "must be of type List")
+                        (* Not sure this checks the correct thing *)
+                        if te2 <> Sast.List(get_type e2)
+                        then type_error ("Second element in a Concat expression " ^
+                            "must be of type List")
                         else
                             if te2 <> te1
-                                then type_error ("First and second element of a Concat " ^
-                                    "expression must be Lists of same type")
+                            then type_error ("First and second element of a Concat " ^
+                                "expression must be Lists of same type")
                             else te1
-            *)
                 | Ast.Cons -> (* Cons: Element : List *)
-                  Unknown (*
-                    if te2 <> Ast.TList(get_type(e2))
-                        then type_error ("Second element in a Cons expression " ^
-                            "must be of type List")
-                    else
-                        if te1 <> get_type(List.hd e2)
-                            then type_error ("First element in a Cons expression " ^
-                                "must be of same type as List in second element")
-            *)
+                    if te2 <> Sast.List(te1)
+                    then type_error ("First element in a Cons expression " ^
+                        "must be of same type as List in second element")
+                    else te2
                 | Ast.Trans -> (* Trans: Int ^^ List *)
-                  Unknown (*
-                    if te1 <> Ast.TInt
-                        then type_error ("First element in a Trans expression " ^
-                            "must be of type Int")
+                    if te1 <> Sast.Int
+                    then type_error ("First element in a Trans expression " ^
+                        "must be of type Int")
                     else
-                        if te2 <> Ast.TList(get_type(List.hd e2))
-                            then type_error ("Second element in a Trans expression " ^
-                                "must be of type List")
-                        else
-                            if te2 <> Ast.TList(get_type(Ast.TInt))
-                                then type_error ("Second element in a Trans " ^
-                                    "expression must be a List of type Int")
-            *)
+                        if te2 <> Sast.List(Sast.Int)
+                        then type_error ("Second element in a Trans " ^
+                            "expression must be a List of type Int")
+                        else te2
             )
     | Ast.Prefix(o, e) -> (* Prefix Operators *)
         let te = get_type e in
         (match o with
             Ast.Not -> (* Not: ! Bool *)
-                if te <> Bool
+                if te <> Sast.Bool
                     then type_error ("Element in Not operation but be of type Bool")
                 else te
             | Ast.Inv | Ast.Retro -> (* Row Inversion: ~ List, Row Retrograde: <> List*)
-               Unknown (*
-                if te <> Ast.TList(Ast.TInt)
+                if te <> Sast.List(Sast.Int)
                     then type_error ("Element in Prefix operation " ^
                         "must be a List of type Int")
                 else te
-                *)
         )
     | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
@@ -174,14 +190,14 @@ let rec get_type = function
     | Ast.List(el) -> (* Check all elements have same type*)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
-                let tx = (get_type x) in 
-                let ty = (get_type y) in 
+                let tx = (get_type x) in
+                let ty = (get_type y) in
                 if tx <> ty 
                     then type_error (Ast.string_of_expr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ Ast.string_of_expr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
-                else () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
+                else trace ("tx: " ^ Sast.string_of_s_type tx ^ "  ty: " ^ Sast.string_of_s_type ty) () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
     | Ast.Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
@@ -217,25 +233,22 @@ let rec get_type = function
 let walk_decl prog = function
     Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
                 let func = {name=id; v_type = (List.map types_to_s_type types)} in 
-                (*Check if we already have a type signature for this identifier in the
-                current scope *)
-                if (mult_typesig id prog.decls)
+                if (exists_typesig id prog.decls)
                     then raise (Multiple_type_sigs id)
                 (* Check if we have bound this identifier to an expression whose type
                 contradicts this signature *)
                 else if (is_declared_here id prog.symtab && type_mismatch func prog.symtab)
                     then raise (Type_mismatch id)
-                (* If type of signature matches that of bound expr, do nothing *)
-                else if (is_declared_here id prog.symtab)
-                    then {decls = prog.decls; symtab = prog.symtab}
-                (* If identifier doesn't exist in current scope, add this type signature
-                to the environment *)
+                (* Add type signature to current environment *)
                 else {decls = prog.decls @ [STypesig(func)];
-                symtab = (add_var func prog.symtab)}
+                      symtab = (add_var func prog.symtab)}
     | Ast.Vardef(id, expr) -> 
                 let var = {name=id; v_type = [get_type expr]} in
-                if( is_declared_here id prog.symtab) 
+                if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
+                (* Only worry if tysig given in same scope doesn't match this var's type *)
+                else if(is_declared_here id prog.symtab && type_mismatch var prog.symtab)
+                    then raise (Type_mismatch id)
                 else 
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 

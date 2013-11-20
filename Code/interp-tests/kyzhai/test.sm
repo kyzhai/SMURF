@@ -1,0 +1,15 @@
+
+d = if True then 1 else 0 
+
+a = 1
+
+b = a
+
+e = let a = 1999 & b = 2999 & c = 3999 in a
+
+c = True
+
+lst = [1, 2, 3]
+
+/* seems like a bug in semantic checking part */
+lst2 = [a, b, c]

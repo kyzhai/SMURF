@@ -97,7 +97,7 @@ and string_of_patterns  = function
 and string_of_types  = function
     TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
   | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
-  | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^v
+  | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^ v
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
