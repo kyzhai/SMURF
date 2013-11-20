@@ -10,7 +10,7 @@ exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
 type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
-              Poly of string | Unknown | Num
+              Poly of string | Unknown | Num | Still_unknown
 
 type s_ids = {
         name : string;

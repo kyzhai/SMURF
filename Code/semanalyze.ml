@@ -328,14 +328,6 @@ let walk_decl prog = function
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 
 
-    | Main(expr) -> print_string "main\n"; 
-        match prog.symtab.parent with 
-            Some(_) -> raise Main_wrong_scope
-            | _ -> if( is_declared "main" prog.symtab ) 
-                   then raise (Multiple_declarations "main")
-                   else { decls= prog.decls @ [SMain(expr)]; 
-                          symtab = add_var {name="main"; v_type = [Unknown]} prog.symtab}
-    | _ -> prog
     (*
     | Ast.Funcdec(fdec) ->
             
@@ -355,9 +347,22 @@ let walk_decl prog = function
             let var = {name = funcdef.s_fname; v_type = funcdef.type_sig} in
                 { decls = prog.decls @ [funcdef]; symtab = global }
                 *)
+                    
+    | Main(expr) -> 
+        if(prog.symtab.parent = None) 
+					then if( is_declared "main" prog.symtab)
+						then raise (Multiple_declarations "main")
+					else { decls = prog.decls @ [SMain(expr)];
+								symtab = (add_var {name = "main"; v_type = [Unknown]; v_expr = expr} prog.symtab)}
+				else raise Main_wrong_scope
+    | _ -> prog
 
 (* Right now gets called by smurf *)
 
 let first_pass list_decs = 
     let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
     in (print_string (string_of_s_program program)); program
+
+let second_pass list_decs = 
+		let program = first_pass list_decs in 
+		program.symtab
