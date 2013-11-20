@@ -86,8 +86,6 @@ let rec eval env = function
     | Ast.Variable(str) -> trace ("eval var: " ^ str) (resolve_name env str, env)
     | Ast.Beat(e, n) -> (VUnknown, env)
     | Ast.Note(e1, e2, e3) -> (VUnknown, env)
-    | Ast.Print(e) -> (VUnknown, env)
-    | Ast.Random -> (VUnknown, env)
     | Ast.Binop(e1, op, e2) -> (VUnknown, env)
     | Ast.Prefix(op, e) -> (VUnknown, env)
     | Ast.If(e1, e2, e3) -> 

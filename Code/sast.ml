@@ -59,9 +59,40 @@ and  s_func_decl = {
     scope : symbol_table;
 }
 
-let string_of_sexpr = function
-    | _ -> "Need to fix this"
 
+let rec string_of_sexpr = function
+    SLiteral(l) -> string_of_int l
+  | SBoolean(b) -> string_of_bool b
+  | SVariable(s) -> s
+  | SBinop(e1, o, e2) ->
+      string_of_sexpr e1 ^ " " ^
+      ( match o with
+        Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/" | Mod -> "%"
+      | BeatAdd -> "$+" | BeatSub -> "$-" | BeatMul -> "$*" | BeatDiv -> "$/"
+      | PCAdd -> "%+" | PCSub -> "%-"
+      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">="
+      | BeatLess -> "$<" | BeatLeq -> "$<=" | BeatGreater -> "$>" | BeatGeq -> "$>="
+      | And -> "&&" | Or -> "||" | BoolEq -> "=="
+      | Concat -> "++" | Cons -> ":" | Trans -> "^^" )
+      ^ " " ^ string_of_sexpr e2
+  | SPrefix(o, e) ->
+      ( match o with Not -> "!" | Inv -> "~" | Retro -> "<>" )
+      ^ " " ^ string_of_sexpr e
+  | SIf(e1, e2, e3) -> "if " ^ string_of_sexpr e1 ^ " then " ^ string_of_sexpr e2 ^
+    " else " ^ string_of_sexpr e3
+  | SBeat(i1, i2) -> string_of_sexpr i1 ^ 
+        let rec repeat n s = 
+            if n>0 then 
+                repeat (n-1) ("." ^ s)
+            else s in repeat i2 ""
+  | SNote(pc, reg, bt) -> " (" ^ string_of_sexpr pc ^ ", " ^ string_of_sexpr reg ^ ")$" ^ (string_of_sexpr bt)
+  | SList(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
+  | SChord(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
+  | SSystem(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
+  | SCall(exp1,exp2) -> string_of_sexpr exp1 ^ " " ^ string_of_sexpr exp2
+  | SLet(exp, prog) -> "let " ^ " NEED TO FIX THIS PART " ^ 
+                      " in " ^ string_of_sexpr exp
+  | x -> "other expr"
 let rec string_of_s_type = function
       Int -> "Int"
     | Bool -> "Bool"
