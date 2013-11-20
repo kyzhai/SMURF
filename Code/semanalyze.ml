@@ -351,7 +351,7 @@ let walk_decl prog = function
 					then if( is_declared "main" prog.symtab)
 						then raise (Multiple_declarations "main")
 					else { decls = prog.decls @ [SMain(expr)];
-								symtab = (add_var {name = "main"; v_type = [Unknown]} prog.symtab) }
+								symtab = (add_var {name = "main"; v_type = [Unknown]; v_expr = expr} prog.symtab)}
 				else raise Main_wrong_scope
     | _ -> prog
 
