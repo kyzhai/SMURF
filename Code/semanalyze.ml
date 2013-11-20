@@ -42,8 +42,10 @@ let type_mismatch var symtab =
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
     [] -> false
-    | STypesig(x) :: rest -> if x.name = id then true else exists_typesig id rest
-    | _ :: rest -> exists_typesig id rest
+    | sym_entry :: rest -> if sym_entry.name = id then
+                            if sym_entry.v_type <> [Unknown] then true
+                            else false
+                           else exists_typesig id rest
 
 (* Check if a definition exists for an id in the current scope *)
 let rec exists_dec id = function
@@ -69,13 +71,21 @@ let rec is_declared id symtab =
             Some(parent) -> is_declared id parent
         |   _ -> false
 
+(* Add type to var already in symbol table (First Pass work) *)
+let mod_var tysig symtab = let s = List.find (fun v -> v.name = tysig.name) symtab.identifiers in
+                           let newlist = List.filter (fun v -> v.name <> tysig.name) 
+                                                      symtab.identifiers in
+                           {parent = symtab.parent; 
+                            identifiers = 
+                                newlist @ [{name = s.name; v_type = tysig.v_type; v_expr = s.v_expr}]}
+
 (* Adds a var to a scope *)
 let add_var v symtab = let s = v :: symtab.identifiers in
                        let symresult = {parent = symtab.parent; identifiers = s} in symresult
 
 (* Start with an empty symbol table *)
-let print_var = { name="print"; v_type = [Unknown] }
-let random_var = { name = "random"; v_type = [Unknown] }
+let print_var = { name="print"; v_type = [Unknown]; v_expr = None}
+let random_var = { name = "random"; v_type = [Unknown]; v_expr = None }
 let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* Collect Variables in pattern *)
@@ -89,10 +99,6 @@ let rec collect_pat_vars = function
         | _ -> []
         @ collect_pat_vars tl
 
-let rec add_ids scope = function
-    [] -> scope
-    | (h::tl) -> let v = {name=h; v_type=[Unknown]} in 
-                            add_ids (add_var v scope) tl 
 
 (* Returns a type from an expression*)
 let rec get_type = function
@@ -305,18 +311,17 @@ let rec get_type = function
 (* First pass walk_decl -> Try to construct a symbol table *)
 let walk_decl prog = function
     Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
-                let func = {name=id; v_type = (List.map types_to_s_type types)} in 
-                if (exists_typesig id prog.decls)
+                let func = {name=id; v_type = (List.map types_to_s_type types); v_expr = None} in 
+                if (exists_typesig id prog.symtab.identifiers)
                     then raise (Multiple_type_sigs id)
-                (* Check if we have bound this identifier to an expression whose type
-                contradicts this signature *)
-                else if (is_declared_here id prog.symtab && type_mismatch func prog.symtab)
-                    then raise (Type_mismatch id)
+                (* Check if we have bound this identifier to an expression already *)
+                else if (is_declared_here id prog.symtab)
+                    then {decls = prog.decls; symtab = mod_var func prog.symtab}
                 (* Add type signature to current environment *)
-                else {decls = prog.decls @ [STypesig(func)];
+                else {decls = prog.decls;
                       symtab = (add_var func prog.symtab)}
     | Ast.Vardef(id, expr) -> 
-                let var = {name=id; v_type = [get_type expr]} in
+                let var = {name=id; v_type = [get_type expr]; v_expr = Some(expr)} in
                 if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
                 (* Only worry if tysig given in same scope doesn't match this var's type *)
@@ -326,14 +331,6 @@ let walk_decl prog = function
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 
 
-    | Main(expr) -> print_string "main\n"; 
-        match prog.symtab.parent with 
-            Some(_) -> raise Main_wrong_scope
-            | _ -> if( is_declared "main" prog.symtab ) 
-                   then raise (Multiple_declarations "main")
-                   else { decls= prog.decls @ [SMain(expr)]; 
-                          symtab = add_var {name="main"; v_type = [Unknown]} prog.symtab}
-    | _ -> prog
     (*
     | Ast.Funcdec(fdec) ->
             
@@ -353,9 +350,22 @@ let walk_decl prog = function
             let var = {name = funcdef.s_fname; v_type = funcdef.type_sig} in
                 { decls = prog.decls @ [funcdef]; symtab = global }
                 *)
+                    
+    | Main(expr) -> 
+        if(prog.symtab.parent = None) 
+					then if( is_declared "main" prog.symtab)
+						then raise (Multiple_declarations "main")
+					else { decls = prog.decls @ [SMain(expr)];
+								symtab = (add_var {name = "main"; v_type = [Unknown]; v_expr = Some(expr)} prog.symtab)}
+				else raise Main_wrong_scope
+    | _ -> prog
 
 (* Right now gets called by smurf *)
 
 let first_pass list_decs = 
     let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
     in (print_string (string_of_s_program program)); program
+
+let second_pass list_decs = 
+		let program = first_pass list_decs in 
+		program.symtab
