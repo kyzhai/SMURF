@@ -80,7 +80,6 @@ let rec string_of_expr = function
   | Call(exp1,exp2) -> string_of_expr exp1 ^ " " ^ string_of_expr exp2
   | Let(decl, exp) -> "let " ^ (String.concat " " (List.map string_of_dec decl)) ^ 
                       " in " ^ string_of_expr exp
-  | x -> "other expr"
 
 and string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^

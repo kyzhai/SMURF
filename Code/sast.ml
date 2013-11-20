@@ -92,7 +92,7 @@ let rec string_of_sexpr = function
   | SCall(exp1,exp2) -> string_of_sexpr exp1 ^ " " ^ string_of_sexpr exp2
   | SLet(exp, prog) -> "let " ^ " NEED TO FIX THIS PART " ^ 
                       " in " ^ string_of_sexpr exp
-  | x -> "other expr"
+
 let rec string_of_s_type = function
       Int -> "Int"
     | Bool -> "Bool"
