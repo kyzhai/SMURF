@@ -53,6 +53,7 @@ let rec string_of_s_type = function
     | Poly(s) -> s
     | Unknown -> "Unknown"
     | Num -> "Num"
+		| Still_unknown -> "Still Unknown"
 
 let string_of_s_ids i = 
     "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
