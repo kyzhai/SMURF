@@ -1,3 +1,2 @@
-main = 
-    let a = 1
+main let a = 1 in a
 
