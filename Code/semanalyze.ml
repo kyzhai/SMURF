@@ -71,15 +71,19 @@ let rec is_declared id symtab =
             Some(parent) -> is_declared id parent
         |   _ -> false
 
-(* Add variable type into symbol table (First Pass work) *)
-let mod_var tysig symtab = if is_declared tysig.name symtab then
-                            let s = List.find (fun v -> v.name = tysig.name) symtab.identifiers in
-                            let newlist = List.filter (fun v -> v.name <> tysig.name) 
+(* Add new entry into symbol table or modify existing one if necessary (First Pass work) *)
+let mod_var entry symtab = if is_declared entry.name symtab then
+                            let s = List.find (fun v -> v.name = entry.name) symtab.identifiers in
+                            let newlist = List.filter (fun v -> v.name <> entry.name) 
                                                       symtab.identifiers in
-                            {parent = symtab.parent; 
-                             identifiers = 
-                             {name = s.name; v_type = tysig.v_type; v_expr = s.v_expr} :: newlist}
-                           else let s = tysig :: symtab.identifiers in
+                            if entry.v_expr = None then
+                                {parent = symtab.parent; 
+                                 identifiers = 
+                                 {name = s.name; v_type = entry.v_type; v_expr = s.v_expr} :: newlist}
+                            else {parent = symtab.parent; 
+                                  identifiers = 
+                                  {name = s.name; v_type = s.v_type; v_expr = entry.v_expr} :: newlist}
+                           else let s = entry :: symtab.identifiers in
                                 {parent = symtab.parent; identifiers = s}
 
 (* Start with an empty symbol table *)
@@ -318,12 +322,9 @@ let walk_decl prog = function
                 let var = {name=id; v_type = [get_type expr]; v_expr = Some(expr)} in
                 if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
-                (* Only worry if tysig given in same scope doesn't match this var's type *)
-                else if(is_declared_here id prog.symtab && type_mismatch var prog.symtab)
-                    then raise (Type_mismatch id)
                 else 
                     { decls = prog.decls @ [SVardef(var, expr)];
-                    symtab = (add_var var prog.symtab) } 
+                    symtab = (mod_var var prog.symtab) } 
 
     (*
     | Ast.Funcdec(fdec) ->
@@ -350,7 +351,7 @@ let walk_decl prog = function
 					then if( is_declared "main" prog.symtab)
 						then raise (Multiple_declarations "main")
 					else { decls = prog.decls @ [SMain(expr)];
-								symtab = (add_var {name = "main"; v_type = [Unknown]; v_expr = Some(expr)} prog.symtab)}
+								symtab = (mod_var {name = "main"; v_type = [Unknown]; v_expr = Some(expr)} prog.symtab)}
 				else raise Main_wrong_scope
     | _ -> prog
 
