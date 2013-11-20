@@ -104,60 +104,108 @@ let rec get_type = function
         and te2 = get_type e2 in
             (match o with
                 Ast.Add | Ast.Sub | Ast.Mul | Ast.Div | Ast. Mod |
-                Ast.Less | Ast.Leq | Ast.Greater | Ast.Geq |
-                Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul |
-                Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq |
-                Ast.PCAdd | Ast.PCSub -> (* Arithmetic and Comparison Operators *)
-                    if te1 <> Sast.Int 
-                    then type_error ("First element of this binary operation " ^
-                        "must be of type Int")
+                Ast.PCAdd | Ast.PCSub ->
+                (* Arithmetic Operators *)
+                    if te1 <> Sast.Num
+                    then type_error ("First element of an arithmetic binary operation " ^
+                        "must be of type Int but element was of type " ^
+                        Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Int
-                        then type_error ("Second element of this binary operation " ^
-                            "must be of type Int")
-                        else Sast.Int
+                        if te2 <> Sast.Num
+                        then type_error ("Second element of an arithmetic binary operation " ^
+                            "must be of type Int but element was of type " ^
+                            Sast.string_of_s_type te2)
+                        else Sast.Num
+                | Ast.Less | Ast.Leq | Ast.Greater | Ast.Geq ->
+                  (* Comparison Operators *)
+                    if te1 <> Sast.Num
+                    then type_error ("First element of a comparison binary operation " ^
+                        "must be of type Int but element was of type " ^
+                        Sast.string_of_s_type te1)
+                    else
+                        if te2 <> Sast.Num
+                        then type_error ("Second element of a comparison binary operation " ^
+                            "must be of type Int but element was of type " ^
+                            Sast.string_of_s_type te2)
+                        else Sast.Num
+                | Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul ->
+                  (* Beat Arithmetic Operators *)
+                    if te1 <> Sast.Num
+                    then type_error ("First element of a Beat arithmetic binary " ^
+                        "operation must be of types Int or Beat but element was of type " ^
+                        Sast.string_of_s_type te1)
+                    else
+                        if te2 <> Sast.Num
+                        then type_error ("Second element of a Beat arithmetic binary " ^
+                            "operation must be of types Int or Beat but element was of type " ^
+                            Sast.string_of_s_type te2)
+                        else Sast.Num
+                | Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq ->
+                  (* Beat Comparison Operators *)
+                    if te1 <> Sast.Num
+                    then type_error ("First element of a Beat comparison binary " ^
+                        "operation must be of types Int or Beat but element was of type " ^
+                        Sast.string_of_s_type te1)
+                    else
+                        if te2 <> Sast.Num
+                        then type_error ("Second element of a Beat comaprison binary " ^
+                            "operation must be of types Int or Beat but element was of type " ^
+                            Sast.string_of_s_type te2)
+                        else Sast.Num
                 | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
                     if te1 <> Sast.Bool
-                    then type_error ("First element of this binary operation " ^
-                        "must be of type Bool")
+                    then type_error ("First element of a boolean binary operation " ^
+                        "must be of type Bool but element was of type " ^
+                        Sast.string_of_s_type te1)
                     else
                         if te2 <> Sast.Bool
-                        then type_error ("Second element of this binary operation " ^
-                            "must be of type Bool")
+                        then type_error ("Second element of a boolean binary operation " ^
+                            "must be of type Bool but element was of type " ^
+                            Sast.string_of_s_type te2)
                         else Sast.Bool
                 | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
                     if te1 <> te2
                     then type_error ("Elements must be of same type for " ^
-                        "structural comparison")
+                        "structural comparison. First element has type " ^
+                        Sast.string_of_s_type te1 ^ " and second element has type " ^
+                        Sast.string_of_s_type te2)
                     else te1
                 | Ast.Concat -> (* Concat: List ++ List *)
                     (* Not sure this checks the correct thing *)
                     if te1 <> Sast.List(get_type e1)
                     then type_error ("First element in a Concat expression " ^
-                        "must be of type List")
+                        "must be of type List but element was of type " ^
+                        Sast.string_of_s_type te2)
                     else
                         (* Not sure this checks the correct thing *)
                         if te2 <> Sast.List(get_type e2)
                         then type_error ("Second element in a Concat expression " ^
-                            "must be of type List")
+                            "must be of type List but element was of type " ^
+                            Sast.string_of_s_type te2)
                         else
                             if te2 <> te1
                             then type_error ("First and second element of a Concat " ^
-                                "expression must be Lists of same type")
+                                "expression must be Lists of same type. " ^
+                                "First element has type " ^ Sast.string_of_s_type te1 ^
+                                " and second element has type " ^ Sast.string_of_s_type te2)
                             else te1
                 | Ast.Cons -> (* Cons: Element : List *)
                     if te2 <> Sast.List(te1)
                     then type_error ("First element in a Cons expression " ^
-                        "must be of same type as List in second element")
+                        "must be of same type as List in second element. " ^
+                        "First element has type " ^ Sast.string_of_s_type te1 ^
+                        " and second element has type " ^ Sast.string_of_s_type te2)
                     else te2
                 | Ast.Trans -> (* Trans: Int ^^ List *)
                     if te1 <> Sast.Int
                     then type_error ("First element in a Trans expression " ^
-                        "must be of type Int")
+                        "must be of type Int but element was of type " ^
+                        Sast.string_of_s_type te1)
                     else
                         if te2 <> Sast.List(Sast.Int)
-                        then type_error ("Second element in a Trans " ^
-                            "expression must be a List of type Int")
+                        then type_error ("Second element in a Trans expression " ^
+                            "must be a List of type Int but element was of type " ^
+                            Sast.string_of_s_type te2)
                         else te2
             )
     | Ast.Prefix(o, e) -> (* Prefix Operators *)
@@ -165,12 +213,13 @@ let rec get_type = function
         (match o with
             Ast.Not -> (* Not: ! Bool *)
                 if te <> Sast.Bool
-                    then type_error ("Element in Not operation but be of type Bool")
+                then type_error ("Element in Not operation must be of type Bool " ^
+                    "but element was of type " ^ Sast.string_of_s_type te)
                 else te
             | Ast.Inv | Ast.Retro -> (* Row Inversion: ~ List, Row Retrograde: <> List*)
                 if te <> Sast.List(Sast.Int)
-                    then type_error ("Element in Prefix operation " ^
-                        "must be a List of type Int")
+                then type_error ("Element in Prefix operation must be a List of " ^
+                    "type Int but element was of type " ^ Sast.string_of_s_type te)
                 else te
         )
     | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
@@ -187,7 +236,7 @@ let rec get_type = function
                 else te2
     | Ast.Beat(i1, i2) -> 
         let ti1 = get_type i1 in
-        if ti1 <> Sast.Int
+        if ti1 <> Sast.Num
         then type_error ("First element in a Beat must be of type Int " ^
             "and a power of 2 between 1 and 16. The given element was of type " ^
             Sast.string_of_s_type ti1)
