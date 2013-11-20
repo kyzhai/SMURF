@@ -38,8 +38,6 @@ let type_mismatch var symtab =
     then false
     else diff_types v1 v2
 
-    
-
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
     [] -> false
@@ -55,10 +53,11 @@ let rec exists_dec id = function
     | SFuncdec(f) :: rest -> if f.s_fname = id then true else exists_dec id rest
     | _ :: rest -> exists_dec id rest
 
-(* Checks if an id is in list of vars *)
-let rec in_list x = function
+(* Check if a variable definition exists for a function id in the current scope *)
+let rec exists_var id = function
     [] -> false
-    | h::tl -> if x = h.name then true else in_list x tl
+    | SVardef(x, _) :: rest -> if x.name = id then true else exists_var id rest
+    | _ :: rest -> exists_var id rest
 
 (* Only checks current scope (might not be needed) *)
 let is_declared_here id symtab = List.exists (fun v -> v.name = id) symtab.identifiers
@@ -79,11 +78,11 @@ let mod_var entry symtab = if is_declared entry.name symtab then
                                                       symtab.identifiers in
                             if entry.v_expr = None then
                                 {parent = symtab.parent; 
-                                 identifiers = 
-                                 {name = s.name; v_type = entry.v_type; v_expr = s.v_expr} :: newlist}
+                                 identifiers = {name = s.name; v_type = entry.v_type; 
+                                                v_expr = s.v_expr} :: newlist}
                             else {parent = symtab.parent; 
-                                  identifiers = 
-                                  {name = s.name; v_type = s.v_type; v_expr = entry.v_expr} :: newlist}
+                                  identifiers = {name = s.name; v_type = s.v_type; 
+                                                 v_expr = entry.v_expr} :: newlist}
                            else let s = entry :: symtab.identifiers in
                                 {parent = symtab.parent; identifiers = s}
 
@@ -95,13 +94,12 @@ let global_env = { identifiers = [print_var; random_var]; parent = None }
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
     [] -> []
-    | (h::tl) -> match h with 
-          Ast.Patvar(s) -> [s]
-        | Ast.Patcomma(pl) -> collect_pat_vars pl
-        | Ast.Patcons(pl1, pl2) -> 
-            (collect_pat_vars [pl1]) @ (collect_pat_vars [pl2])
-        | _ -> []
-        @ collect_pat_vars tl
+    | (h::tl) -> (match h with 
+          Ast.Patvar(s) -> [s] 
+        | Ast.Patcomma(pl) -> collect_pat_vars pl 
+        | Ast.Patcons(pl1, pl2) -> (collect_pat_vars [pl1]) @ (collect_pat_vars [pl2]) 
+        | _ -> collect_pat_vars tl ) 
+    @ collect_pat_vars tl
 
 
 (* Set up a new scope given a set of variables to put into scope *)
@@ -332,23 +330,28 @@ let rec walk_decl prog = function
                     { decls = SVardef(var, (to_sexpr prog.symtab expr)) :: prog.decls ;
                     symtab = (mod_var var prog.symtab) } 
     | Ast.Funcdec(fdec) ->
-            let f_vars = collect_pat_vars fdec.args in 
-            let new_scope = {parent=Some(prog.symtab); identifiers = gen_new_scope f_vars} in
-            let funcdef = SFuncdec({s_fname = fdec.fname; 
-                                            type_sig = [Unknown];
-                                            s_args = fdec.args;
-                                            s_value = to_sexpr prog.symtab fdec.value;
-                                            scope = new_scope;}) in 
-            let var = {name = fdec.fname; v_type = [Unknown]; v_expr = Some(fdec.value)} in
-                { decls = funcdef :: prog.decls; symtab = (mod_var var prog.symtab)  }
+            if (exists_var fdec.fname prog.decls)
+                then raise (Multiple_declarations fdec.fname)
+            else
+                let f_vars = collect_pat_vars fdec.args in 
+                let new_scope = {parent=Some(prog.symtab); identifiers = gen_new_scope f_vars} in
+                let funcdef = SFuncdec({s_fname = fdec.fname; 
+                                                type_sig = [Unknown];
+                                                s_args = fdec.args;
+                                                s_value = to_sexpr prog.symtab fdec.value;
+                                                scope = new_scope;}) in 
+                let var = {name = fdec.fname; v_type = [Unknown]; v_expr = Some(fdec.value)} in
+                    { decls = funcdef :: prog.decls; symtab = (mod_var var prog.symtab)  }
     | Main(expr) -> 
         if(prog.symtab.parent = None) 
 					then if( is_declared "main" prog.symtab)
 						then raise (Multiple_declarations "main")
 					else { decls = prog.decls @ [SMain(to_sexpr prog.symtab expr)];
-								symtab = (mod_var {name = "main"; v_type = [Unknown]; v_expr = Some(expr)} prog.symtab)}
+								symtab = (mod_var {name = "main"; v_type = [Unknown]; 
+                                                   v_expr = Some(expr)} prog.symtab)}
 				else raise Main_wrong_scope
 
+(* Convert Ast expression nodes to Sast s_expr nodes (so we can have nested scopes) *)
 and to_sexpr symbol = function
     | Ast.Literal(i) -> SLiteral(i)
     | Ast.Boolean(b) -> SBoolean(b)
@@ -365,8 +368,8 @@ and to_sexpr symbol = function
     | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in
                            let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs
                            in SLet(to_sexpr symbol e, nested_prog)
-(* Right now gets called by smurf *)
 
+(* Right now gets called by smurf *)
 let first_pass list_decs = 
     let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
     in (print_string (string_of_s_program program)); program

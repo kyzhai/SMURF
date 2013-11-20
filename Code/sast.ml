@@ -113,22 +113,22 @@ let string_of_s_ids i =
 let rec string_of_symbol_table symtab = 
     if symtab.parent = None then "Global Scope: \n\t" ^ 
         String.concat "\t" (List.map string_of_s_ids symtab.identifiers) ^ "\n"
-    else (*(string_of_env p) ^ *)"\tNew Scope: " ^ 
-        String.concat "\n\t" (List.map string_of_s_ids symtab.identifiers) ^"\n\t"
+    else (*(string_of_env p) ^ *)"\tNew Scope: \n\t\t" ^ 
+        String.concat "\t\t" (List.map string_of_s_ids symtab.identifiers) ^"\n\t"
 
 let string_of_s_func_decl f = 
-        "Function: " ^ f.s_fname ^ " " ^ String.concat " " 
+        f.s_fname ^ " " ^ String.concat " " 
         (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
-        String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " =\n" 
+        String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " = " 
         ^ string_of_sexpr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
 
 let string_of_s_dec = function
-      STypesig(i) -> "STypesig: " ^ string_of_s_ids i
-    | SFuncdec(f) -> "SFuncdec: " ^ string_of_s_func_decl f
-    | SVardef(i, e) -> "SVardef: \n" ^ string_of_s_ids i ^ "\n\t" ^ string_of_sexpr e
+      STypesig(i) -> "STypesig: \n\t\t" ^ string_of_s_ids i
+    | SFuncdec(f) -> "SFuncdec: \n\t\t" ^ string_of_s_func_decl f
+    | SVardef(i, e) -> "SVardef: \n\t\t" ^ string_of_s_ids i ^ "\n\t" ^ string_of_sexpr e
     | SMain(e) -> "SMain: " ^ string_of_sexpr e
 
 let string_of_s_program p = 
-    "Program: " ^ String.concat "\n\t" 
+    "Program: \n\t" ^ String.concat "\n\t" 
     (List.map string_of_s_dec p.decls) ^ "\n" ^
     string_of_symbol_table p.symtab
