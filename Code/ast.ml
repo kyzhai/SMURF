@@ -63,7 +63,7 @@ let rec string_of_expr = function
       | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">="
       | BeatLess -> "$<" | BeatLeq -> "$<=" | BeatGreater -> "$>" | BeatGeq -> "$>="
       | And -> "&&" | Or -> "||" | BoolEq -> "=="
-      | Concat -> "++" | Cons -> ":" | Trans -> "^^" | m -> "OP" )
+      | Concat -> "++" | Cons -> ":" | Trans -> "^^" )
       ^ " " ^ string_of_expr e2
   | Prefix(o, e) ->
       ( match o with Not -> "!" | Inv -> "~" | Retro -> "<>" )
