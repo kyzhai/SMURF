@@ -57,11 +57,17 @@ let rec string_of_expr = function
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
       ( match o with
-        Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/"
-      | BoolEq -> "==" 
-      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=" 
-      | Concat -> "++" | Cons -> ":" | m -> "OP" ) 
+        Add -> "+" | Sub -> "-" | Mul -> "*" | Div -> "/" | Mod -> "%"
+      | BeatAdd -> "$+" | BeatSub -> "$-" | BeatMul -> "$*" | BeatDiv -> "$/"
+      | PCAdd -> "%+" | PCSub -> "%-"
+      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">="
+      | BeatLess -> "$<" | BeatLeq -> "$<=" | BeatGreater -> "$>" | BeatGeq -> "$>="
+      | And -> "&&" | Or -> "||" | BoolEq -> "=="
+      | Concat -> "++" | Cons -> ":" | Trans -> "^^" )
       ^ " " ^ string_of_expr e2
+  | Prefix(o, e) ->
+      ( match o with Not -> "!" | Inv -> "~" | Retro -> "<>" )
+      ^ " " ^ string_of_expr e
   | If(e1, e2, e3) -> "if " ^ string_of_expr e1 ^ " then " ^ string_of_expr e2 ^
     " else " ^ string_of_expr e3
   | Beat(i1, i2) -> string_of_expr i1 ^ 

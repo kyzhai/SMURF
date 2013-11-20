@@ -10,11 +10,12 @@ exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
 type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
-              Poly of string | Unknown | Num
+              Poly of string | Unknown | Num | Still_unknown
 
 type s_ids = {
         name : string;
         v_type : s_type list;
+        v_expr : expr option;
 }
 
 type symbol_table = {
@@ -52,6 +53,7 @@ let rec string_of_s_type = function
     | Poly(s) -> s
     | Unknown -> "Unknown"
     | Num -> "Num"
+		| Still_unknown -> "Still Unknown"
 
 let string_of_s_ids i = 
     "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
