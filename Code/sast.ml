@@ -15,6 +15,7 @@ type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
 type s_ids = {
         name : string;
         v_type : s_type list;
+        v_expr : expr;
 }
 
 type symbol_table = {
