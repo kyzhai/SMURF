@@ -75,19 +75,6 @@ let rec resolve_name env name =
               None -> interp_error ("Can't find binding to " ^ name)
             | Some par -> resolve_name par name
 
-
-
-(* run : program -> () *)
-(* run the program *)
-let run program s_prog = 
-
-let decls = program in 
-let globalE = {parent = None; 
-        ids = List.fold_left (fun mp lst -> 
-        NameMap.add lst.name VUnknown mp) 
-        NameMap.empty s_prog.symtab.identifiers}
-in let _ = show_env globalE in
-
 (* eval : env -> Ast.expression -> (value, env') *)
 (* evaluate the expression, return the result and the updated 
  * environment, the environment updated includes the 
@@ -141,13 +128,27 @@ and exec_decl env = function
             trace (string_of_value v) update_env env str v
     | Main(e) -> trace "exec smain" ignore(eval env e); env
 
+
+(* run : program -> () *)
+(* run the program *)
+let run program s_prog = 
+
+let decls = program in 
+let globalE = {parent = None; 
+        ids = List.fold_left (fun mp lst -> 
+        NameMap.add lst.name VUnknown mp) 
+        NameMap.empty s_prog.symtab.identifiers}
+in 
+let _ = show_env globalE in
+
 (* top-level declarations always run in global environment *)
-in List.fold_left exec_decl globalE decls
+List.fold_left exec_decl globalE decls
 
 
+(*
 let _ = 
     let lexbuf = Lexing.from_channel stdin in 
     let program = Parser.program Scanner.token lexbuf in 
     let s_prog = Semanalyze.first_pass program in 
         trace "calling run" run program s_prog
-
+*)

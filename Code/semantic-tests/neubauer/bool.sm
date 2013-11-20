@@ -1,0 +1,7 @@
+a = True && True
+b = False && False
+c = True && False
+
+d = True || True
+e = False || False
+f = True || False
