@@ -71,17 +71,16 @@ let rec is_declared id symtab =
             Some(parent) -> is_declared id parent
         |   _ -> false
 
-(* Add type to var already in symbol table (First Pass work) *)
-let mod_var tysig symtab = let s = List.find (fun v -> v.name = tysig.name) symtab.identifiers in
-                           let newlist = List.filter (fun v -> v.name <> tysig.name) 
+(* Add variable type into symbol table (First Pass work) *)
+let mod_var tysig symtab = if is_declared tysig.name symtab then
+                            let s = List.find (fun v -> v.name = tysig.name) symtab.identifiers in
+                            let newlist = List.filter (fun v -> v.name <> tysig.name) 
                                                       symtab.identifiers in
-                           {parent = symtab.parent; 
-                            identifiers = 
-                                newlist @ [{name = s.name; v_type = tysig.v_type; v_expr = s.v_expr}]}
-
-(* Adds a var to a scope *)
-let add_var v symtab = let s = v :: symtab.identifiers in
-                       let symresult = {parent = symtab.parent; identifiers = s} in symresult
+                            {parent = symtab.parent; 
+                             identifiers = 
+                             {name = s.name; v_type = tysig.v_type; v_expr = s.v_expr} :: newlist}
+                           else let s = tysig :: symtab.identifiers in
+                                {parent = symtab.parent; identifiers = s}
 
 (* Start with an empty symbol table *)
 let print_var = { name="print"; v_type = [Unknown]; v_expr = None}
@@ -314,12 +313,7 @@ let walk_decl prog = function
                 let func = {name=id; v_type = (List.map types_to_s_type types); v_expr = None} in 
                 if (exists_typesig id prog.symtab.identifiers)
                     then raise (Multiple_type_sigs id)
-                (* Check if we have bound this identifier to an expression already *)
-                else if (is_declared_here id prog.symtab)
-                    then {decls = prog.decls; symtab = mod_var func prog.symtab}
-                (* Add type signature to current environment *)
-                else {decls = prog.decls;
-                      symtab = (add_var func prog.symtab)}
+                else {decls = prog.decls; symtab = mod_var func prog.symtab}
     | Ast.Vardef(id, expr) -> 
                 let var = {name=id; v_type = [get_type expr]; v_expr = Some(expr)} in
                 if(exists_dec id prog.decls) 
