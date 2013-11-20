@@ -42,7 +42,7 @@ Compare() {
 Run() {
     echo $* 2>&1
     eval $* || {
-    echo -e '\E[47;31m'"\033[1mFAILED:\033[0m $1 failed on $*\n" 
+    echo -e "[FAILED] $1 failed on $*\n" 
     return 1
     }
 }

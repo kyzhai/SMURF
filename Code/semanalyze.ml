@@ -190,14 +190,14 @@ let rec get_type = function
     | Ast.List(el) -> (* Check all elements have same type*)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
-                let tx = (get_type x) in 
-                let ty = (get_type y) in 
+                let tx = (get_type x) in
+                let ty = (get_type y) in
                 if tx <> ty 
                     then type_error (Ast.string_of_expr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ Ast.string_of_expr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
-                else () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
+                else trace ("tx: " ^ Sast.string_of_s_type tx ^ "  ty: " ^ Sast.string_of_s_type ty) () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
     | Ast.Chord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
