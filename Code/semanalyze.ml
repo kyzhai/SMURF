@@ -360,3 +360,7 @@ let walk_decl prog = function
 let first_pass list_decs = 
     let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
     in (print_string (string_of_s_program program)); program
+
+let second_pass list_decs = 
+		let program = first_pass list_decs in 
+		program.symtab
