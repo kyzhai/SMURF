@@ -42,8 +42,10 @@ let type_mismatch var symtab =
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
     [] -> false
-    | STypesig(x) :: rest -> if x.name = id then true else exists_typesig id rest
-    | _ :: rest -> exists_typesig id rest
+    | sym_entry :: rest -> if sym_entry.name = id then
+                            if sym_entry.v_type <> [Unknown] then true
+                            else false
+                           else exists_typesig id rest
 
 (* Check if a definition exists for an id in the current scope *)
 let rec exists_dec id = function
@@ -305,15 +307,15 @@ let rec get_type = function
 (* First pass walk_decl -> Try to construct a symbol table *)
 let walk_decl prog = function
     Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
-                let func = {name=id; v_type = (List.map types_to_s_type types)} in 
-                if (exists_typesig id prog.decls)
+                let func = {name=id; v_type = (List.map types_to_s_type types); v_expr = None} in 
+                if (exists_typesig id prog.symtab)
                     then raise (Multiple_type_sigs id)
                 (* Check if we have bound this identifier to an expression whose type
                 contradicts this signature *)
                 else if (is_declared_here id prog.symtab && type_mismatch func prog.symtab)
                     then raise (Type_mismatch id)
                 (* Add type signature to current environment *)
-                else {decls = prog.decls @ [STypesig(func)];
+                else {decls = prog.decls;
                       symtab = (add_var func prog.symtab)}
     | Ast.Vardef(id, expr) -> 
                 let var = {name=id; v_type = [get_type expr]} in
