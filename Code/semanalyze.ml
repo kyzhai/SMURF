@@ -136,12 +136,12 @@ let rec get_type = function
                         else Sast.Num
                 | Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul ->
                   (* Beat Arithmetic Operators *)
-                    if te1 <> Sast.Num
+                    if te1 <> Sast.Num && te1 <> Sast.Int && te1 <> Sast.Beat
                     then type_error ("First element of a Beat arithmetic binary " ^
                         "operation must be of types Int or Beat but element was of type " ^
                         Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Num
+                        if te2 <> Sast.Num && te2 <> Sast.Int && te2 <> Sast.Beat
                         then type_error ("Second element of a Beat arithmetic binary " ^
                             "operation must be of types Int or Beat but element was of type " ^
                             Sast.string_of_s_type te2)
@@ -254,15 +254,15 @@ let rec get_type = function
         let tpc = get_type pc 
         and treg = get_type reg
         and tb = get_type b in
-        if tpc <> Sast.Int
+        if tpc <> Sast.Num
         then type_error ("First element in Note (pitch class) must be of type Int " ^
             "between -1 and 11 but element was of type " ^ Sast.string_of_s_type tpc)
         else
-            if treg <> Sast.Int
+            if treg <> Sast.Num
             then type_error ("Second element in Note (register) must be of type Int " ^
                 "between 0 and 3 but element was of type " ^ Sast.string_of_s_type tpc)
             else
-                if tb <> Sast.Beat
+                if tb <> Sast.Num && tb <> Sast.Int && tb <> Sast.Beat
                 then type_error ("Third element in Note (Beat) must be of type Beat " ^
                     "but element was of type " ^ Sast.string_of_s_type tb)
                 else Sast.Note
