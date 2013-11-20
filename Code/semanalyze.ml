@@ -148,12 +148,12 @@ let rec get_type = function
                         else Sast.Num
                 | Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq ->
                   (* Beat Comparison Operators *)
-                    if te1 <> Sast.Num
+                    if te1 <> Sast.Num && te1 <> Sast.Int && te1 <> Sast.Beat
                     then type_error ("First element of a Beat comparison binary " ^
                         "operation must be of types Int or Beat but element was of type " ^
                         Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Num
+                        if te2 <> Sast.Num && te2 <> Sast.Int && te2 <> Sast.Beat
                         then type_error ("Second element of a Beat comaprison binary " ^
                             "operation must be of types Int or Beat but element was of type " ^
                             Sast.string_of_s_type te2)
