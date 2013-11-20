@@ -4,9 +4,17 @@
 
 open Util
 open Interpreter
-open Message
+open Lexing
 (*
 *)
+
+
+let lexer_from_string str =
+  let lex = Lexing.from_string str in
+  let pos = lex.lex_curr_p in
+    lex.lex_curr_p <- { pos with pos_fname = ""; pos_lnum = 1; } ;
+    lex
+
 
 exception Fatal_error of string
 let fatal_error msg = raise (Fatal_error msg)
@@ -23,7 +31,7 @@ let _ =
         Interpreter
     in 
     match act with 
-         Interpreter -> 
+          Interpreter -> 
             ignore(let lexbuf = Lexing.from_channel stdin in 
             let program = Parser.program Scanner.token lexbuf in 
             let s_prog = Semanalyze.first_pass program in 
@@ -37,7 +45,7 @@ let _ =
                     try (* read a top-level declaration and execute *)
                         print_string "SMURF> ";
                         let str = read_line () in
-                        let lexbuf = Message.lexer_from_string str in
+                        let lexbuf = lexer_from_string str in
                         let cmd =
                             try
                                 Parser.program Scanner.token lexbuf 
@@ -50,10 +58,10 @@ let _ =
                             in globalE := env'
                         with 
                               Interpreter.Interp_error msg -> fatal_error (msg)
-                            | Fatal_error msg -> Message.report msg
+                            | Fatal_error msg -> print_endline msg
                     with 
                           Interpreter.Interp_error msg -> fatal_error (msg)      
-                        | Fatal_error msg -> Message.report msg
+                        | Fatal_error msg -> print_endline msg
                 done
                 with End_of_file -> print_endline "\nGood bye!"
             )(* End of ignore *)
