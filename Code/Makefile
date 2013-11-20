@@ -34,7 +34,7 @@ $(SMURF): $(OBJ)
 	ocamlyacc -v $<
 
 clean:
-	rm -f *.cmi *.cmo parser.ml scanner.ml *.output parser.mli test smurf
+	rm -f *.cmi *.cmo parser.ml scanner.ml *.output parser.mli test smurf interp
 
 
 test: $(SMURF)
