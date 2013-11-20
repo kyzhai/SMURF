@@ -22,8 +22,10 @@ byte:
 	$(OCAMLBUILD) $(TARGET).byte
 
 native:
+	make -f Makefile clean
 	$(OCAMLBUILD) $(TARGET).native
 
 
 clean:
+	make -f Makefile clean
 	$(OCAMLBUILD) -clean
