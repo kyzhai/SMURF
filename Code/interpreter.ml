@@ -94,29 +94,29 @@ in let _ = show_env globalE in
  * current and all the outer environments that modified
  *)
 let rec eval env = function
-      Literal(x) -> trace ("eval lit: " ^ string_of_int x) (VInt(x), env)
-    | Boolean(x) -> trace ("eval bool: " ^ string_of_bool x) (VBool(x), env)
-    | Variable(str) -> trace ("eval var: " ^ str) (resolve_name env str, env)
-    | Beat(e, n) -> (VUnknown, env)
-    | Note(e1, e2, e3) -> (VUnknown, env)
-    | Print(e) -> (VUnknown, env)
-    | Random -> (VUnknown, env)
-    | Binop(e1, op, e2) -> (VUnknown, env)
-    | Prefix(op, e) -> (VUnknown, env)
-    | If(e1, e2, e3) -> 
+      Ast.Literal(x) -> trace ("eval lit: " ^ string_of_int x) (VInt(x), env)
+    | Ast.Boolean(x) -> trace ("eval bool: " ^ string_of_bool x) (VBool(x), env)
+    | Ast.Variable(str) -> trace ("eval var: " ^ str) (resolve_name env str, env)
+    | Ast.Beat(e, n) -> (VUnknown, env)
+    | Ast.Note(e1, e2, e3) -> (VUnknown, env)
+    | Ast.Print(e) -> (VUnknown, env)
+    | Ast.Random -> (VUnknown, env)
+    | Ast.Binop(e1, op, e2) -> (VUnknown, env)
+    | Ast.Prefix(op, e) -> (VUnknown, env)
+    | Ast.If(e1, e2, e3) -> 
         trace "eval if: " (match eval env e1 with
             | VBool(true), env -> trace "true branch" eval env e2 
             | VBool(false), env -> trace "false branch" eval env e3
             | _ -> interp_error ("error in If expr"))
-    | List(el) -> 
+    | Ast.List(el) -> 
         trace "eval list: " 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VList(List.rev lst), env')
-    | Chord(el) -> (VUnknown, env)
-    | System(el) -> (VUnknown, env)
-    | Call(e1, e2) -> (VUnknown, env)
-    | Let(dl, e) -> 
+    | Ast.Chord(el) -> (VUnknown, env)
+    | Ast.System(el) -> (VUnknown, env)
+    | Ast.Call(e1, e2) -> (VUnknown, env)
+    | Ast.Let(dl, e) -> 
         let new_env = (List.fold_left 
                 (fun env' dec -> match dec with
                       Vardef(str, e) -> let v, env = eval env e in 
