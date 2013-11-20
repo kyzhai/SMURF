@@ -240,7 +240,6 @@ let walk_decl prog = function
                     { decls = prog.decls @ [SVardef(var, expr)];
                     symtab = (add_var var prog.symtab) } 
 
-    | _ -> prog
     (*
     | Ast.Funcdec(fdec) ->
             
@@ -260,16 +259,15 @@ let walk_decl prog = function
             let var = {name = funcdef.s_fname; v_type = funcdef.type_sig} in
                 { decls = prog.decls @ [funcdef]; symtab = global }
                 *)
-                    (*
-    | Main(expr) -> print_string "main\n"; 
-        match prog.symtab with 
-            Parent(l, c) -> if( is_declared "main" prog.symtab ) 
-                then raise (Multiple_declarations "main")
-                else
-                        { decls= prog.decls @ [SMain(expr)]; 
-                        symtab = add_var {name="main"; v_type = [Unknown]} prog.symtab}
-            | Child(l,p, c) -> raise Main_wrong_scope
-            *)
+                    
+    | Main(expr) -> 
+        if(prog.symtab.parent = None) 
+					then if( is_declared "main" prog.symtab)
+						then raise (Multiple_declarations "main")
+					else { decls = prog.decls @ [SMain(expr)];
+								symtab = (add_var {name = "main"; v_type = [Unknown]} prog.symtab) }
+				else raise Main_wrong_scope
+    | _ -> prog
 
 (* Right now gets called by smurf *)
 
