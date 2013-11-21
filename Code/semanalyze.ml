@@ -46,6 +46,8 @@ let rec exists_typesig id = function
                             else false
                            else exists_typesig id rest
 
+let get_typesig id ids = (List.find (fun t -> t.name = id) ids).v_type
+
 (* Check if a definition exists for an id in the current scope *)
 let rec exists_dec id = function
     [] -> false
@@ -86,6 +88,14 @@ let mod_var entry symtab = if is_declared entry.name symtab then
                            else let s = entry :: symtab.identifiers in
                                 {parent = symtab.parent; identifiers = s}
 
+let replace_vardef program var oldvar = match var with
+    | SVardef(ids, s_expr) -> let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
+                              let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
+                              let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
+                                {decls = var :: newdecls; symtab = {parent = program.symtab.parent; identifiers = newentry :: newsym}}
+    | x -> raise (Multiple_declarations "Hello")
+
+
 (* Start with an empty symbol table *)
 let print_var = { name="print"; v_type = [Unknown]; v_expr = None}
 let random_var = { name = "random"; v_type = [Unknown]; v_expr = None }
@@ -109,10 +119,10 @@ let rec gen_new_scope = function
 
 (* Returns a type from an expression*)
 let rec get_type = function
-      Ast.Literal(l) -> Num (* Int or Beat *)
-    | Ast.Boolean(b) -> Bool
-    | Ast.Variable(s) -> Unknown (* look up in symbol table? *)
-    | Ast.Binop(e1, o, e2) ->  (* Check type of operator *)
+      SLiteral(l) -> Num (* Int or Beat *)
+    | SBoolean(b) -> Bool
+    | SVariable(s) -> Unknown (* look up in symbol table? *)
+    | SBinop(e1, o, e2) ->  (* Check type of operator *)
         let te1 = get_type e1
         and te2 = get_type e2 in
             (match o with
@@ -221,7 +231,7 @@ let rec get_type = function
                             Sast.string_of_s_type te2)
                         else te2
             )
-    | Ast.Prefix(o, e) -> (* Prefix Operators *)
+    | SPrefix(o, e) -> (* Prefix Operators *)
         let te = get_type e in
         (match o with
             Ast.Not -> (* Not: ! Bool *)
@@ -235,19 +245,19 @@ let rec get_type = function
                     "type Int but element was of type " ^ Sast.string_of_s_type te)
                 else te
         )
-    | Ast.If(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
+    | SIf(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
         let te1 = get_type e1 in 
         if te1 <> Sast.Bool then 
-            type_error (Ast.string_of_expr e1 ^ " has type " ^ string_of_s_type te1
+            type_error (string_of_sexpr e1 ^ " has type " ^ string_of_s_type te1
             ^ " but is used as if it has type " ^ string_of_s_type Sast.Bool)
         else let te2 = get_type e2 in 
              let te3 = get_type e3 in 
              if te2 <> te3 then
-                type_error (Ast.string_of_expr e2 ^ " has type " ^ string_of_s_type te2 
-                ^ " but " ^ Ast.string_of_expr e3 ^ " has type " ^ string_of_s_type te3 
+                type_error (string_of_sexpr e2 ^ " has type " ^ string_of_s_type te2 
+                ^ " but " ^ string_of_sexpr e3 ^ " has type " ^ string_of_s_type te3 
                 ^ " which is not allowed in conditional statement")
                 else te2
-    | Ast.Beat(i1, i2) -> 
+    | SBeat(i1, i2) -> 
         let ti1 = get_type i1 in
         if ti1 <> Sast.Num
         then type_error ("First element in a Beat must be of type Int " ^
@@ -257,7 +267,7 @@ let rec get_type = function
             if i2 < 0 || i2 > 4
             then type_error ("Dots may not increase Beat value past 16th")
             else Sast.Beat
-    | Ast.Note(pc, reg, b) -> 
+    | SNote(pc, reg, b) -> 
         let tpc = get_type pc 
         and treg = get_type reg
         and tb = get_type b in
@@ -273,18 +283,18 @@ let rec get_type = function
                 then type_error ("Third element in Note (Beat) must be of type Beat " ^
                     "but element was of type " ^ Sast.string_of_s_type tb)
                 else Sast.Note
-    | Ast.List(el) -> (* Check all elements have same type*)
+    | SList(el) -> (* Check all elements have same type*)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in
                 let ty = (get_type y) in
                 if tx <> ty 
-                    then type_error (Ast.string_of_expr x ^ " has type of "
+                    then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
-                        ^ Ast.string_of_expr y ^ " has type " 
+                        ^ string_of_sexpr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
                 else trace ("tx: " ^ Sast.string_of_s_type tx ^ "  ty: " ^ Sast.string_of_s_type ty) () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
-    | Ast.Chord(el) -> (* Check all elements have type of TNote *)
+    | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
@@ -292,18 +302,18 @@ let rec get_type = function
                 if tx <> ty 
                     then type_error ("Elements in Chord should all have type of " 
                     ^ Ast.string_of_types Ast.TNote ^ " but the element of " 
-                    ^ Ast.string_of_expr y ^ " has type of " ^ Sast.string_of_s_type ty)
+                    ^ string_of_sexpr y ^ " has type of " ^ Sast.string_of_s_type ty)
                 else () in List.iter (match_type_or_fail hd) el; 
         let hd = List.hd el in 
             let match_duration_or_fail x y = match x, y with
-                 Ast.Note(p1,r1,bt1), Ast.Note(p2,r2,bt2) -> 
-                    (if (Ast.string_of_expr bt1) <> (Ast.string_of_expr bt2) 
-                        then type_error ("The time durating of " ^ Ast.string_of_expr bt1
-                        ^ " is not the consistent with that of " ^ Ast.string_of_expr bt2)
+                 SNote(p1,r1,bt1), SNote(p2,r2,bt2) -> 
+                    (if (string_of_sexpr bt1) <> (string_of_sexpr bt2) 
+                        then type_error ("The time durating of " ^ string_of_sexpr bt1
+                        ^ " is not the consistent with that of " ^ string_of_sexpr bt2)
                         else ())
                | _,_ -> type_error ("Not Expected Exception")
         in List.iter (match_duration_or_fail hd) el; Sast.Chord
-    | Ast.System(el) -> (* Check all elements have type of TChord *)
+    | SSystem(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
                 let tx = (get_type x) in 
@@ -311,13 +321,13 @@ let rec get_type = function
                 if tx <> ty 
                     then type_error ("Elements in Chord should all have type of " 
                     ^ string_of_s_type Sast.Chord ^ " but the element of " 
-                    ^ Ast.string_of_expr y ^ " has type of " ^ string_of_s_type ty)
+                    ^ string_of_sexpr y ^ " has type of " ^ string_of_s_type ty)
                 else () in List.iter (match_type_or_fail hd) el; Sast.System
     | _ -> Sast.Unknown
 
 (* First pass walk_decl -> Try to construct a symbol table *)
 let rec walk_decl prog = function
-    Ast.Tysig(id,types) -> (*print_string "type signature\n"; *)
+    Ast.Tysig(id,types) -> 
                 let func = {name=id; v_type = (List.map types_to_s_type types); v_expr = None} in 
                 if (exists_typesig id prog.symtab.identifiers)
                     then raise (Multiple_type_sigs id)
@@ -369,11 +379,31 @@ and to_sexpr symbol = function
                            let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs
                            in SLet(to_sexpr symbol e, nested_prog)
 
+(* Second pass -> use symbol table to resolve all semantic checks *)
+let rec walk_decl_second program = function
+    | SVardef(s_id, s_expr) as oldvar -> 
+        let texpr = [get_type s_expr] in
+        if s_id.v_type = [Unknown] then
+            let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
+                               let set_type = get_typesig s_id.name program.symtab.identifiers in
+                               if diff_types set_type texpr then
+                                raise (Type_mismatch s_id.name)
+                               else set_type
+                           else texpr in 
+            let newvar = SVardef({name = s_id.name; v_type = new_type; v_expr = s_id.v_expr}
+                         , s_expr) in
+            replace_vardef program newvar oldvar
+        else if diff_types s_id.v_type texpr then
+            raise (Type_mismatch s_id.name)
+        else program
+    | _ -> program
+
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
     let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
-    in (print_string (string_of_s_program program)); program
+    in (*(print_string (string_of_s_program program));*) program
 
 let second_pass list_decs = 
 		let program = first_pass list_decs in 
-		program.symtab
+        let real_program = List.fold_left walk_decl_second program program.decls in
+		(print_string (string_of_s_program real_program)); real_program.symtab
