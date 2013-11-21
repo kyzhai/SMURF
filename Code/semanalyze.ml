@@ -12,12 +12,14 @@ let rec types_to_s_type = function
     | TList(l) -> Sast.List(types_to_s_type l)
     | TPoly(s) -> Sast.Poly(s)
 
+(* Return a list of equivalent types to v1 *)
 let equiv_type v1 = match v1 with
       Sast.Num -> [Sast.Int; Sast.Beat; Sast.Num]
     | Sast.Chord -> [Sast.List(Sast.Note); Sast.Chord]
     | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
     | x -> [x]
 
+(* Return true if v1 and v2 are different types *)
 let rec diff_types v1 v2 = match v1, v2 with
     | x::t1, y::t2 -> if ((List.mem x (equiv_type y)) || (List.mem y (equiv_type x)))
                       then diff_types t1 t2 else true
@@ -46,6 +48,7 @@ let rec exists_typesig id = function
                             else false
                            else exists_typesig id rest
 
+(* Get the type signature for an identifier in the current scope *)
 let get_typesig id ids = (List.find (fun t -> t.name = id) ids).v_type
 
 (* Check if a definition exists for an id in the current scope *)
@@ -88,12 +91,13 @@ let mod_var entry symtab = if is_declared entry.name symtab then
                            else let s = entry :: symtab.identifiers in
                                 {parent = symtab.parent; identifiers = s}
 
+(* Update type of variable definition in our symbol table and our list of declarations *)
 let replace_vardef program var oldvar = match var with
     | SVardef(ids, s_expr) -> let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
                               let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
                               let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
                                 {decls = var :: newdecls; symtab = {parent = program.symtab.parent; identifiers = newentry :: newsym}}
-    | x -> raise (Multiple_declarations "Hello")
+    | x -> raise (Multiple_declarations "Hello") (* Fix this... *)
 
 
 (* Start with an empty symbol table *)
