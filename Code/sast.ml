@@ -23,13 +23,13 @@ type s_ids = {
 
 type symbol_table = {
     parent : symbol_table option;
-    identifiers : s_ids list; 
+    mutable identifiers :  s_ids list; 
 }
 
 
 
 type s_program = {
-    decls : s_dec list;
+    mutable decls : s_dec list;
     symtab : symbol_table;
 }
 
