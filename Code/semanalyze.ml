@@ -105,19 +105,38 @@ let print_var = { name="print"; v_type = [Unknown]; v_expr = None}
 let random_var = { name = "random"; v_type = [Unknown]; v_expr = None }
 let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
+let rec get_pat_type = function
+    Patconst _  -> Sast.Int                 
+    | Patbool _ -> Sast.Bool       
+    | Patvar _ | Patwild -> Sast.Unknown
+    | Patcomma l -> if l = [] then Sast.List(Empty)
+                    else let hd = List.hd l in 
+                     let match_type_or_fail x y = 
+                        let tx = (get_pat_type x) in
+                        let ty = (get_pat_type y) in
+                        if tx <> ty && tx <> Sast.Unknown && ty <> Sast.Unknown
+                            then raise (Pattern_list_type_mismatch (string_of_s_type tx ^ " " ^ string_of_s_type ty))
+                        else () in List.iter (match_type_or_fail hd) l; Sast.List(get_pat_type hd)
+    | Patcons (e1, e2) -> let ty1 = get_pat_type e1 in
+                         let ty2 = get_pat_type e2 in
+                            let wrong_cons_type = function
+                                Sast.Int | Sast.Bool -> true
+                                | _ -> false
+                            in
+                         if wrong_cons_type ty2 then raise (Cons_pattern_type_mismatch e2)
+                         else (match ty2 with
+                                 Sast.List(els) -> if ty1 <> els && ty1 <> Sast.Unknown && els <> Sast.Unknown
+                                                   then raise (Pattern_list_type_mismatch (string_of_s_type ty1 ^ " " ^ string_of_s_type ty2))
+                                                   else ty1
+                                 | _ -> ty1)
+
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
     [] -> []
-    | (h::tl) -> (match h with 
-          Ast.Patvar(s) -> [s] 
-        | Ast.Patcomma(pl) -> collect_pat_vars pl 
-        | Ast.Patcons(pl1, pl2) -> (collect_pat_vars [pl1]) @ (collect_pat_vars [pl2]) 
-        | _ -> collect_pat_vars tl ) 
-    @ collect_pat_vars tl
-
-let rec not_linear_pats = function
-    [] -> false
-    | (h :: tl) -> List.exists (fun pat -> pat = h) tl
+    | Ast.Patvar(s) :: rest -> s :: collect_pat_vars rest
+    | (Ast.Patcomma(pl) as l) :: rest -> (match (get_pat_type l) with _ ->  collect_pat_vars pl) @ collect_pat_vars rest
+    | Ast.Patcons(pl1, pl2) :: rest -> ((collect_pat_vars [pl1]) @ (collect_pat_vars [pl2])) @ collect_pat_vars rest
+    | _ :: rest -> collect_pat_vars rest
 
 (* Set up a new scope given a set of variables to put into scope *)
 let rec gen_new_scope = function
