@@ -3,6 +3,7 @@ open Util
 
 exception Multiple_declarations of string
 exception Multiple_type_sigs of string
+exception Multiple_patterns of string 
 exception Type_mismatch of string
 exception Main_wrong_scope
 

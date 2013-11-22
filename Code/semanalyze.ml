@@ -77,26 +77,26 @@ let rec is_declared id symtab =
         |   _ -> false
 
 (* Add new entry into symbol table or modify existing one if necessary (First Pass work) *)
-let mod_var entry symtab = if is_declared entry.name symtab then
-                            let s = List.find (fun v -> v.name = entry.name) symtab.identifiers in
-                            let newlist = List.filter (fun v -> v.name <> entry.name) 
-                                                      symtab.identifiers in
-                            if entry.v_expr = None then
-                                {parent = symtab.parent; 
-                                 identifiers = {name = s.name; v_type = entry.v_type; 
-                                                v_expr = s.v_expr} :: newlist}
-                            else {parent = symtab.parent; 
-                                  identifiers = {name = s.name; v_type = s.v_type; 
-                                                 v_expr = entry.v_expr} :: newlist}
-                           else let s = entry :: symtab.identifiers in
-                                {parent = symtab.parent; identifiers = s}
+let mod_var entry symtab = 
+    if is_declared entry.name symtab then
+        let s = List.find (fun v -> v.name = entry.name) symtab.identifiers in
+        let newlist = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
+        if entry.v_expr = None then
+            {parent = symtab.parent; 
+            identifiers = {name = s.name; v_type = entry.v_type; v_expr = s.v_expr} :: newlist}
+        else {parent = symtab.parent; identifiers = {name = s.name; v_type = s.v_type; 
+                                                    v_expr = entry.v_expr} :: newlist}
+    else let s = entry :: symtab.identifiers in
+         {parent = symtab.parent; identifiers = s}
 
 (* Update type of variable definition in our symbol table and our list of declarations *)
 let replace_vardef program var oldvar = match var with
-    | SVardef(ids, s_expr) -> let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
-                              let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
-                              let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
-                                {decls = var :: newdecls; symtab = {parent = program.symtab.parent; identifiers = newentry :: newsym}}
+    | SVardef(ids, s_expr) -> 
+        let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
+        let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
+        let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
+        {decls = var :: newdecls; symtab = 
+            {parent = program.symtab.parent; identifiers = newentry :: newsym}}
     | x -> raise (Multiple_declarations "Hello") (* Fix this... *)
 
 
@@ -115,11 +115,15 @@ let rec collect_pat_vars = function
         | _ -> collect_pat_vars tl ) 
     @ collect_pat_vars tl
 
+let rec not_linear_pats = function
+    [] -> false
+    | (h :: tl) -> List.exists (fun pat -> pat = h) tl
 
 (* Set up a new scope given a set of variables to put into scope *)
 let rec gen_new_scope = function
     [] -> []
-    | pat :: rest -> {name = pat; v_type = [Unknown]; v_expr = None} :: gen_new_scope rest
+    | pat :: rest -> if List.exists (fun p -> p = pat) rest then raise (Multiple_patterns pat)
+                     else {name = pat; v_type = [Unknown]; v_expr = None} :: gen_new_scope rest
 
 (* Returns a type from an expression*)
 let rec get_type = function
