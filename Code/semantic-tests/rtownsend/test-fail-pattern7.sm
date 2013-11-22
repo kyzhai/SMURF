@@ -1,0 +1,3 @@
+/* Last element of conspattern must be list */
+
+f a:True = False

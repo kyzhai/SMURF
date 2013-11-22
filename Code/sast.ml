@@ -5,7 +5,7 @@ exception Multiple_declarations of string
 exception Multiple_type_sigs of string
 exception Multiple_patterns of string 
 exception Pattern_list_type_mismatch of string 
-exception Cons_pattern_type_mismatch of pattern
+exception Cons_pattern_type_mismatch of string
 exception Type_mismatch of string
 exception Main_wrong_scope
 
