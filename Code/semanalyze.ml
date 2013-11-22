@@ -95,8 +95,9 @@ let replace_vardef program var oldvar = match var with
         let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
         let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
         let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
-        {decls = var :: newdecls; symtab = 
-            {parent = program.symtab.parent; identifiers = newentry :: newsym}}
+        program.symtab.identifiers <- newentry :: newsym;
+        program.decls <- (var :: newdecls); program
+        
     | x -> raise (Multiple_declarations "Hello") (* Fix this... *)
 
 
@@ -431,7 +432,7 @@ let rec walk_decl_second program = function
             let newvar = SVardef({name = s_id.name; v_type = new_type; v_expr = s_id.v_expr}
                          , s_expr) in
             replace_vardef program newvar oldvar
-        else if diff_types s_id.v_type texpr then
+    else if diff_types s_id.v_type texpr then
             raise (Type_mismatch s_id.name)
         else program
     | _ -> program
