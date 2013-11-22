@@ -4,6 +4,8 @@ open Util
 exception Multiple_declarations of string
 exception Multiple_type_sigs of string
 exception Multiple_patterns of string 
+exception Pattern_list_type_mismatch of string 
+exception Cons_pattern_type_mismatch of pattern
 exception Type_mismatch of string
 exception Main_wrong_scope
 
@@ -11,7 +13,7 @@ exception Type_error of string
 let type_error msg = raise (Type_error msg)
 
 type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
-              Poly of string | Unknown | Num | Still_unknown
+              Poly of string | Unknown | Num | Still_unknown | Empty
 
 type s_ids = {
         name : string;
@@ -102,6 +104,7 @@ let rec string_of_s_type = function
     | Chord -> "Chord"
     | System -> "System"
     | List(t) -> "[" ^ string_of_s_type t ^ "]"
+    | Empty -> "[]"
     | Poly(s) -> s
     | Unknown -> "Unknown"
     | Num -> "Num"
