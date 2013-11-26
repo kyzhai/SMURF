@@ -18,11 +18,11 @@ end)
 type value = 
     | VInt of int
     | VBool of bool
-    | VBeat of int * int
-    | VNote of int * int * value
+    | VBeat of value * int
+    | VNote of value * value * value
+    | VList of value list
     | VChord of value list
     | VSystem of value list
-    | VList of value list
     | VUnknown
 
 type enviroment = {
@@ -31,9 +31,19 @@ type enviroment = {
 }
 
 let rec string_of_value = function
-      VInt(x) -> string_of_int x
+    | VInt(x) -> string_of_int x
     | VBool(x) -> string_of_bool x
-    | VList(vl) -> "[" ^ (String.concat ", " (List.map string_of_value vl)) ^ "]"
+    | VBeat(i1, i2) -> string_of_value i1 ^ 
+        let rec repeat n s = 
+            if n>0 then 
+                repeat (n-1) ("." ^ s)
+            else s in repeat i2 ""
+    | VNote(pc, reg, bt) -> " (" ^ string_of_value pc 
+        ^ ", " ^ string_of_value reg ^ ")$" 
+        ^ (string_of_value bt)
+    | VList(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
+    | VChord(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
+    | VSystem(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
     | _ -> "Unresolved"
 
 (* show the environment to std out *)
@@ -84,23 +94,61 @@ let rec eval env = function
       Ast.Literal(x) -> trace ("eval lit: " ^ string_of_int x) (VInt(x), env)
     | Ast.Boolean(x) -> trace ("eval bool: " ^ string_of_bool x) (VBool(x), env)
     | Ast.Variable(str) -> trace ("eval var: " ^ str) (resolve_name env str, env)
-    | Ast.Beat(e, n) -> (VUnknown, env)
-    | Ast.Note(e1, e2, e3) -> (VUnknown, env)
-    | Ast.Binop(e1, op, e2) -> (VUnknown, env)
-    | Ast.Prefix(op, e) -> (VUnknown, env)
+    | Ast.Beat(e, n) -> trace ("eval beat: ") 
+        (let (v,env') = eval env e in VBeat(v,n), env')
+    | Ast.Note(e1, e2, e3) -> trace ("eval note: ") 
+        (let (v1,env1) = eval env e1 in 
+         let (v2,env2) = eval env1 e2 in 
+         let (v3,env3) = eval env2 e3 in VNote(v1,v2,v3),env3)
+    | Ast.Binop(e1, op, e2) -> (*Incomplete*)
+        (let (v1,env1) = eval env e1 in 
+         let (v2,env2) = eval env1 e2 in 
+         (match v1, v2 with 
+            | VInt(x), VInt(y) -> 
+                (match op with 
+                      Add -> VInt(x+y),env2
+                    | Sub -> VInt(x-y),env2
+                    | Mul -> VInt(x*y),env2
+                    | Div -> VInt(x/y),env2
+                    | Mod -> VInt(x mod y),env2
+                    | _ -> interp_error ("Not expected op for Ints"))
+            | _ -> interp_error ("Not expected operands")
+         ))
+    | Ast.Prefix(op, e) -> (*Incomplete*)
+        (let (v1,env1) = eval env e in
+         match v1 with 
+            | VList(lst) -> (match op with
+                | Retro -> VList(List.rev lst),env1
+                | _ -> interp_error ("Unexpected op for list"))
+            | VChord(lst) -> (match op with
+                | Retro -> VChord(List.rev lst),env1
+                | _ -> interp_error ("Unexpected op for chord"))
+            | VSystem(lst) -> (match op with
+                | Retro -> VSystem(List.rev lst),env1
+                | _ -> interp_error ("Unexpected op for system"))
+            | _ -> interp_error ("Unexpected operand for prefix op")
+         )
     | Ast.If(e1, e2, e3) -> 
         trace "eval if: " (match eval env e1 with
             | VBool(true), env -> trace "true branch" eval env e2 
             | VBool(false), env -> trace "false branch" eval env e3
             | _ -> interp_error ("error in If expr"))
-    | Ast.List(el) -> 
+    | Ast.List(el) -> (*updating evironment after eval every expression*)
         trace "eval list: " 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VList(List.rev lst), env')
-    | Ast.Chord(el) -> (VUnknown, env)
-    | Ast.System(el) -> (VUnknown, env)
-    | Ast.Call(e1, e2) -> (VUnknown, env)
+    | Ast.Chord(el) -> 
+        trace "eval Chord: " 
+        (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
+                    let v, env' = eval env e in (env',v::lst)) 
+                (env,[]) el) in VChord(List.rev lst), env')
+    | Ast.System(el) -> 
+        trace "eval System: " 
+        (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
+                    let v, env' = eval env e in (env',v::lst)) 
+                (env,[]) el) in VSystem(List.rev lst), env')
+    | Ast.Call(e1, e2) -> trace "eval Call:" (VUnknown, env)
     | Ast.Let(dl, e) -> 
         let new_env = (List.fold_left 
                 (fun env' dec -> match dec with
@@ -136,17 +184,9 @@ let globalE = {parent = None;
         ids = List.fold_left (fun mp lst -> 
         NameMap.add lst.name VUnknown mp) 
         NameMap.empty s_prog.symtab.identifiers}
-in 
-let _ = show_env globalE in
+in let _ = show_env globalE in
 
 (* top-level declarations always run in global environment *)
 List.fold_left exec_decl globalE decls
 
 
-(*
-let _ = 
-    let lexbuf = Lexing.from_channel stdin in 
-    let program = Parser.program Scanner.token lexbuf in 
-    let s_prog = Semanalyze.first_pass program in 
-        trace "calling run" run program s_prog
-*)
