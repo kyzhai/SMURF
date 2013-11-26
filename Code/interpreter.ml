@@ -23,7 +23,9 @@ type value =
     | VList of value list
     | VChord of value list
     | VSystem of value list
+    | VFun of string * dec * func_decl list (* name * sig * fdecl *)
     | VUnknown
+
 
 type enviroment = {
     parent : enviroment option;
@@ -44,6 +46,12 @@ let rec string_of_value = function
     | VList(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
     | VChord(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
     | VSystem(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
+    | VFun(name,fsig,fdecl) -> (
+            match fsig with 
+                  Tysig(name,types) -> (name ^ " :: " 
+        ^ String.concat " -> " (List.map Ast.string_of_types types) ^ "\n\t     "
+        ^ (String.concat "\t     " (List.map Ast.string_of_fdec fdecl)))
+                | _ -> interp_error ("Unexpected type for Tsig"))
     | _ -> "Unresolved"
 
 (* show the environment to std out *)
@@ -148,7 +156,7 @@ let rec eval env = function
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VSystem(List.rev lst), env')
-    | Ast.Call(e1, e2) -> trace "eval Call:" (VUnknown, env)
+    | Ast.Call(e1, e2) -> trace "eval Call: Why the function call only takes one parementer?" (VUnknown, env)
     | Ast.Let(dl, e) -> 
         let new_env = (List.fold_left 
                 (fun env' dec -> match dec with
@@ -167,9 +175,16 @@ let rec eval env = function
 (* execute the top-level declaration, in the global enviroment, 
  * return the updated global environment *)
 and exec_decl env = function
-      Tysig(str, tlst) -> trace "exec stsig" env
-    | Funcdec(f_decl) -> trace "exec sfun" env
-    | Vardef(str, e) -> (* trace "svar" eval env e; env *)
+      Tysig(str,tlst) -> trace "exec stsig" (* signature will yield a new fun *)
+        (let vfun = VFun(str,Tysig(str,tlst),[]) in update_env env str vfun)
+    | Funcdec(f_decl) -> trace "exec sfun" (* fun decl will be added to current *)
+        (match NameMap.mem f_decl.fname env.ids with
+              true -> (match NameMap.find f_decl.fname env.ids with 
+                        | VFun(name,fsig,def) -> 
+                            let vfun = VFun(name, fsig, f_decl::def) in update_env env name vfun
+                        | _ -> interp_error("Not defined as a signature"))
+            | false -> interp_error ("Function definition without a signature"))
+    | Vardef(str,e) -> (* trace "svar" eval env e; env *)
         let v, env = eval env e in
             trace (string_of_value v) update_env env str v
     | Main(e) -> trace "exec smain" ignore(eval env e); env
