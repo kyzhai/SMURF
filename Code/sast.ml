@@ -7,6 +7,7 @@ exception Multiple_patterns of string
 exception Pattern_list_type_mismatch of string 
 exception Cons_pattern_type_mismatch of string
 exception No_type_signature_found of string
+exception Pattern_num_mismatch of int * int
 exception Type_mismatch of string
 exception Main_wrong_scope
 

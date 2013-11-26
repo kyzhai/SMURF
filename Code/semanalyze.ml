@@ -52,11 +52,12 @@ let rec exists_typesig id = function
 let get_typesig id ids = (List.find (fun t -> t.name = id) ids).v_type
 
 (* Check if type signature exists for id in current or higher scope *)
-let rec exists_typesig_p id symtab = 
-    if exists_typesig id symtab.identifiers then true
+let rec get_types_p id symtab = 
+    if exists_typesig id symtab.identifiers then get_typesig id symtab.identifiers
     else match symtab.parent with
-        | Some(psym) -> exists_typesig_p id psym
-        | None -> false
+        | Some(psym) -> get_types_p id psym
+        | None -> raise (No_type_signature_found id)
+
 
 (* Check if a definition exists for an id in the current scope *)
 let rec exists_dec id = function
@@ -443,8 +444,11 @@ let rec walk_decl_second program = function
             raise (Type_mismatch s_id.name)
         else program
     | SFuncdec(info) ->
-        if (exists_typesig_p info.s_fname program.symtab) then program
-        else raise (No_type_signature_found info.s_fname)
+        let types = get_types_p info.s_fname program.symtab in
+        let argl = List.length info.s_args in
+        let tyl = List.length types in
+        if (argl <> tyl - 1) then raise (Pattern_num_mismatch( argl, tyl - 1))
+        else program
     | _ -> program
 
 (* Right now gets called by smurf *)
