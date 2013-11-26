@@ -108,7 +108,17 @@ let replace_vardef program var oldvar = match var with
     | _ -> program
         
 
-
+(* Update type and scope of function declaration in our symbol table and our list of declarations *)
+let replace_funcdec program func oldfunc = match func with
+    | _ -> program
+(*
+    | SFuncdec(info) -> 
+        let newdecls = List.filter (fun dec -> dec <> oldfunc) program.decls in
+        let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
+        let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
+        program.symtab.identifiers <- newentry :: newsym;
+        program.decls <- (func :: newdecls); program
+*)
 (* Start with an empty symbol table *)
 let print_var = { name="print"; v_type = [Unknown]; v_expr = None}
 let random_var = { name = "random"; v_type = [Unknown]; v_expr = None }
@@ -157,6 +167,34 @@ let rec collect_pat_vars = function
                                           ((collect_pat_vars [pl1]) @ (collect_pat_vars [pl2])))
                                           @ collect_pat_vars rest
     | _ :: rest -> collect_pat_vars rest
+
+(* Check if there exist 2 function declarations with the same ids and pattern lists *)
+let rec same_pats func = function
+    [] -> false
+    | SFuncdec(info) :: rest -> 
+        if (info.s_fname <> func.s_fname) then same_pats func rest
+        else if (List.length info.s_args <> List.length func.s_args) then same_pats func rest
+        else          let rec compare_pats arg1 arg2 = match arg1, arg2 with
+            | Patconst(x), Patconst(y) -> if x <> y then false else true
+            | Patbool(x), Patbool(y) -> if x <> y then false else true
+            | Patvar(_), Patvar(_) -> true
+            | Patwild, Patwild -> true
+            | Patcomma(l1), Patcomma(l2) -> 
+                if (List.length l1 <> List.length l2) then false else
+                if (List.length l1 = 0 || List.length l2 = 0) then false else
+                if (List.for_all (fun v -> v = true) (List.map2 compare_pats l1 l2))
+                then true else false
+            | Patcons(p1, p2), Patcons(p3, p4) ->
+                if (compare_pats p1 p3 && compare_pats p2 p4) then true else false
+            | Patcomma(l1), Patcons(p1, p2) | Patcons(p1, p2), Patcomma(l1) ->
+                if (List.length l1 = 0) then false else
+                if (compare_pats (List.hd l1) p1) then compare_pats (Patcomma(List.tl l1)) p2
+                else false
+            | _, _ -> false
+            in let result = List.map2 compare_pats info.s_args func.s_args in
+                List.for_all (fun v -> v = true) result
+    | _ :: rest -> same_pats func rest
+
 
 (* Set up a new scope given a set of variables to put into scope *)
 let rec gen_new_scope = function
@@ -443,12 +481,22 @@ let rec walk_decl_second program = function
         else if diff_types s_id.v_type texpr then
             raise (Type_mismatch s_id.name)
         else program
-    | SFuncdec(info) ->
+    | SFuncdec(info) as oldfunc ->
         let types = get_types_p info.s_fname program.symtab in
         let argl = List.length info.s_args in
         let tyl = List.length types in
         if (argl <> tyl - 1) then raise (Pattern_num_mismatch( argl, tyl - 1))
-        else program
+        else let search_decls = List.filter (fun v -> v <> oldfunc) program.decls in
+            if (List.length search_decls < (List.length program.decls) - 1)
+            then raise (Multiple_identical_pattern_lists 
+                        (String.concat " " (List.map string_of_patterns info.s_args)))
+            else if (same_pats info search_decls)
+            then raise (Multiple_identical_pattern_lists 
+                        (String.concat " " (List.map string_of_patterns info.s_args)))
+        else let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
+                                     s_args = info.s_args; s_value = info.s_value;
+                                     scope = info.scope;}) in
+             replace_funcdec program newfunc oldfunc
     | _ -> program
 
 (* Right now gets called by smurf *)
