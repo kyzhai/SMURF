@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SMURF="./smurf"
+SMURF="./smurf.byte"
 TESTDIR="./semantic-tests"
 
 # Set time limit for all operations
