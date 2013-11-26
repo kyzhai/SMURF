@@ -51,6 +51,13 @@ let rec exists_typesig id = function
 (* Get the type signature for an identifier in the current scope *)
 let get_typesig id ids = (List.find (fun t -> t.name = id) ids).v_type
 
+(* Check if type signature exists for id in current or higher scope *)
+let rec exists_typesig_p id symtab = 
+    if exists_typesig id symtab.identifiers then true
+    else match symtab.parent with
+        | Some(psym) -> exists_typesig_p id psym
+        | None -> false
+
 (* Check if a definition exists for an id in the current scope *)
 let rec exists_dec id = function
     [] -> false
@@ -97,8 +104,8 @@ let replace_vardef program var oldvar = match var with
         let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
         program.symtab.identifiers <- newentry :: newsym;
         program.decls <- (var :: newdecls); program
+    | _ -> program
         
-    | x -> raise (Multiple_declarations "Hello") (* Fix this... *)
 
 
 (* Start with an empty symbol table *)
@@ -432,9 +439,12 @@ let rec walk_decl_second program = function
             let newvar = SVardef({name = s_id.name; v_type = new_type; v_expr = s_id.v_expr}
                          , s_expr) in
             replace_vardef program newvar oldvar
-    else if diff_types s_id.v_type texpr then
+        else if diff_types s_id.v_type texpr then
             raise (Type_mismatch s_id.name)
         else program
+    | SFuncdec(info) ->
+        if (exists_typesig_p info.s_fname program.symtab) then program
+        else raise (No_type_signature_found info.s_fname)
     | _ -> program
 
 (* Right now gets called by smurf *)
