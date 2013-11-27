@@ -90,8 +90,8 @@ let mod_var entry symtab =
         let newlist = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
         if entry.v_expr = None then
             {parent = symtab.parent; 
-            identifiers = {name = s.name; v_type = entry.v_type; v_expr = s.v_expr} :: newlist}
-        else {parent = symtab.parent; identifiers = {name = s.name; v_type = s.v_type; 
+            identifiers = {name = s.name; pats = []; v_type = entry.v_type; v_expr = s.v_expr} :: newlist}
+        else {parent = symtab.parent; identifiers = {name = s.name; pats = entry.pats; v_type = s.v_type; 
                                                     v_expr = entry.v_expr} :: newlist}
     else let s = entry :: symtab.identifiers in
          {parent = symtab.parent; identifiers = s}
@@ -101,7 +101,7 @@ let replace_vardef program var oldvar = match var with
     | SVardef(ids, s_expr) -> 
         let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
         let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
-        let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
+        let newentry = {name = ids.name; pats = []; v_type = ids.v_type; v_expr = ids.v_expr} in
         program.symtab.identifiers <- newentry :: newsym;
         program.decls <- (var :: newdecls); program
     | _ -> program
@@ -119,8 +119,8 @@ let replace_funcdec program func oldfunc = match func with
         program.decls <- (func :: newdecls); program
 *)
 (* Start with an empty symbol table *)
-let print_var = { name="print"; v_type = [Unknown]; v_expr = None}
-let random_var = { name = "random"; v_type = [Unknown]; v_expr = None }
+let print_var = { name="print"; pats = []; v_type = [Unknown]; v_expr = None}
+let random_var = { name = "random"; pats = [];  v_type = [Unknown]; v_expr = None }
 let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* Check if a type is just a bunch of nested empty lists *)
@@ -200,7 +200,7 @@ let rec same_pats func = function
 let rec gen_new_scope = function
     [] -> []
     | pat :: rest -> if List.exists (fun p -> p = pat) rest then raise (Multiple_patterns pat)
-                     else {name = pat; v_type = [Unknown]; v_expr = None} :: gen_new_scope rest
+                     else {name = pat; pats = []; v_type = [Unknown]; v_expr = None} :: gen_new_scope rest
 
 (* Returns a type from an expression*)
 let rec get_type = function
@@ -414,12 +414,12 @@ let rec get_type = function
 (* First pass walk_decl -> Try to construct a symbol table *)
 let rec walk_decl prog = function
     Ast.Tysig(id,types) -> 
-                let func = {name=id; v_type = (List.map types_to_s_type types); v_expr = None} in 
+                let func = {name=id; pats = []; v_type = (List.map types_to_s_type types); v_expr = None} in 
                 if (exists_typesig id prog.symtab.identifiers)
                     then raise (Multiple_type_sigs id)
                 else {decls = prog.decls; symtab = mod_var func prog.symtab}
     | Ast.Vardef(id, expr) -> 
-                let var = {name=id; v_type = [Unknown]; v_expr = Some(expr)} in
+                let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(expr)} in
                 if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
                 else 
@@ -436,14 +436,14 @@ let rec walk_decl prog = function
                                                 s_args = fdec.args;
                                                 s_value = to_sexpr prog.symtab fdec.value;
                                                 scope = new_scope;}) in 
-                let var = {name = fdec.fname; v_type = [Unknown]; v_expr = Some(fdec.value)} in
+                let var = {name = fdec.fname; pats = fdec.args;  v_type = [Unknown]; v_expr = Some(fdec.value)} in
                     { decls = funcdef :: prog.decls; symtab = (mod_var var prog.symtab)  }
     | Main(expr) -> 
         if(prog.symtab.parent = None) 
 					then if( is_declared "main" prog.symtab)
 						then raise (Multiple_declarations "main")
 					else { decls = prog.decls @ [SMain(to_sexpr prog.symtab expr)];
-								symtab = (mod_var {name = "main"; v_type = [Unknown]; 
+								symtab = (mod_var {name = "main"; pats = []; v_type = [Unknown]; 
                                                    v_expr = Some(expr)} prog.symtab)}
 				else raise Main_wrong_scope
 
@@ -476,7 +476,7 @@ let rec walk_decl_second program = function
                                 raise (Type_mismatch s_id.name)
                                else set_type
                            else texpr in 
-            let newvar = SVardef({name = s_id.name; v_type = new_type; v_expr = s_id.v_expr}
+            let newvar = SVardef({name = s_id.name; pats = []; v_type = new_type; v_expr = s_id.v_expr}
                          , s_expr) in
             replace_vardef program newvar oldvar
         else if diff_types s_id.v_type texpr then

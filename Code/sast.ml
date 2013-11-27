@@ -21,6 +21,7 @@ type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
 
 type s_ids = {
         name : string;
+        pats : pattern list;
         v_type : s_type list;
         v_expr : expr option;
 }
