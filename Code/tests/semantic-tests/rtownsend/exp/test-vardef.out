@@ -1,6 +1,6 @@
 Program: 
 	SVardef: 
-		ID: a :: Num
+		ID: a :: Int
 
 	3
 	SVardef: 
@@ -8,7 +8,7 @@ Program:
 
 	a
 Global Scope: 
-	ID: a :: Num
+	ID: a :: Int
 	ID: b :: Unknown
 	ID: print :: Unknown
 	ID: random :: Unknown

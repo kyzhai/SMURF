@@ -1,75 +1,75 @@
 Program: 
 	SVardef: 
-		ID: a :: Num
+		ID: a :: Int
 
 	1 < 2
 	SVardef: 
-		ID: b :: Num
+		ID: b :: Int
 
 	1 > 2
 	SVardef: 
-		ID: c :: Num
+		ID: c :: Int
 
 	1 <= 2
 	SVardef: 
-		ID: d :: Num
+		ID: d :: Int
 
 	1 >= 2
 	SVardef: 
-		ID: e :: Num
+		ID: e :: Beat
 
 	1 $< 2
 	SVardef: 
-		ID: f :: Num
+		ID: f :: Beat
 
 	1. $< 2
 	SVardef: 
-		ID: g :: Num
+		ID: g :: Beat
 
 	1 $> 2
 	SVardef: 
-		ID: h :: Num
+		ID: h :: Beat
 
 	1 $> 2.
 	SVardef: 
-		ID: i :: Num
+		ID: i :: Beat
 
 	1 $<= 2
 	SVardef: 
-		ID: j :: Num
+		ID: j :: Beat
 
 	1 $<= 2.
 	SVardef: 
-		ID: k :: Num
+		ID: k :: Beat
 
 	1 $>= 2
 	SVardef: 
-		ID: l :: Num
+		ID: l :: Beat
 
 	1. $>= 2
 	SVardef: 
-		ID: m :: Num
+		ID: m :: Int
 
 	4 == 4
 	SVardef: 
-		ID: n :: Num
+		ID: n :: Int
 
 	4 == 3
 Global Scope: 
-	ID: a :: Num
-	ID: b :: Num
-	ID: c :: Num
-	ID: d :: Num
-	ID: e :: Num
-	ID: f :: Num
-	ID: g :: Num
-	ID: h :: Num
-	ID: i :: Num
-	ID: j :: Num
-	ID: k :: Num
-	ID: l :: Num
-	ID: m :: Num
-	ID: n :: Num
+	ID: a :: Int
+	ID: b :: Int
+	ID: c :: Int
+	ID: d :: Int
+	ID: e :: Beat
+	ID: f :: Beat
+	ID: g :: Beat
+	ID: h :: Beat
+	ID: i :: Beat
+	ID: j :: Beat
+	ID: k :: Beat
+	ID: l :: Beat
+	ID: m :: Int
+	ID: n :: Int
 	ID: print :: Unknown
 	ID: random :: Unknown
 

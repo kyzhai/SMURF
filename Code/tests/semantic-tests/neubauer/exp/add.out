@@ -1,30 +1,30 @@
 Program: 
 	SVardef: 
-		ID: a :: Num
+		ID: a :: Int
 
 	4 + 4
 	SVardef: 
-		ID: b :: Num
+		ID: b :: Int
 
 	4 - 4
 	SVardef: 
-		ID: c :: Num
+		ID: c :: Int
 
 	4 * 4
 	SVardef: 
-		ID: d :: Num
+		ID: d :: Int
 
 	4 / 4
 	SVardef: 
-		ID: e :: Num
+		ID: e :: Int
 
 	4 % 4
 Global Scope: 
-	ID: a :: Num
-	ID: b :: Num
-	ID: c :: Num
-	ID: d :: Num
-	ID: e :: Num
+	ID: a :: Int
+	ID: b :: Int
+	ID: c :: Int
+	ID: d :: Int
+	ID: e :: Int
 	ID: print :: Unknown
 	ID: random :: Unknown
 

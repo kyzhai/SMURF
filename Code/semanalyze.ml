@@ -14,8 +14,7 @@ let rec types_to_s_type = function
 
 (* Return a list of equivalent types to v1 *)
 let equiv_type v1 = match v1 with
-      Sast.Num -> [Sast.Int; Sast.Beat; Sast.Num]
-    | Sast.Chord -> [Sast.List(Sast.Note); Sast.Chord]
+    Sast.Chord -> [Sast.List(Sast.Note); Sast.Chord]
     | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
     | x -> [x]
 
@@ -132,8 +131,8 @@ let rec only_empties = function
 
 (* So far, just used to check for pattern errors in collect_pat_vars *)
 let rec get_pat_type = function
-    Patconst(_) -> Sast.Int                 
-    | Patbool(_)-> Sast.Bool       
+    Patconst(_) -> Sast.Int
+    | Patbool(_)-> Sast.Bool
     | Patvar(_)| Patwild -> Sast.Unknown
     | Patcomma l -> if l = [] then Sast.List(Empty)
                     else let hd = List.hd l in 
@@ -205,7 +204,7 @@ let rec gen_new_scope = function
 
 (* Returns a type from an expression*)
 let rec get_type = function
-      SLiteral(l) -> Num (* Int or Beat *)
+      SLiteral(l) -> Int
     | SBoolean(b) -> Bool
     | SVariable(s) -> Unknown (* look up in symbol table? *)
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
@@ -215,52 +214,52 @@ let rec get_type = function
                 Ast.Add | Ast.Sub | Ast.Mul | Ast.Div | Ast. Mod |
                 Ast.PCAdd | Ast.PCSub ->
                 (* Arithmetic Operators *)
-                    if te1 <> Sast.Num
+                    if te1 <> Sast.Int
                     then type_error ("First element of an arithmetic binary operation " ^
                         "must be of type Int but element was of type " ^
                         Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Num
+                        if te2 <> Sast.Int
                         then type_error ("Second element of an arithmetic binary operation " ^
                             "must be of type Int but element was of type " ^
                             Sast.string_of_s_type te2)
-                        else Sast.Num
+                        else Sast.Int
                 | Ast.Less | Ast.Leq | Ast.Greater | Ast.Geq ->
                   (* Comparison Operators *)
-                    if te1 <> Sast.Num
+                    if te1 <> Sast.Int
                     then type_error ("First element of a comparison binary operation " ^
                         "must be of type Int but element was of type " ^
                         Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Num
+                        if te2 <> Sast.Int
                         then type_error ("Second element of a comparison binary operation " ^
                             "must be of type Int but element was of type " ^
                             Sast.string_of_s_type te2)
-                        else Sast.Num
+                        else Sast.Int
                 | Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul ->
                   (* Beat Arithmetic Operators *)
-                    if te1 <> Sast.Num && te1 <> Sast.Int && te1 <> Sast.Beat
+                    if te1 <> Sast.Int && te1 <> Sast.Beat
                     then type_error ("First element of a Beat arithmetic binary " ^
                         "operation must be of types Int or Beat but element was of type " ^
                         Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Num && te2 <> Sast.Int && te2 <> Sast.Beat
+                        if te2 <> Sast.Int && te2 <> Sast.Beat
                         then type_error ("Second element of a Beat arithmetic binary " ^
                             "operation must be of types Int or Beat but element was of type " ^
                             Sast.string_of_s_type te2)
-                        else Sast.Num
+                        else Sast.Beat
                 | Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq ->
                   (* Beat Comparison Operators *)
-                    if te1 <> Sast.Num && te1 <> Sast.Int && te1 <> Sast.Beat
+                    if te1 <> Sast.Int && te1 <> Sast.Beat
                     then type_error ("First element of a Beat comparison binary " ^
                         "operation must be of types Int or Beat but element was of type " ^
                         Sast.string_of_s_type te1)
                     else
-                        if te2 <> Sast.Num && te2 <> Sast.Int && te2 <> Sast.Beat
+                        if te2 <> Sast.Int && te2 <> Sast.Beat
                         then type_error ("Second element of a Beat comaprison binary " ^
                             "operation must be of types Int or Beat but element was of type " ^
                             Sast.string_of_s_type te2)
-                        else Sast.Num
+                        else Sast.Beat
                 | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
                     if te1 <> Sast.Bool
                     then type_error ("First element of a boolean binary operation " ^
@@ -345,27 +344,28 @@ let rec get_type = function
                 else te2
     | SBeat(i1, i2) -> 
         let ti1 = get_type i1 in
-        if ti1 <> Sast.Num
+        if ti1 <> Sast.Int
         then type_error ("First element in a Beat must be of type Int " ^
             "and a power of 2 between 1 and 16. The given element was of type " ^
             Sast.string_of_s_type ti1)
         else
-            if i2 < 0 || i2 > 4
+          (* Need to check more thoroughly*)
+          if i2 < 0 || i2 > 4
             then type_error ("Dots may not increase Beat value past 16th")
             else Sast.Beat
-    | SNote(pc, reg, b) -> 
-        let tpc = get_type pc 
+    | SNote(pc, reg, b) ->
+        let tpc = get_type pc
         and treg = get_type reg
         and tb = get_type b in
-        if tpc <> Sast.Num
+        if tpc <> Sast.Int
         then type_error ("First element in Note (pitch class) must be of type Int " ^
             "between -1 and 11 but element was of type " ^ Sast.string_of_s_type tpc)
         else
-            if treg <> Sast.Num
+            if treg <> Sast.Int
             then type_error ("Second element in Note (register) must be of type Int " ^
                 "between 0 and 3 but element was of type " ^ Sast.string_of_s_type tpc)
             else
-                if tb <> Sast.Num && tb <> Sast.Int && tb <> Sast.Beat
+                if tb <> Sast.Int && tb <> Sast.Beat
                 then type_error ("Third element in Note (Beat) must be of type Beat " ^
                     "but element was of type " ^ Sast.string_of_s_type tb)
                 else Sast.Note
