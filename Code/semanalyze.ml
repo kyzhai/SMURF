@@ -152,7 +152,7 @@ let rec get_pat_type = function
             | Sast.List(els) -> if only_empties els then Sast.List(ty1)
                                 else if ty1 <> els && ty1 <> Sast.Unknown && els <> Sast.Unknown
                                      then raise (Pattern_list_type_mismatch (string_of_s_type ty1
-                                                ^ " doesn't match " ^ string_of_s_type ty2))
+                                                ^ " doesn't match " ^ string_of_s_type els))
                                 else if ty1 <> Sast.Unknown then Sast.List(ty1)
                                 else Sast.List(els)
     | _ -> raise (Cons_pattern_type_mismatch (string_of_patterns e2)))
@@ -181,6 +181,7 @@ let rec same_pats func = function
             | Patwild, Patwild -> true
             | Patcomma(l1), Patcomma(l2) -> 
                 if (List.length l1 <> List.length l2) then false else
+                if (List.length l1 = 0 && List.length l2 = 0) then true else
                 if (List.length l1 = 0 || List.length l2 = 0) then false else
                 if (List.for_all (fun v -> v = true) (List.map2 compare_pats l1 l2))
                 then true else false
