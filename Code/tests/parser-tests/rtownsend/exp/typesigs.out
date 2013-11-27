@@ -1,0 +1,10 @@
+a :: Int
+b :: Bool
+c :: Note
+d :: Chord
+e :: System
+f :: [Beat]
+g :: Int-> [Chord]-> [[Bool]]
+h :: Poly a-> Poly a-> Poly b
+g :: Poly cucumber-> Int
+i :: Poly hippo

@@ -1,0 +1,7 @@
+f :: [Poly a]-> Poly a-> Poly a
+f l 0 = 0
+f [] _ = true
+f [true] false = false
+f x : y : rest 3 = 5
+f [x : y : rest] [] = [3]
+f [1, 2, 3] x = 4

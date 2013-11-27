@@ -1,0 +1,4 @@
+x = let y = 4
+ z = 4
+ v = 16
+ in y + z + v

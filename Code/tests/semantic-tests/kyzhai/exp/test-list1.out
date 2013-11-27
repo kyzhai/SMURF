@@ -1,0 +1,14 @@
+*** tx: Bool  ty: Bool
+*** tx: Bool  ty: Bool
+*** tx: Bool  ty: Bool
+*** tx: Bool  ty: Bool
+Program: 
+	SVardef: 
+		ID: a :: [Bool]
+
+	[true, false, true, false]
+Global Scope: 
+	ID: a :: [Bool]
+	ID: print :: Unknown
+	ID: random :: Unknown
+

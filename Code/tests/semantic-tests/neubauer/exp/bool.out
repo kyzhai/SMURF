@@ -1,0 +1,35 @@
+Program: 
+	SVardef: 
+		ID: a :: Bool
+
+	true && true
+	SVardef: 
+		ID: b :: Bool
+
+	false && false
+	SVardef: 
+		ID: c :: Bool
+
+	true && false
+	SVardef: 
+		ID: d :: Bool
+
+	true || true
+	SVardef: 
+		ID: e :: Bool
+
+	false || false
+	SVardef: 
+		ID: f :: Bool
+
+	true || false
+Global Scope: 
+	ID: a :: Bool
+	ID: b :: Bool
+	ID: c :: Bool
+	ID: d :: Bool
+	ID: e :: Bool
+	ID: f :: Bool
+	ID: print :: Unknown
+	ID: random :: Unknown
+
