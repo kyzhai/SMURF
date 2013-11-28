@@ -332,7 +332,9 @@ let rec get_type = function
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
-                else trace ("tx: " ^ Sast.string_of_s_type tx ^ "  ty: " ^ Sast.string_of_s_type ty) () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
+                else trace ("tx: " ^ Sast.string_of_s_type tx ^ "  ty: " 
+                        ^ Sast.string_of_s_type ty) () in 
+                        List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 

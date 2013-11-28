@@ -7,7 +7,6 @@ open Random
 exception Output_error of string
 let output_error msg = raise (Output_error msg)
 
-
 let default_velocity = 90
 
 (* Write the head of each smurf file, returns the number of tracks *)
@@ -33,46 +32,9 @@ let write_head oc value =
         done in 
     let () = fprintf oc "\n" in number_of_track
     
-type triplet = {
-    tick: int;
-    note: int;
-    velocity: int;
-}
 
-(* add a note to a lst for the convinence of writing to file *)
-(* value -> [triplet] -> int -> [triplet] *)
-let add_triplet_lst vnote lst init_tick = 
-    match vnote with 
-          VNote(pc,reg,bt) -> (match pc,reg,bt with 
-                    VInt(-1),_,_ -> lst (* rest *)
-                  | VInt(p),VInt(r),VBeat(VInt(i1),i2) -> 
-                    (let num_tick=int_of_float ((16.0/.(float_of_int i1))*.
-                      ((match i2 with 
-                         1 -> 16.0 | 2 -> 24.0 
-                       | 3 -> 32.0 | 4 -> 36.0 
-                       | 5 -> 38.0 | 6 -> 39.0 
-                       | _ -> output_error ("Error"))/.16.0)) in 
-                         let rlst = ref lst in
-                         for i=1 to num_tick do
-                             let lst' = {tick = init_tick+i;
-                                 note = r*12+p;
-                                 velocity = default_velocity}::!rlst
-                             in rlst := lst'
-                         done); lst
-                  | _,_,_ -> output_error ("Error"))
-        | _ -> output_error ("Error")
-
-(* dump_to_lst : value -> int -> [triplet] *)
-let dump_to_lst value number_of_track = 
-    let lst = [] in
-    (match value with
-        | VNote(pc,reg,bt) as vnote -> trace "Writing Note" 
-            (add_triplet_lst vnote lst 0)
-        | VChord(_) -> trace "Writing Chord" lst
-        | VSystem(_) -> trace "Writing System" lst
-        | _ -> output_error ("Illegal format for smurf output"))
-
-
+(* get the number of ticks of a beat *)
+(* VBeat -> Int *)
 let ticks_of_beat = function
       VBeat(VInt(i1),i2) -> printf ("tob: %d %d\n") i1 i2; (int_of_float 
           ((16.0/.(float_of_int i1)) *.
@@ -83,29 +45,26 @@ let ticks_of_beat = function
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
+(* value -> Int *)
 let rec ticks_of_output value = 
-    let ticks = ( match value with
+    match value with
       VNote(pc,reg,bt) -> ticks_of_beat bt
-    (* | VChord(x::xs) -> ticks_of_output x (* Notes in a Chord played simultaneously *) *)
     | VChord(nlst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 nlst
     | VSystem(slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst 
     | VList(lst) -> List.fold_left (fun m sys -> let tick = ticks_of_output sys in 
             if m < tick then tick else m) 0 lst
     | _ -> output_error ("Error in ticks_of_output")
-    ) in printf ("total number of ticks is: %d\n") ticks; ticks
 
 
 (* Write a note into an array, return the next postion to be writen, and the next tick to begin with *)
-let rec write_to_array value arr ix iy tic = printf ("wta: %d %d %d \n") ix iy tic; 
+(* Array -> Int -> Int -> Int -> (Int, Int, Int) *)
+let rec write_to_array value arr ix iy tic = 
     (match value with
     | VNote(VInt(p),VInt(r),bt) -> let nt = ticks_of_beat bt in 
         let note = (match p with 
               -1 -> -1
             | _ -> p+12*(r+3)) in printf ("nt: %d, note: %d\n") nt note; (
         for i=0 to (nt-1) do
-
-            printf "cur_index: %d %d %d \n" (ix+i) iy note;
-
             arr.(ix+i).(iy) <- tic+i;                   (* tick *)
             arr.(ix+i).(iy+1) <- note;                  (* note *)
             arr.(ix+i).(iy+2) <- default_velocity;      (* velocity *)
@@ -131,14 +90,6 @@ let rec write_to_array value arr ix iy tic = printf ("wta: %d %d %d \n") ix iy t
     )
 
 
-
-let dump_to_array value number_of_track = 
-    let dimx = ticks_of_output value in
-    let dimy = number_of_track * 3 in
-    let resArr = (Array.make_matrix dimx dimy (-1)) in 
-    write_to_array value resArr 0 0 0 
-
-
 (* Write a Chord or a System to file with smurf specified format *)
 (* write_to_file : string -> value -> unit *)
 let write_to_file filename value = 
@@ -146,9 +97,9 @@ let write_to_file filename value =
     let number_of_track = write_head oc value in 
     let dimx = ticks_of_output value in
     let dimy = number_of_track * 3 in
-    let resArr = printf ("Dim: %d\t%d\n") dimx dimy; (Array.make_matrix (dimx) (dimy) (-1)) in 
-    let (_,_,_) = printf ("*** l 138\n"); (write_to_array value resArr 0 0 0) in 
-    let () = printf("*** l 146"); 
+    let resArr = (Array.make_matrix (dimx) (dimy) (-1)) in 
+    let _ = (write_to_array value resArr 0 0 0) in 
+    let () = 
     (for i=0 to dimx-1 do
         for j=0 to (number_of_track -1) do
             if resArr.(i).(3*j+1) <> (-1) then
