@@ -10,12 +10,17 @@ SOURCES = scanner.mll \
           interpreter.ml \
           util.ml \
           toplevel.ml \
-          message.ml
+          values.ml \
+          output.ml
 
-OCAMLBUILD=ocamlbuild
+OCAMLBUILD = ocamlbuild
 
 all: 
 	$(OCAMLBUILD) test.byte smurf.byte toplevel.byte
 
+midi:
+	java -jar CSV2MIDI.jar testout.csv testout.midi
+
 clean:
 	$(OCAMLBUILD) -clean
+

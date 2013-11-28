@@ -5,6 +5,8 @@
 open Util
 open Interpreter
 open Lexing
+open Output
+open Values
 (*
 *)
 
@@ -57,10 +59,11 @@ let _ =
                             (List.fold_left exec_decl !globalE cmd)
                             in globalE := env'
                         with 
-                              Interpreter.Interp_error msg -> fatal_error (msg)
+                              Interp_error msg -> fatal_error (msg)
                             | Fatal_error msg -> print_endline msg
+                            | Output_error msg -> print_endline msg
                     with 
-                          Interpreter.Interp_error msg -> fatal_error (msg)      
+                          Interp_error msg -> fatal_error (msg)      
                         | Fatal_error msg -> print_endline msg
                 done
                 with End_of_file -> print_endline "\nGood bye!"

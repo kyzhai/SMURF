@@ -1,0 +1,26 @@
+3c3
+< 		ID: a :: Num
+---
+> 		ID: a :: Int
+7c7
+< 		ID: b :: Num
+---
+> 		ID: b :: Int
+11c11
+< 		ID: c :: Num
+---
+> 		ID: c :: Int
+15c15
+< 		ID: d :: Num
+---
+> 		ID: d :: Int
+19,22c19,22
+< 	ID: a :: Num
+< 	ID: b :: Num
+< 	ID: c :: Num
+< 	ID: d :: Num
+---
+> 	ID: a :: Int
+> 	ID: b :: Int
+> 	ID: c :: Int
+> 	ID: d :: Int

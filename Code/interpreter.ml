@@ -1,62 +1,13 @@
 (* File: interpeter.ml
  * interpret a file from AST to SMURFy code *)
+
 open Ast
 open Sast
 open Util
 open Printf
-
-
-exception Interp_error of string
-let interp_error msg = raise (Interp_error msg)
-
-module NameMap = Map.Make(struct
-  type t = string
-  let compare x y = Pervasives.compare x y
-end)
-
-(* The value of returned by each expression *)
-type value = 
-    | VInt of int
-    | VBool of bool
-    | VBeat of value * int
-    | VNote of value * value * value
-    | VList of value list
-    | VChord of value list
-    | VSystem of value list
-    | VUnknown
-
-type enviroment = {
-    parent : enviroment option;
-    ids : value NameMap.t;
-}
-
-let rec string_of_value = function
-    | VInt(x) -> string_of_int x
-    | VBool(x) -> string_of_bool x
-    | VBeat(i1, i2) -> string_of_value i1 ^ 
-        let rec repeat n s = 
-            if n>0 then 
-                repeat (n-1) ("." ^ s)
-            else s in repeat i2 ""
-    | VNote(pc, reg, bt) -> " (" ^ string_of_value pc 
-        ^ ", " ^ string_of_value reg ^ ")$" 
-        ^ (string_of_value bt)
-    | VList(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
-    | VChord(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
-    | VSystem(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
-    | _ -> "Unresolved"
-
-(* show the environment to std out *)
-let rec show_env env = match debug with
-      true -> 
-        (match env.parent with
-              None -> printf "GlobalE: \n"; NameMap.iter 
-              (fun key v -> print_string ("\t" ^ key ^ " -> " 
-              ^ string_of_value v ^ "\n")) env.ids
-            | Some x -> printf "LocalE: \n"; NameMap.iter 
-              (fun key v -> print_string ("\t" ^ key ^ " -> " 
-              ^ string_of_value v ^ "\n")) env.ids; show_env x)
-    | false -> ()
+open Values
+open Output
+    
 
 
 (* update a variable 'name' with the value of 'v',
@@ -148,7 +99,7 @@ let rec eval env = function
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VSystem(List.rev lst), env')
-    | Ast.Call(e1, e2) -> trace "eval Call:" (VUnknown, env)
+    | Ast.Call(e1, e2) -> trace "eval Call: Why the function call only takes one parementer?" (VUnknown, env)
     | Ast.Let(dl, e) -> 
         let new_env = (List.fold_left 
                 (fun env' dec -> match dec with
@@ -167,12 +118,21 @@ let rec eval env = function
 (* execute the top-level declaration, in the global enviroment, 
  * return the updated global environment *)
 and exec_decl env = function
-      Tysig(str, tlst) -> trace "exec stsig" env
-    | Funcdec(f_decl) -> trace "exec sfun" env
-    | Vardef(str, e) -> (* trace "svar" eval env e; env *)
+      Tysig(str,tlst) -> trace "exec stsig" (* signature will yield a new fun *)
+        (let vfun = VFun(str,Tysig(str,tlst),[]) in update_env env str vfun)
+    | Funcdec(f_decl) -> trace "exec sfun" (* fun decl will be added to current *)
+        (match NameMap.mem f_decl.fname env.ids with
+              true -> (match NameMap.find f_decl.fname env.ids with 
+                        | VFun(name,fsig,def) -> 
+                            let vfun = VFun(name, fsig, f_decl::def) in update_env env name vfun
+                        | _ -> interp_error("Not defined as a signature"))
+            | false -> interp_error ("Function definition without a signature"))
+    | Vardef(str,e) -> (* trace "svar" eval env e; env *)
         let v, env = eval env e in
             trace (string_of_value v) update_env env str v
-    | Main(e) -> trace "exec smain" ignore(eval env e); env
+    | Main(e) -> trace "exec smain" 
+        (let v, env = eval env e in 
+            write_to_file "testout.csv" v; env)
 
 
 (* run : program -> () *)

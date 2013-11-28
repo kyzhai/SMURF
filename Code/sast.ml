@@ -6,10 +6,6 @@ exception Multiple_type_sigs of string
 exception Multiple_patterns of string 
 exception Pattern_list_type_mismatch of string 
 exception Cons_pattern_type_mismatch of string
-exception Multiple_identical_pattern_lists of string
-exception No_type_signature_found of string
-exception No_func_dec of string
-exception Pattern_num_mismatch of int * int
 exception Type_mismatch of string
 exception Main_wrong_scope
 
@@ -21,7 +17,6 @@ type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
 
 type s_ids = {
         name : string;
-        pats : pattern list;
         v_type : s_type list;
         v_expr : expr option;
 }

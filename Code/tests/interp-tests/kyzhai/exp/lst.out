@@ -1,0 +1,444 @@
+GlobalE: 
+	a -> Unresolved
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval lit: 1
+*** eval lit: 2
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 2
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 3
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 10
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** eval lit: 10
+*** eval lit: 2
+*** eval lit: 2
+*** eval beat: 
+*** eval note: 
+*** eval lit: 8
+*** eval lit: 3
+*** eval lit: 2
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 11
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 10
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** eval lit: -1
+*** eval lit: 2
+*** eval lit: 4
+*** eval beat: 
+*** eval note: 
+*** eval lit: 2
+*** eval lit: 3
+*** eval lit: 4
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 8
+*** eval lit: 0
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 9
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** eval list: 
+*** [[[ (1, 2)$1.., (2, 3)$1..],[ (3, 3)$1.., (10, 3)$1..]],[[ (10, 2)$2.., (8, 3)$2..],[ (11, 3)$1.., (10, 3)$1..]],[[ (-1, 2)$4.., (2, 3)$4..],[ (8, 0)$1.., (9, 3)$1..]]]
+GlobalE: 
+	a -> [[[ (1, 2)$1.., (2, 3)$1..],[ (3, 3)$1.., (10, 3)$1..]],[[ (10, 2)$2.., (8, 3)$2..],[ (11, 3)$1.., (10, 3)$1..]],[[ (-1, 2)$4.., (2, 3)$4..],[ (8, 0)$1.., (9, 3)$1..]]]
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval var: a
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+total number of ticks is: 56
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+total number of ticks is: 56
+total number of ticks is: 112
+tob: 2 2
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+total number of ticks is: 56
+total number of ticks is: 84
+tob: 4 2
+total number of ticks is: 7
+tob: 4 2
+total number of ticks is: 7
+total number of ticks is: 14
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+total number of ticks is: 56
+total number of ticks is: 70
+total number of ticks is: 112
+Dim: 112	9
+*** l 138
+wta: 0 0 0 
+wta: 0 0 0 
+wta: 0 0 0 
+vchord: 
+tob: 1 2
+wta: 0 0 0 
+tob: 1 2
+nt: 28, note: 61
+cur_index: 0 0 61 
+cur_index: 1 0 61 
+cur_index: 2 0 61 
+cur_index: 3 0 61 
+cur_index: 4 0 61 
+cur_index: 5 0 61 
+cur_index: 6 0 61 
+cur_index: 7 0 61 
+cur_index: 8 0 61 
+cur_index: 9 0 61 
+cur_index: 10 0 61 
+cur_index: 11 0 61 
+cur_index: 12 0 61 
+cur_index: 13 0 61 
+cur_index: 14 0 61 
+cur_index: 15 0 61 
+cur_index: 16 0 61 
+cur_index: 17 0 61 
+cur_index: 18 0 61 
+cur_index: 19 0 61 
+cur_index: 20 0 61 
+cur_index: 21 0 61 
+cur_index: 22 0 61 
+cur_index: 23 0 61 
+cur_index: 24 0 61 
+cur_index: 25 0 61 
+cur_index: 26 0 61 
+cur_index: 27 0 61 
+wta: 28 0 0 
+tob: 1 2
+nt: 28, note: 74
+cur_index: 28 0 74 
+cur_index: 29 0 74 
+cur_index: 30 0 74 
+cur_index: 31 0 74 
+cur_index: 32 0 74 
+cur_index: 33 0 74 
+cur_index: 34 0 74 
+cur_index: 35 0 74 
+cur_index: 36 0 74 
+cur_index: 37 0 74 
+cur_index: 38 0 74 
+cur_index: 39 0 74 
+cur_index: 40 0 74 
+cur_index: 41 0 74 
+cur_index: 42 0 74 
+cur_index: 43 0 74 
+cur_index: 44 0 74 
+cur_index: 45 0 74 
+cur_index: 46 0 74 
+cur_index: 47 0 74 
+cur_index: 48 0 74 
+cur_index: 49 0 74 
+cur_index: 50 0 74 
+cur_index: 51 0 74 
+cur_index: 52 0 74 
+cur_index: 53 0 74 
+cur_index: 54 0 74 
+cur_index: 55 0 74 
+wta: 56 0 28 
+vchord: 
+tob: 1 2
+wta: 56 0 28 
+tob: 1 2
+nt: 28, note: 75
+cur_index: 56 0 75 
+cur_index: 57 0 75 
+cur_index: 58 0 75 
+cur_index: 59 0 75 
+cur_index: 60 0 75 
+cur_index: 61 0 75 
+cur_index: 62 0 75 
+cur_index: 63 0 75 
+cur_index: 64 0 75 
+cur_index: 65 0 75 
+cur_index: 66 0 75 
+cur_index: 67 0 75 
+cur_index: 68 0 75 
+cur_index: 69 0 75 
+cur_index: 70 0 75 
+cur_index: 71 0 75 
+cur_index: 72 0 75 
+cur_index: 73 0 75 
+cur_index: 74 0 75 
+cur_index: 75 0 75 
+cur_index: 76 0 75 
+cur_index: 77 0 75 
+cur_index: 78 0 75 
+cur_index: 79 0 75 
+cur_index: 80 0 75 
+cur_index: 81 0 75 
+cur_index: 82 0 75 
+cur_index: 83 0 75 
+wta: 84 0 28 
+tob: 1 2
+nt: 28, note: 82
+cur_index: 84 0 82 
+cur_index: 85 0 82 
+cur_index: 86 0 82 
+cur_index: 87 0 82 
+cur_index: 88 0 82 
+cur_index: 89 0 82 
+cur_index: 90 0 82 
+cur_index: 91 0 82 
+cur_index: 92 0 82 
+cur_index: 93 0 82 
+cur_index: 94 0 82 
+cur_index: 95 0 82 
+cur_index: 96 0 82 
+cur_index: 97 0 82 
+cur_index: 98 0 82 
+cur_index: 99 0 82 
+cur_index: 100 0 82 
+cur_index: 101 0 82 
+cur_index: 102 0 82 
+cur_index: 103 0 82 
+cur_index: 104 0 82 
+cur_index: 105 0 82 
+cur_index: 106 0 82 
+cur_index: 107 0 82 
+cur_index: 108 0 82 
+cur_index: 109 0 82 
+cur_index: 110 0 82 
+cur_index: 111 0 82 
+wta: 0 3 0 
+wta: 0 3 0 
+vchord: 
+tob: 2 2
+wta: 0 3 0 
+tob: 2 2
+nt: 14, note: 70
+cur_index: 0 3 70 
+cur_index: 1 3 70 
+cur_index: 2 3 70 
+cur_index: 3 3 70 
+cur_index: 4 3 70 
+cur_index: 5 3 70 
+cur_index: 6 3 70 
+cur_index: 7 3 70 
+cur_index: 8 3 70 
+cur_index: 9 3 70 
+cur_index: 10 3 70 
+cur_index: 11 3 70 
+cur_index: 12 3 70 
+cur_index: 13 3 70 
+wta: 14 3 0 
+tob: 2 2
+nt: 14, note: 80
+cur_index: 14 3 80 
+cur_index: 15 3 80 
+cur_index: 16 3 80 
+cur_index: 17 3 80 
+cur_index: 18 3 80 
+cur_index: 19 3 80 
+cur_index: 20 3 80 
+cur_index: 21 3 80 
+cur_index: 22 3 80 
+cur_index: 23 3 80 
+cur_index: 24 3 80 
+cur_index: 25 3 80 
+cur_index: 26 3 80 
+cur_index: 27 3 80 
+wta: 28 3 14 
+vchord: 
+tob: 1 2
+wta: 28 3 14 
+tob: 1 2
+nt: 28, note: 83
+cur_index: 28 3 83 
+cur_index: 29 3 83 
+cur_index: 30 3 83 
+cur_index: 31 3 83 
+cur_index: 32 3 83 
+cur_index: 33 3 83 
+cur_index: 34 3 83 
+cur_index: 35 3 83 
+cur_index: 36 3 83 
+cur_index: 37 3 83 
+cur_index: 38 3 83 
+cur_index: 39 3 83 
+cur_index: 40 3 83 
+cur_index: 41 3 83 
+cur_index: 42 3 83 
+cur_index: 43 3 83 
+cur_index: 44 3 83 
+cur_index: 45 3 83 
+cur_index: 46 3 83 
+cur_index: 47 3 83 
+cur_index: 48 3 83 
+cur_index: 49 3 83 
+cur_index: 50 3 83 
+cur_index: 51 3 83 
+cur_index: 52 3 83 
+cur_index: 53 3 83 
+cur_index: 54 3 83 
+cur_index: 55 3 83 
+wta: 56 3 14 
+tob: 1 2
+nt: 28, note: 82
+cur_index: 56 3 82 
+cur_index: 57 3 82 
+cur_index: 58 3 82 
+cur_index: 59 3 82 
+cur_index: 60 3 82 
+cur_index: 61 3 82 
+cur_index: 62 3 82 
+cur_index: 63 3 82 
+cur_index: 64 3 82 
+cur_index: 65 3 82 
+cur_index: 66 3 82 
+cur_index: 67 3 82 
+cur_index: 68 3 82 
+cur_index: 69 3 82 
+cur_index: 70 3 82 
+cur_index: 71 3 82 
+cur_index: 72 3 82 
+cur_index: 73 3 82 
+cur_index: 74 3 82 
+cur_index: 75 3 82 
+cur_index: 76 3 82 
+cur_index: 77 3 82 
+cur_index: 78 3 82 
+cur_index: 79 3 82 
+cur_index: 80 3 82 
+cur_index: 81 3 82 
+cur_index: 82 3 82 
+cur_index: 83 3 82 
+wta: 0 6 0 
+wta: 0 6 0 
+vchord: 
+tob: 4 2
+wta: 0 6 0 
+tob: 4 2
+nt: 7, note: -1
+cur_index: 0 6 -1 
+cur_index: 1 6 -1 
+cur_index: 2 6 -1 
+cur_index: 3 6 -1 
+cur_index: 4 6 -1 
+cur_index: 5 6 -1 
+cur_index: 6 6 -1 
+wta: 7 6 0 
+tob: 4 2
+nt: 7, note: 74
+cur_index: 7 6 74 
+cur_index: 8 6 74 
+cur_index: 9 6 74 
+cur_index: 10 6 74 
+cur_index: 11 6 74 
+cur_index: 12 6 74 
+cur_index: 13 6 74 
+wta: 14 6 7 
+vchord: 
+tob: 1 2
+wta: 14 6 7 
+tob: 1 2
+nt: 28, note: 44
+cur_index: 14 6 44 
+cur_index: 15 6 44 
+cur_index: 16 6 44 
+cur_index: 17 6 44 
+cur_index: 18 6 44 
+cur_index: 19 6 44 
+cur_index: 20 6 44 
+cur_index: 21 6 44 
+cur_index: 22 6 44 
+cur_index: 23 6 44 
+cur_index: 24 6 44 
+cur_index: 25 6 44 
+cur_index: 26 6 44 
+cur_index: 27 6 44 
+cur_index: 28 6 44 
+cur_index: 29 6 44 
+cur_index: 30 6 44 
+cur_index: 31 6 44 
+cur_index: 32 6 44 
+cur_index: 33 6 44 
+cur_index: 34 6 44 
+cur_index: 35 6 44 
+cur_index: 36 6 44 
+cur_index: 37 6 44 
+cur_index: 38 6 44 
+cur_index: 39 6 44 
+cur_index: 40 6 44 
+cur_index: 41 6 44 
+wta: 42 6 7 
+tob: 1 2
+nt: 28, note: 81
+cur_index: 42 6 81 
+cur_index: 43 6 81 
+cur_index: 44 6 81 
+cur_index: 45 6 81 
+cur_index: 46 6 81 
+cur_index: 47 6 81 
+cur_index: 48 6 81 
+cur_index: 49 6 81 
+cur_index: 50 6 81 
+cur_index: 51 6 81 
+cur_index: 52 6 81 
+cur_index: 53 6 81 
+cur_index: 54 6 81 
+cur_index: 55 6 81 
+cur_index: 56 6 81 
+cur_index: 57 6 81 
+cur_index: 58 6 81 
+cur_index: 59 6 81 
+cur_index: 60 6 81 
+cur_index: 61 6 81 
+cur_index: 62 6 81 
+cur_index: 63 6 81 
+cur_index: 64 6 81 
+cur_index: 65 6 81 
+cur_index: 66 6 81 
+cur_index: 67 6 81 
+cur_index: 68 6 81 
+cur_index: 69 6 81 
+*** l 146*** exec smain
+*** calling run

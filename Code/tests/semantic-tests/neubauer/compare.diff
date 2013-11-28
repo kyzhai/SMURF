@@ -1,0 +1,86 @@
+3c3
+< 		ID: a :: Num
+---
+> 		ID: a :: Int
+7c7
+< 		ID: b :: Num
+---
+> 		ID: b :: Int
+11c11
+< 		ID: c :: Num
+---
+> 		ID: c :: Int
+15c15
+< 		ID: d :: Num
+---
+> 		ID: d :: Int
+19c19
+< 		ID: e :: Num
+---
+> 		ID: e :: Beat
+23c23
+< 		ID: f :: Num
+---
+> 		ID: f :: Beat
+27c27
+< 		ID: g :: Num
+---
+> 		ID: g :: Beat
+31c31
+< 		ID: h :: Num
+---
+> 		ID: h :: Beat
+35c35
+< 		ID: i :: Num
+---
+> 		ID: i :: Beat
+39c39
+< 		ID: j :: Num
+---
+> 		ID: j :: Beat
+43c43
+< 		ID: k :: Num
+---
+> 		ID: k :: Beat
+47c47
+< 		ID: l :: Num
+---
+> 		ID: l :: Beat
+51c51
+< 		ID: m :: Num
+---
+> 		ID: m :: Int
+55c55
+< 		ID: n :: Num
+---
+> 		ID: n :: Int
+59,72c59,72
+< 	ID: a :: Num
+< 	ID: b :: Num
+< 	ID: c :: Num
+< 	ID: d :: Num
+< 	ID: e :: Num
+< 	ID: f :: Num
+< 	ID: g :: Num
+< 	ID: h :: Num
+< 	ID: i :: Num
+< 	ID: j :: Num
+< 	ID: k :: Num
+< 	ID: l :: Num
+< 	ID: m :: Num
+< 	ID: n :: Num
+---
+> 	ID: a :: Int
+> 	ID: b :: Int
+> 	ID: c :: Int
+> 	ID: d :: Int
+> 	ID: e :: Beat
+> 	ID: f :: Beat
+> 	ID: g :: Beat
+> 	ID: h :: Beat
+> 	ID: i :: Beat
+> 	ID: j :: Beat
+> 	ID: k :: Beat
+> 	ID: l :: Beat
+> 	ID: m :: Int
+> 	ID: n :: Int

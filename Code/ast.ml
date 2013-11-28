@@ -81,12 +81,15 @@ let rec string_of_expr = function
   | Let(decl, exp) -> "let " ^ (String.concat " " (List.map string_of_dec decl)) ^ 
                       " in " ^ string_of_expr exp
 
+and string_of_fdec = function
+    {fname;args;value} -> fname ^ " " ^  String.concat " " 
+      (List.map string_of_patterns args) ^ " = " ^ string_of_expr value ^ "\n"
+
 and string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^
       "\n"
   | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
-  | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " 
-      (List.map string_of_patterns fdec.args) ^ " = " ^ string_of_expr fdec.value ^ "\n"
+  | Funcdec(fdec) -> string_of_fdec fdec
   | Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
 
 and string_of_patterns  = function
