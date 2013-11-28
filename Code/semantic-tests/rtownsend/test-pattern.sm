@@ -1,7 +1,0 @@
-/* Testing cons pattern matching */
-
-f a:[] b:c d:e:f:[]:[] 3:2:_:4:_ = 5
-
-f True:False:[] True:False:[True, False] [3,4,5]:[] = 1
-
-f [3,4,5]:[[1]] = 2

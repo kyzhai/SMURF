@@ -1,0 +1,2 @@
+f :: Int -> Int -> Int
+f x m = 3 + x / m

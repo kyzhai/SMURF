@@ -1,0 +1,3 @@
+/* Type signature for function must exist in same or higher scope */
+
+f x = 4
