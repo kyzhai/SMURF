@@ -7,11 +7,12 @@ Program:
 	SFuncdec: 
 		f m :: Unknown = 3
 	New Scope: 
-		ID: m :: Unknown
+		ID: m  :: Unknown
 
 	
 Global Scope: 
-	ID: f :: Int -> Int
-	ID: print :: Unknown
-	ID: random :: Unknown
+	ID: f 0 :: Int -> Int
+	ID: f m :: Int -> Int
+	ID: print  :: Unknown
+	ID: random  :: Unknown
 
