@@ -1,0 +1,1 @@
+Fatal error: exception Sast.Type_error("First element of a boolean binary operation must be of type Bool but element was of type Int")

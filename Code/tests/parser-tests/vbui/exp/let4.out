@@ -1,0 +1,10 @@
+Program: 
+	SVardef: 
+		ID: x :: Unknown
+
+	let  NEED TO FIX THIS PART  in y + z + v
+Global Scope: 
+	ID: x :: Unknown
+	ID: print :: Unknown
+	ID: random :: Unknown
+

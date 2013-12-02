@@ -1,0 +1,10 @@
+Program: 
+	SVardef: 
+		ID: a :: [Bool]
+
+	[true, false, true, false]
+Global Scope: 
+	ID: a :: [Bool]
+	ID: print :: Unknown
+	ID: random :: Unknown
+

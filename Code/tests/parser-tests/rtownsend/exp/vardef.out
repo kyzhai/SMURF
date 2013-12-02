@@ -1,0 +1,1 @@
+Fatal error: exception Sast.Type_error("a == b has type Unknown but is used as if it has type Bool")

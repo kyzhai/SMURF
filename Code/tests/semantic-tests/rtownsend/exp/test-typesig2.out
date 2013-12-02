@@ -1,0 +1,10 @@
+Program: 
+	SVardef: 
+		ID: x :: Note
+
+	 (2, 3)$4.
+Global Scope: 
+	ID: x :: Note
+	ID: print :: Unknown
+	ID: random :: Unknown
+

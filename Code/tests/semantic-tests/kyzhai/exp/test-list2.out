@@ -1,0 +1,1 @@
+Fatal error: exception Sast.Type_error("1 has type of Int but true has type Bool in a same list")

@@ -1,0 +1,10 @@
+Program: 
+	SVardef: 
+		ID: a :: [Int]
+
+	[1, 2, 3, 4]
+Global Scope: 
+	ID: a :: [Int]
+	ID: print :: Unknown
+	ID: random :: Unknown
+

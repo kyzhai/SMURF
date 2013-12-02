@@ -1,0 +1,44 @@
+Program: 
+	SFuncdec: 
+		f [1, 2, 3] x :: Unknown = 4
+	New Scope: 
+		ID: x :: Unknown
+
+	
+	SFuncdec: 
+		f [x : y : rest] [] :: Unknown = [3]
+	New Scope: 
+		ID: x :: Unknown
+		ID: y :: Unknown
+		ID: rest :: Unknown
+
+	
+	SFuncdec: 
+		f x : y : rest 3 :: Unknown = 5
+	New Scope: 
+		ID: x :: Unknown
+		ID: y :: Unknown
+		ID: rest :: Unknown
+
+	
+	SFuncdec: 
+		f [true] false :: Unknown = false
+	New Scope: 
+		
+	
+	SFuncdec: 
+		f [] _ :: Unknown = true
+	New Scope: 
+		
+	
+	SFuncdec: 
+		f l 0 :: Unknown = 0
+	New Scope: 
+		ID: l :: Unknown
+
+	
+Global Scope: 
+	ID: f :: [a] -> a -> a
+	ID: print :: Unknown
+	ID: random :: Unknown
+

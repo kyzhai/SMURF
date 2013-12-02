@@ -1,0 +1,90 @@
+Program: 
+	SVardef: 
+		ID: a :: Beat
+
+	16 $+ 16
+	SVardef: 
+		ID: b :: Beat
+
+	4 $+ 8 $+ 8
+	SVardef: 
+		ID: c :: Beat
+
+	4 $+ 8
+	SVardef: 
+		ID: d :: Beat
+
+	1 $+ 2 $+ 2
+	SVardef: 
+		ID: e :: Beat
+
+	1 $- 2
+	SVardef: 
+		ID: f :: Beat
+
+	2 $- 2
+	SVardef: 
+		ID: g :: Beat
+
+	8 $- 2
+	SVardef: 
+		ID: h :: Beat
+
+	16 $* 2
+	SVardef: 
+		ID: i :: Beat
+
+	1 $* 2
+	SVardef: 
+		ID: j :: Beat
+
+	2 $/ 16
+	SVardef: 
+		ID: k :: Beat
+
+	2 $/ 1
+	SVardef: 
+		ID: l :: Int
+
+	2 %+ 5
+	SVardef: 
+		ID: m :: Int
+
+	9 %+ 5
+	SVardef: 
+		ID: n :: Int
+
+	15 %+ 3
+	SVardef: 
+		ID: o :: Int
+
+	2 %- 5
+	SVardef: 
+		ID: p :: Int
+
+	9 %- 5
+	SVardef: 
+		ID: q :: Int
+
+	15 %- 3
+Global Scope: 
+	ID: a :: Beat
+	ID: b :: Beat
+	ID: c :: Beat
+	ID: d :: Beat
+	ID: e :: Beat
+	ID: f :: Beat
+	ID: g :: Beat
+	ID: h :: Beat
+	ID: i :: Beat
+	ID: j :: Beat
+	ID: k :: Beat
+	ID: l :: Int
+	ID: m :: Int
+	ID: n :: Int
+	ID: o :: Int
+	ID: p :: Int
+	ID: q :: Int
+	ID: print :: Unknown
+	ID: random :: Unknown
+

@@ -1,0 +1,17 @@
+Program: 
+	SVardef: 
+		ID: y :: Unknown
+
+	double 10
+	SFuncdec: 
+		double x :: Unknown = x * 2
+	New Scope: 
+		ID: x :: Unknown
+
+	
+Global Scope: 
+	ID: y :: Unknown
+	ID: double :: Int -> Int
+	ID: print :: Unknown
+	ID: random :: Unknown
+

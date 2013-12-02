@@ -1,0 +1,40 @@
+Program: 
+	SVardef: 
+		ID: d :: Int
+
+	if true then 1 else 0
+	SVardef: 
+		ID: a :: Int
+
+	1
+	SVardef: 
+		ID: b :: Unknown
+
+	a
+	SVardef: 
+		ID: e :: Unknown
+
+	let  NEED TO FIX THIS PART  in a
+	SVardef: 
+		ID: c :: Bool
+
+	true
+	SVardef: 
+		ID: lst :: [Int]
+
+	[1, 2, 3]
+	SVardef: 
+		ID: lst2 :: [Unknown]
+
+	[a, b, c]
+Global Scope: 
+	ID: d :: Int
+	ID: a :: Int
+	ID: b :: Unknown
+	ID: e :: Unknown
+	ID: c :: Bool
+	ID: lst :: [Int]
+	ID: lst2 :: [Unknown]
+	ID: print :: Unknown
+	ID: random :: Unknown
+

@@ -17,8 +17,6 @@ type expr =                                 (* Expressions *)
     | Variable of string                    (* bar *)
     | Beat of expr * int                    (* 2. *)
     | Note of  expr * expr * expr           (* (11, 2)^4. *)
-    | Print of expr                         (* print 3+4 *)
-    | Random                                (* random *)
     | Binop of expr * operator * expr       (* a + 2 *)
     | Prefix of prefix_operator * expr      (* ! a == 4 *)
     | If of expr * expr * expr              (* if b == 4 then True else False *)
@@ -82,14 +80,16 @@ let rec string_of_expr = function
   | Call(exp1,exp2) -> string_of_expr exp1 ^ " " ^ string_of_expr exp2
   | Let(decl, exp) -> "let " ^ (String.concat " " (List.map string_of_dec decl)) ^ 
                       " in " ^ string_of_expr exp
-  | x -> "other expr"
+
+and string_of_fdec = function
+    {fname;args;value} -> fname ^ " " ^  String.concat " " 
+      (List.map string_of_patterns args) ^ " = " ^ string_of_expr value ^ "\n"
 
 and string_of_dec  = function
     Tysig(id, types) -> id ^ " :: " ^ String.concat "-> " (List.map string_of_types types) ^
       "\n"
   | Vardef(id, expr) -> id ^ " = " ^ string_of_expr expr ^ "\n"
-  | Funcdec(fdec) -> fdec.fname ^ " " ^  String.concat " " 
-      (List.map string_of_patterns fdec.args) ^ " = " ^ string_of_expr fdec.value ^ "\n"
+  | Funcdec(fdec) -> string_of_fdec fdec
   | Main(expr) -> "main " ^ string_of_expr expr ^ "\n"
 
 and string_of_patterns  = function

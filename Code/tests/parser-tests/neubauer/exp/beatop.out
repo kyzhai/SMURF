@@ -1,0 +1,10 @@
+Program: 
+	SVardef: 
+		ID: a :: Beat
+
+	8...
+Global Scope: 
+	ID: a :: Beat
+	ID: print :: Unknown
+	ID: random :: Unknown
+
