@@ -26,18 +26,6 @@ let rec diff_types v1 v2 = match v1, v2 with
     | [], _::_ -> true
     | _::_, [] -> true
 
-let type_mismatch var symtab = 
-    let v = List.find (fun n -> n.name = var.name) symtab.identifiers in
-    let v1 = v.v_type in
-    let v2 = var.v_type in
-    let is_poly t = match t with
-        | Sast.Poly(_) -> true
-        | _ -> false
-    in
-    let poly_check = is_poly (List.hd v1) || is_poly (List.hd v2) in
-    if (List.length v1 = 1 && List.length v2 = 1 && poly_check)
-    then false
-    else diff_types v1 v2
 
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
@@ -50,7 +38,7 @@ let rec exists_typesig id = function
 (* Get the type signature for an identifier in the current scope *)
 let get_typesig id ids = (List.find (fun t -> t.name = id) ids).v_type
 
-(* Check if type signature exists for id in current or higher scope *)
+(* Get type signature for function id in current or higher scope *)
 let rec get_types_p id symtab = 
     if exists_typesig id symtab.identifiers then get_typesig id symtab.identifiers
     else match symtab.parent with
@@ -58,18 +46,14 @@ let rec get_types_p id symtab =
         | None -> raise (No_type_signature_found id)
 
 
-(* Check if a definition exists for an id in the current scope *)
-let rec exists_dec id = function
+(* Check if a vardef or funcdec exists for an id in the current scope *)
+let rec exists_dec id ty = function
     [] -> false
-    | SVardef(x, _) :: rest -> if x.name = id then true else exists_dec id rest
-    | SFuncdec(f) :: rest -> if f.s_fname = id then true else exists_dec id rest
-    | _ :: rest -> exists_dec id rest
-
-(* Check if a variable definition exists for a function id in the current scope *)
-let rec exists_var id = function
-    [] -> false
-    | SVardef(x, _) :: rest -> if x.name = id then true else exists_var id rest
-    | _ :: rest -> exists_var id rest
+    | SVardef(x, _) :: rest -> if x.name = id then true else exists_dec id ty rest
+    | SFuncdec(f) :: rest -> (match ty with 
+                             "func" -> exists_dec id ty rest
+                             | _ -> if f.s_fname = id then true else exists_dec id ty rest)
+    | _ :: rest -> exists_dec id ty rest
 
 (* Only checks current scope (might not be needed) *)
 let is_declared_here id symtab = List.exists (fun v -> v.name = id) symtab.identifiers
@@ -84,41 +68,31 @@ let rec is_declared id symtab =
         |   _ -> false
 
 (* Add new entry into symbol table or modify existing one if necessary (First Pass work) *)
-let mod_var entry symtab = match entry with
-    (* Entry is type signature *)
-    {v_expr = None } -> 
-      if is_declared_here entry.name symtab then
+let mod_var entry symtab =
+    if is_declared_here entry.name symtab then 
         let preventries = List.filter (fun v -> v.name = entry.name) symtab.identifiers in
         let newsym = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
-        if List.length preventries = 1 then
-            let newen = List.hd preventries in
-            let newen = {name = entry.name; pats = newen.pats; v_type = entry.v_type;
-                         v_expr = newen.v_expr} in
-            newen :: newsym
-        else let newens = List.map (fun en -> let result = {name = en.name; pats = en.pats;
-                                                            v_type = entry.v_type; 
-                                                            v_expr = en.v_expr} in result) 
-                                    preventries in newens @ newsym
-      else entry :: symtab.identifiers
-    (* Entry is vardef *)
-    | {pats = [] } ->
-      if is_declared_here entry.name symtab then
-        let preventry = List.find (fun v -> v.name = entry.name) symtab.identifiers in
-        let newsym = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
-        let newen = {name = entry.name; pats = entry.pats; v_type = preventry.v_type;
-                     v_expr = entry.v_expr} in newen :: newsym
-      else entry :: symtab.identifiers
-    (* Entry is funcdec *)
-    | _ -> 
-    if is_declared_here entry.name symtab then
-        let preventries = List.filter (fun v -> v.name = entry.name) symtab.identifiers in
-        let functype = (List.hd preventries).v_type in
-        let newen = {name = entry.name; pats = entry.pats; v_type = functype;
-                         v_expr = entry.v_expr} in 
-        if List.length preventries = 1 && (List.hd preventries).v_expr = None then
-            let newsym = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
-            newen :: newsym
-        else newen :: symtab.identifiers
+        let firsten = List.hd preventries in
+        match entry with
+        (* Entry is type signature *)
+        {v_expr = None } -> 
+            if List.length preventries = 1 then
+                let newen = {name = entry.name; pats = firsten.pats; v_type = entry.v_type;
+                             v_expr = firsten.v_expr} in newen :: newsym
+            else let newens = List.map (fun en -> let result = {name = en.name; pats = en.pats;
+                                                                v_type = entry.v_type; 
+                                                                v_expr = en.v_expr} in result) 
+                                        preventries in newens @ newsym
+        (* Entry is vardef *)
+        | {pats = [] } ->
+            let newen = {name = entry.name; pats = entry.pats; v_type = firsten.v_type;
+                         v_expr = entry.v_expr} in newen :: newsym
+        (* Entry is funcdec *)
+        | _ -> 
+            let newen = {name = entry.name; pats = entry.pats; v_type = firsten.v_type;
+                             v_expr = entry.v_expr} in 
+            if List.length preventries = 1 && firsten.v_expr = None then newen :: newsym
+            else newen :: symtab.identifiers
     else entry :: symtab.identifiers
 
 (* Update type of variable definition in our symbol table and our list of declarations *)
@@ -462,13 +436,13 @@ let rec walk_decl prog = function
                 else prog.symtab.identifiers <- mod_var entry prog.symtab; prog
     | Ast.Vardef(id, expr) -> 
                 let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(expr)} in
-                if(exists_dec id prog.decls) 
+                if(exists_dec id "var" prog.decls) 
                     then raise (Multiple_declarations id)
                 else prog.symtab.identifiers <- mod_var var prog.symtab;
                     { decls = SVardef(var, (to_sexpr prog.symtab expr)) :: prog.decls ;
                     symtab = prog.symtab} 
     | Ast.Funcdec(fdec) ->
-            if (exists_var fdec.fname prog.decls)
+            if (exists_dec fdec.fname "func" prog.decls)
                 then raise (Multiple_declarations fdec.fname)
             else
                 let f_vars = collect_pat_vars fdec.args in 
