@@ -2,8 +2,8 @@ Program:
 	SFuncdec: 
 		f x m :: Unknown = 3 + x / m
 	New Scope: 
-		ID: x  :: Unknown
-		ID: m  :: Unknown
+		ID: x  :: Int
+		ID: m  :: Int
 
 	
 Global Scope: 

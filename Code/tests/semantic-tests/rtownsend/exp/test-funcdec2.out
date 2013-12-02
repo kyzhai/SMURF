@@ -7,7 +7,7 @@ Program:
 	SFuncdec: 
 		f m :: Unknown = 3
 	New Scope: 
-		ID: m  :: Unknown
+		ID: m  :: Int
 
 	
 Global Scope: 
