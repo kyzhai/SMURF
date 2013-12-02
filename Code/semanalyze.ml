@@ -84,17 +84,42 @@ let rec is_declared id symtab =
         |   _ -> false
 
 (* Add new entry into symbol table or modify existing one if necessary (First Pass work) *)
-let mod_var entry symtab = 
-    if is_declared entry.name symtab then
-        let s = List.find (fun v -> v.name = entry.name) symtab.identifiers in
-        let newlist = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
-        if entry.v_expr = None then
-            {parent = symtab.parent; 
-            identifiers = {name = s.name; pats = []; v_type = entry.v_type; v_expr = s.v_expr} :: newlist}
-        else {parent = symtab.parent; identifiers = {name = s.name; pats = entry.pats; v_type = s.v_type; 
-                                                    v_expr = entry.v_expr} :: newlist}
-    else let s = entry :: symtab.identifiers in
-         {parent = symtab.parent; identifiers = s}
+let mod_var entry symtab = match entry with
+    (* Entry is type signature *)
+    {v_expr = None } -> 
+      if is_declared_here entry.name symtab then
+        let preventries = List.filter (fun v -> v.name = entry.name) symtab.identifiers in
+        let newsym = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
+        if List.length preventries = 1 then
+            let newen = List.hd preventries in
+            let newen = {name = entry.name; pats = newen.pats; v_type = entry.v_type;
+                         v_expr = newen.v_expr} in
+            newen :: newsym
+        else let newens = List.map (fun en -> let result = {name = en.name; pats = en.pats;
+                                                            v_type = entry.v_type; 
+                                                            v_expr = en.v_expr} in result) 
+                                    preventries in newens @ newsym
+      else entry :: symtab.identifiers
+    (* Entry is vardef *)
+    | {pats = [] } ->
+      if is_declared_here entry.name symtab then
+        let preventry = List.find (fun v -> v.name = entry.name) symtab.identifiers in
+        let newsym = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
+        let newen = {name = entry.name; pats = entry.pats; v_type = preventry.v_type;
+                     v_expr = entry.v_expr} in newen :: newsym
+      else entry :: symtab.identifiers
+    (* Entry is funcdec *)
+    | _ -> 
+    if is_declared_here entry.name symtab then
+        let preventries = List.filter (fun v -> v.name = entry.name) symtab.identifiers in
+        let functype = (List.hd preventries).v_type in
+        let newen = {name = entry.name; pats = entry.pats; v_type = functype;
+                         v_expr = entry.v_expr} in 
+        if List.length preventries = 1 && (List.hd preventries).v_expr = None then
+            let newsym = List.filter (fun v -> v.name <> entry.name) symtab.identifiers in
+            newen :: newsym
+        else newen :: symtab.identifiers
+    else entry :: symtab.identifiers
 
 (* Update type of variable definition in our symbol table and our list of declarations *)
 let replace_vardef program var oldvar = match var with
@@ -200,7 +225,8 @@ let rec same_pats func = function
 let rec gen_new_scope = function
     [] -> []
     | pat :: rest -> if List.exists (fun p -> p = pat) rest then raise (Multiple_patterns pat)
-                     else {name = pat; pats = []; v_type = [Unknown]; v_expr = None} :: gen_new_scope rest
+                     else {name = pat; pats = []; v_type = [Unknown];
+                           v_expr = None} :: gen_new_scope rest
 
 (* Returns a type from an expression*)
 let rec get_type = function
@@ -429,17 +455,18 @@ let rec get_type = function
 (* First pass walk_decl -> Try to construct a symbol table *)
 let rec walk_decl prog = function
     Ast.Tysig(id,types) -> 
-                let func = {name=id; pats = []; v_type = (List.map types_to_s_type types); v_expr = None} in 
+                let entry = {name=id; pats = []; v_type = (List.map types_to_s_type types); 
+                            v_expr = None} in 
                 if (exists_typesig id prog.symtab.identifiers)
                     then raise (Multiple_type_sigs id)
-                else {decls = prog.decls; symtab = mod_var func prog.symtab}
+                else prog.symtab.identifiers <- mod_var entry prog.symtab; prog
     | Ast.Vardef(id, expr) -> 
                 let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(expr)} in
                 if(exists_dec id prog.decls) 
                     then raise (Multiple_declarations id)
-                else 
+                else prog.symtab.identifiers <- mod_var var prog.symtab;
                     { decls = SVardef(var, (to_sexpr prog.symtab expr)) :: prog.decls ;
-                    symtab = (mod_var var prog.symtab) } 
+                    symtab = prog.symtab} 
     | Ast.Funcdec(fdec) ->
             if (exists_var fdec.fname prog.decls)
                 then raise (Multiple_declarations fdec.fname)
@@ -451,16 +478,18 @@ let rec walk_decl prog = function
                                                 s_args = fdec.args;
                                                 s_value = to_sexpr prog.symtab fdec.value;
                                                 scope = new_scope;}) in 
-                let var = {name = fdec.fname; pats = fdec.args;  v_type = [Unknown]; v_expr = Some(fdec.value)} in
-                    { decls = funcdef :: prog.decls; symtab = (mod_var var prog.symtab)  }
+                let var = {name = fdec.fname; pats = fdec.args;  v_type = [Unknown]; 
+                           v_expr = Some(fdec.value)} in
+                    prog.symtab.identifiers <- mod_var var prog.symtab;
+                    { decls = funcdef :: prog.decls; symtab = prog.symtab }
     | Main(expr) -> 
-        if(prog.symtab.parent = None) 
-					then if( is_declared "main" prog.symtab)
-						then raise (Multiple_declarations "main")
-					else { decls = prog.decls @ [SMain(to_sexpr prog.symtab expr)];
-								symtab = (mod_var {name = "main"; pats = []; v_type = [Unknown]; 
-                                                   v_expr = Some(expr)} prog.symtab)}
-				else raise Main_wrong_scope
+        if(prog.symtab.parent = None) then 
+            if( is_declared "main" prog.symtab) then raise (Multiple_declarations "main")
+		    else let mainvar = {name = "main"; pats = []; v_type = [Unknown]; v_expr = Some(expr)}
+            in prog.symtab.identifiers <- (mod_var mainvar prog.symtab);
+               { decls = (prog.decls @ [SMain(to_sexpr prog.symtab expr)]); symtab = prog.symtab }
+         else raise Main_wrong_scope
+
 
 (* Convert Ast expression nodes to Sast s_expr nodes (so we can have nested scopes) *)
 and to_sexpr symbol = function
@@ -491,8 +520,8 @@ let rec walk_decl_second program = function
                                 raise (Type_mismatch s_id.name)
                                else set_type
                            else texpr in 
-            let newvar = SVardef({name = s_id.name; pats = []; v_type = new_type; v_expr = s_id.v_expr}
-                         , s_expr) in
+            let newvar = SVardef({name = s_id.name; pats = []; v_type = new_type; 
+                                  v_expr = s_id.v_expr}, s_expr) in
             replace_vardef program newvar oldvar
         else if diff_types s_id.v_type texpr then
             raise (Type_mismatch s_id.name)

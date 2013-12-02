@@ -107,8 +107,10 @@ and string_of_s_dec = function
     | SMain(e) -> "SMain: " ^ string_of_sexpr e
 
 and string_of_s_ids i = 
-    "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
-    (List.map string_of_s_type i.v_type) ^ "\n"
+    let str = if (i.pats <> []) then String.concat " " (List.map string_of_patterns i.pats) 
+              else "" in
+    "ID: " ^ i.name ^ " " ^ str ^ " :: " ^ String.concat " -> "
+    (List.map string_of_s_type i.v_type) ^ "\n" 
 
 and string_of_s_func_decl f = 
         f.s_fname ^ " " ^ String.concat " " 
