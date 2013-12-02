@@ -51,7 +51,7 @@ and s_expr =
     | SChord of s_expr list                    (* [(11,3)$4., (5,2)$4.]*)
     | SSystem of s_expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
     | SCall of s_expr * s_expr                   (* foo a *)
-    | SLet of s_expr * s_program               (* let x = 4 in x + 2 *)
+    | SLet of s_program * s_expr               (* let x = 4 in x + 2 *)
 
 and s_dec = 
       STypesig of s_ids 
@@ -98,10 +98,25 @@ let rec string_of_sexpr = function
   | SChord(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
   | SSystem(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
   | SCall(exp1,exp2) -> string_of_sexpr exp1 ^ " " ^ string_of_sexpr exp2
-  | SLet(exp, prog) -> "let " ^ " NEED TO FIX THIS PART " ^ 
+  | SLet(decs, exp) -> "let " ^ (String.concat " " (List.map string_of_s_dec decs.decls)) ^ 
                       " in " ^ string_of_sexpr exp
+and string_of_s_dec = function
+      STypesig(i) -> "STypesig: \n\t\t" ^ string_of_s_ids i
+    | SFuncdec(f) -> "SFuncdec: \n\t\t" ^ string_of_s_func_decl f
+    | SVardef(i, e) -> "SVardef: \n\t\t" ^ string_of_s_ids i ^ "\n\t" ^ string_of_sexpr e
+    | SMain(e) -> "SMain: " ^ string_of_sexpr e
 
-let rec string_of_s_type = function
+and string_of_s_ids i = 
+    "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
+    (List.map string_of_s_type i.v_type) ^ "\n"
+
+and string_of_s_func_decl f = 
+        f.s_fname ^ " " ^ String.concat " " 
+        (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
+        String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " = " 
+        ^ string_of_sexpr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
+
+and string_of_s_type = function
       Int -> "Int"
     | Bool -> "Bool"
     | Note -> "Note"
@@ -115,27 +130,12 @@ let rec string_of_s_type = function
     | Num -> "Num"
 		| Still_unknown -> "Still Unknown"
 
-let string_of_s_ids i = 
-    "ID: " ^ i.name ^ " :: " ^ String.concat " -> "
-    (List.map string_of_s_type i.v_type) ^ "\n"
-
-let rec string_of_symbol_table symtab = 
+and string_of_symbol_table symtab = 
     if symtab.parent = None then "Global Scope: \n\t" ^ 
         String.concat "\t" (List.map string_of_s_ids symtab.identifiers) ^ "\n"
     else (*(string_of_env p) ^ *)"\tNew Scope: \n\t\t" ^ 
         String.concat "\t\t" (List.map string_of_s_ids symtab.identifiers) ^"\n\t"
 
-let string_of_s_func_decl f = 
-        f.s_fname ^ " " ^ String.concat " " 
-        (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
-        String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " = " 
-        ^ string_of_sexpr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
-
-let string_of_s_dec = function
-      STypesig(i) -> "STypesig: \n\t\t" ^ string_of_s_ids i
-    | SFuncdec(f) -> "SFuncdec: \n\t\t" ^ string_of_s_func_decl f
-    | SVardef(i, e) -> "SVardef: \n\t\t" ^ string_of_s_ids i ^ "\n\t" ^ string_of_sexpr e
-    | SMain(e) -> "SMain: " ^ string_of_sexpr e
 
 let string_of_s_program p = 
     "Program: \n\t" ^ String.concat "\n\t" 
