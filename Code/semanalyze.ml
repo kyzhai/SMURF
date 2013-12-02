@@ -478,7 +478,7 @@ and to_sexpr symbol = function
     | Ast.Call(e1, e2) -> SCall(to_sexpr symbol e1, to_sexpr symbol e2)
     | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in
                            let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs
-                           in SLet(to_sexpr symbol e, nested_prog)
+                           in SLet(nested_prog, to_sexpr symbol e)
 
 (* Second pass -> use symbol table to resolve all semantic checks *)
 let rec walk_decl_second program = function
