@@ -1,3 +1,10 @@
-x = let y = 4
- z = 4
- in y + z
+Program: 
+	SVardef: 
+		ID: x :: Unknown
+
+	let  NEED TO FIX THIS PART  in y + z
+Global Scope: 
+	ID: x :: Unknown
+	ID: print :: Unknown
+	ID: random :: Unknown
+

@@ -1,121 +1,40 @@
-GlobalE: 
-	a -> Unresolved
-	b -> Unresolved
-	c -> Unresolved
-	d -> Unresolved
-	e -> Unresolved
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval bool: true
-*** true branch
-*** eval lit: 1
-*** eval if: 
-*** 1
-GlobalE: 
-	a -> Unresolved
-	b -> Unresolved
-	c -> Unresolved
-	d -> 1
-	e -> Unresolved
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval lit: 1
-*** 1
-GlobalE: 
-	a -> 1
-	b -> Unresolved
-	c -> Unresolved
-	d -> 1
-	e -> Unresolved
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval var: a
-*** 1
-GlobalE: 
-	a -> 1
-	b -> 1
-	c -> Unresolved
-	d -> 1
-	e -> Unresolved
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval lit: 1999
-*** eval lit: 2999
-*** eval lit: 3999
-LocalE: 
-	a -> 1999
-	b -> 2999
-	c -> 3999
-GlobalE: 
-	a -> 1
-	b -> 1
-	c -> Unresolved
-	d -> 1
-	e -> Unresolved
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval var: a
-*** 1999
-GlobalE: 
-	a -> 1
-	b -> 1
-	c -> Unresolved
-	d -> 1
-	e -> 1999
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval bool: true
-*** true
-GlobalE: 
-	a -> 1
-	b -> 1
-	c -> true
-	d -> 1
-	e -> 1999
-	lst -> Unresolved
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval lit: 1
-*** eval lit: 2
-*** eval lit: 3
-*** eval list: 
-*** [1,2,3]
-GlobalE: 
-	a -> 1
-	b -> 1
-	c -> true
-	d -> 1
-	e -> 1999
-	lst -> [1,2,3]
-	lst2 -> Unresolved
-	print -> Unresolved
-	random -> Unresolved
-*** eval var: a
-*** eval var: b
-*** eval var: c
-*** eval list: 
-*** [1,1,true]
-GlobalE: 
-	a -> 1
-	b -> 1
-	c -> true
-	d -> 1
-	e -> 1999
-	lst -> [1,2,3]
-	lst2 -> [1,1,true]
-	print -> Unresolved
-	random -> Unresolved
-*** calling run
+Program: 
+	SVardef: 
+		ID: d :: Int
+
+	if true then 1 else 0
+	SVardef: 
+		ID: a :: Int
+
+	1
+	SVardef: 
+		ID: b :: Unknown
+
+	a
+	SVardef: 
+		ID: e :: Unknown
+
+	let  NEED TO FIX THIS PART  in a
+	SVardef: 
+		ID: c :: Bool
+
+	true
+	SVardef: 
+		ID: lst :: [Int]
+
+	[1, 2, 3]
+	SVardef: 
+		ID: lst2 :: [Unknown]
+
+	[a, b, c]
+Global Scope: 
+	ID: d :: Int
+	ID: a :: Int
+	ID: b :: Unknown
+	ID: e :: Unknown
+	ID: c :: Bool
+	ID: lst :: [Int]
+	ID: lst2 :: [Unknown]
+	ID: print :: Unknown
+	ID: random :: Unknown
+

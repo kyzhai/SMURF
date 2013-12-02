@@ -1,0 +1,6 @@
+
+add :: Int -> Int -> Int
+
+add x y = x + y
+
+a = add 10 10 

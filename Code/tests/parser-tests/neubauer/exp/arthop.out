@@ -1,7 +1,40 @@
-a = 40 + 2
-b = 50 - 8
-c = 3 * 14
-d = 84 / 2
-e = 86 % 44
-f = -86 % 44
-g = 42
+Program: 
+	SVardef: 
+		ID: a :: Int
+
+	40 + 2
+	SVardef: 
+		ID: b :: Int
+
+	50 - 8
+	SVardef: 
+		ID: c :: Int
+
+	3 * 14
+	SVardef: 
+		ID: d :: Int
+
+	84 / 2
+	SVardef: 
+		ID: e :: Int
+
+	86 % 44
+	SVardef: 
+		ID: f :: Int
+
+	-86 % 44
+	SVardef: 
+		ID: g :: Int
+
+	42
+Global Scope: 
+	ID: a :: Int
+	ID: b :: Int
+	ID: c :: Int
+	ID: d :: Int
+	ID: e :: Int
+	ID: f :: Int
+	ID: g :: Int
+	ID: print :: Unknown
+	ID: random :: Unknown
+

@@ -280,30 +280,42 @@ let rec get_type = function
                     else te1
                 | Ast.Concat -> (* Concat: List ++ List *)
                     (* Not sure this checks the correct thing *)
-                    if te1 <> Sast.List(get_type e1)
-                    then type_error ("First element in a Concat expression " ^
-                        "must be of type List but element was of type " ^
-                        Sast.string_of_s_type te2)
-                    else
-                        (* Not sure this checks the correct thing *)
-                        if te2 <> Sast.List(get_type e2)
-                        then type_error ("Second element in a Concat expression " ^
-                            "must be of type List but element was of type " ^
-                            Sast.string_of_s_type te2)
-                        else
-                            if te2 <> te1
-                            then type_error ("First and second element of a Concat " ^
-                                "expression must be Lists of same type. " ^
-                                "First element has type " ^ Sast.string_of_s_type te1 ^
-                                " and second element has type " ^ Sast.string_of_s_type te2)
-                            else te1
+                    (match te1 with 
+                      Sast.List(t1) -> (match te2 with
+                          Sast.List(t2) -> (if t1 <> t2 then 
+                              type_error ("Operands of a concat operator have different types") else te1)
+                        | Sast.Empty -> te1
+                        | _ -> type_error "Concat operator can only used between lists")
+                    | Sast.Chord -> (match te2 with
+                          Sast.Chord | Sast.Empty -> Sast.Chord
+                        | _ -> type_error ("Operands of a concat operator have different types"))
+                    | Sast.System -> (match te2 with
+                          Sast.System | Sast.Empty -> Sast.System
+                        | _ -> type_error ("Operands of a concat operator have different types"))
+                    | Sast.Empty -> (match te2 with
+                          Sast.List(t2) -> te2
+                        | Sast.Empty -> Sast.Empty
+                        | Sast.Chord -> Sast.Chord
+                        | Sast.System -> Sast.System
+                        | _ -> type_error "Concat operator can only used between lists")
+                    | _ -> type_error "Concat operator can only used between lists")
+
                 | Ast.Cons -> (* Cons: Element : List *)
-                    if te2 <> Sast.List(te1)
-                    then type_error ("First element in a Cons expression " ^
-                        "must be of same type as List in second element. " ^
-                        "First element has type " ^ Sast.string_of_s_type te1 ^
-                        " and second element has type " ^ Sast.string_of_s_type te2)
-                    else te2
+                    (match te2 with 
+                       Sast.List(t2) -> (if te1 <> t2 then 
+                            type_error ("The types of the lhs and rhs of a cons operator don't match")
+                            else te2)
+                     | Sast.Chord -> (if te1 <> Sast.Note then 
+                         type_error ("The types of the lhs and rhs of a cons operator don't match")
+                         else te2)
+                     | Sast.System -> (if te1 <> Sast.Chord then 
+                         type_error ("The types of the lhs and rhs of a cons operator don't match")
+                         else te2)
+                     | Sast.Empty -> (match te1 with
+                           Sast.Note -> Sast.Chord
+                         | Sast.Chord -> Sast.System 
+                         | _ -> Sast.List(te1))
+                     | _ -> type_error ("The second operand of a cons operator was: " ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
                 | Ast.Trans -> (* Trans: Int ^^ List *)
                     if te1 <> Sast.Int
                     then type_error ("First element in a Trans expression " ^
@@ -370,8 +382,10 @@ let rec get_type = function
                     "but element was of type " ^ Sast.string_of_s_type tb)
                 else Sast.Note
     | SList(el) -> (* Check all elements have same type*)
-        let hd = List.hd el in 
-            let match_type_or_fail x y = 
+        (match el with 
+          [] -> Sast.Empty
+        | _ -> let hd = List.hd el in 
+             let match_type_or_fail x y = 
                 let tx = (get_type x) in
                 let ty = (get_type y) in
                 if tx <> ty 
@@ -379,7 +393,8 @@ let rec get_type = function
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
-                else trace ("tx: " ^ Sast.string_of_s_type tx ^ "  ty: " ^ Sast.string_of_s_type ty) () in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd))
+                else () 
+            in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd)))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 

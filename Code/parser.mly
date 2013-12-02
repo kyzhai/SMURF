@@ -136,10 +136,12 @@ expr:
 
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
-|   LLIST expr_list RLIST   { match (List.hd $2) with
-                                Note(_,_,_) -> Chord($2)
-                              | Chord(_) -> System($2)
-                              | _ -> List($2) }
+|   LLIST expr_list RLIST   { match $2 with 
+                                [] -> List($2)
+                              | _ -> (match (List.hd $2) with
+                                    Note(_,_,_) -> Chord($2)
+                                  | Chord(_) -> System($2)
+                                  | _ -> List($2)) }
 |   LET program IN expr     { Let($2, $4) }
 
 |   callexpr                { $1 }

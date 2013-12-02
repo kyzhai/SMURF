@@ -1,1 +1,1 @@
-Fatal error: exception Failure("hd")
+Fatal error: exception Sast.Type_error("1 has type of Int but 4. has type Beat in a same list")

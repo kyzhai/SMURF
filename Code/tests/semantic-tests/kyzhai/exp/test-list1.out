@@ -1,7 +1,3 @@
-*** tx: Bool  ty: Bool
-*** tx: Bool  ty: Bool
-*** tx: Bool  ty: Bool
-*** tx: Bool  ty: Bool
 Program: 
 	SVardef: 
 		ID: a :: [Bool]

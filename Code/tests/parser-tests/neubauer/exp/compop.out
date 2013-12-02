@@ -1,8 +1,45 @@
-a = 1 < 2
-b = 2 < 1
-c = 1 > 2
-d = 2 > 1
-e = 0 <= 0
-f = 4 <= 3
-g = 0 >= 0
-h = 3 >= 4
+Program: 
+	SVardef: 
+		ID: a :: Int
+
+	1 < 2
+	SVardef: 
+		ID: b :: Int
+
+	2 < 1
+	SVardef: 
+		ID: c :: Int
+
+	1 > 2
+	SVardef: 
+		ID: d :: Int
+
+	2 > 1
+	SVardef: 
+		ID: e :: Int
+
+	0 <= 0
+	SVardef: 
+		ID: f :: Int
+
+	4 <= 3
+	SVardef: 
+		ID: g :: Int
+
+	0 >= 0
+	SVardef: 
+		ID: h :: Int
+
+	3 >= 4
+Global Scope: 
+	ID: a :: Int
+	ID: b :: Int
+	ID: c :: Int
+	ID: d :: Int
+	ID: e :: Int
+	ID: f :: Int
+	ID: g :: Int
+	ID: h :: Int
+	ID: print :: Unknown
+	ID: random :: Unknown
+
