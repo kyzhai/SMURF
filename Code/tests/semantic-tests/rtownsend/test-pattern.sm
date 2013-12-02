@@ -2,7 +2,7 @@
 f :: [Int] -> [Int] -> [a] -> [Int] -> Int
 f a:[] b:c d:e:f:[]:[] 3:2:_:4:_ = 5
 
-g :: [Bool] -> [Bool] -> [Int] -> Int
+g :: [Bool] -> [Bool] -> [[Int]] -> Int
 
 g True:False:[] True:False:[True, False] [3,4,5]:[] = 1
 
