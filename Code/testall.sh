@@ -78,7 +78,7 @@ Check() {
     numpass=$((numpass+1))
     echo "$basename: PASS" 1>&2
     else
-    echo "$basename: FAIL" 1>&2
+    echo -e '\E[37;44m'"$basename: \033[1mFAIL\033[0m" 1>&2
     globalerror=$error
     fi
 }
