@@ -244,8 +244,8 @@ conjunction has higher precedence than logical disjunction.
 \subsubsection{Tone row operators}
 \label{sec:bintonerow}
 The only binary tone row operator is the transposition operator, \texttt{$\wedge\wedge$}.
-\emph{expression$_1$} must be an expression that evaluates to a list of pitch classes,
-and \emph{expression$_2$} must have type \texttt{Int}. The result of this operation is a new
+\emph{expression$_1$} must have type \texttt{Int}, and \emph{expression$_2$} must be an 
+expression that evaluates to a list of pitch classes. The result of this operation is a new
 tone row where each pitch class has been transposed up by $n$ semitones, where $n$ is the result
 of evaluating \emph{expression$_2$}.
 
