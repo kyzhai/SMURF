@@ -187,7 +187,7 @@ Basic arithmetic operators are those found in most programming languages like
 type \texttt{Int}. It should be noted that the modulus operator ignores negatives e.g.
 \texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}.
 The pitch class operators are \texttt{\%+} and \texttt{\%-}. These can be read as mod 12 addition
-and mod 12 subtraction. They also operate on expressions of type \texttt{Int}, but the expressions
+and mod 12 subtraction. They operate on expressions of type note and type \texttt{Int}, but the expressions
 must evaluate to values in the range $0-11$. The built-in mod 12
 arithmetic serves for easy manipulation of pitch class integers.
 Lastly, there are rhythmic arithmetic operators (both operands must be of type \texttt{Beat}). 
@@ -244,8 +244,8 @@ conjunction has higher precedence than logical disjunction.
 \subsubsection{Tone row operators}
 \label{sec:bintonerow}
 The only binary tone row operator is the transposition operator, \texttt{$\wedge\wedge$}.
-\emph{expression$_1$} must be an expression that evaluates to a list of pitch classes,
-and \emph{expression$_2$} must have type \texttt{Int}. The result of this operation is a new
+\emph{expression$_1$} must have type \texttt{Int}, and \emph{expression$_2$} must be an 
+expression that evaluates to a list of pitch classes. The result of this operation is a new
 tone row where each pitch class has been transposed up by $n$ semitones, where $n$ is the result
 of evaluating \emph{expression$_2$}.
 

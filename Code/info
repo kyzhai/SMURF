@@ -1,0 +1,117 @@
+./smurf.byte < ./tests/semantic-tests/kyzhai/main.sm >& ./tests/semantic-tests/kyzhai/./main.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/main.sm >& ./tests/semantic-tests/kyzhai/./main.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-beat.sm >& ./tests/semantic-tests/kyzhai/./test-beat.out
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-chord1.sm >& ./tests/semantic-tests/kyzhai/./test-chord1.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-chord1.sm >& ./tests/semantic-tests/kyzhai/./test-chord1.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-chord2.sm >& ./tests/semantic-tests/kyzhai/./test-chord2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-chord2.sm >& ./tests/semantic-tests/kyzhai/./test-chord2.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/testfail-list1.sm >& ./tests/semantic-tests/kyzhai/./testfail-list1.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/testfail-list1.sm >& ./tests/semantic-tests/kyzhai/./testfail-list1.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/testfail-list2.sm >& ./tests/semantic-tests/kyzhai/./testfail-list2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/testfail-list2.sm >& ./tests/semantic-tests/kyzhai/./testfail-list2.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-if1.sm >& ./tests/semantic-tests/kyzhai/./test-if1.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-if1.sm >& ./tests/semantic-tests/kyzhai/./test-if1.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-if2.sm >& ./tests/semantic-tests/kyzhai/./test-if2.out
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-if3.sm >& ./tests/semantic-tests/kyzhai/./test-if3.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-if3.sm >& ./tests/semantic-tests/kyzhai/./test-if3.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-list1.sm >& ./tests/semantic-tests/kyzhai/./test-list1.out
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-list2.sm >& ./tests/semantic-tests/kyzhai/./test-list2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-list2.sm >& ./tests/semantic-tests/kyzhai/./test-list2.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-list.sm >& ./tests/semantic-tests/kyzhai/./test-list.out
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-note.sm >& ./tests/semantic-tests/kyzhai/./test-note.out
+./smurf.byte < ./tests/semantic-tests/kyzhai/test.sm >& ./tests/semantic-tests/kyzhai/./test.out
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-system1.sm >& ./tests/semantic-tests/kyzhai/./test-system1.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-system1.sm >& ./tests/semantic-tests/kyzhai/./test-system1.out
+
+./smurf.byte < ./tests/semantic-tests/kyzhai/test-system2.sm >& ./tests/semantic-tests/kyzhai/./test-system2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/kyzhai/test-system2.sm >& ./tests/semantic-tests/kyzhai/./test-system2.out
+
+./smurf.byte < ./tests/semantic-tests/neubauer/add.sm >& ./tests/semantic-tests/neubauer/./add.out
+./smurf.byte < ./tests/semantic-tests/neubauer/beat.sm >& ./tests/semantic-tests/neubauer/./beat.out
+./smurf.byte < ./tests/semantic-tests/neubauer/bool.sm >& ./tests/semantic-tests/neubauer/./bool.out
+./smurf.byte < ./tests/semantic-tests/neubauer/compare.sm >& ./tests/semantic-tests/neubauer/./compare.out
+./smurf.byte < ./tests/semantic-tests/neubauer/pc.sm >& ./tests/semantic-tests/neubauer/./pc.out
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec2.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec2.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec2.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec3.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec3.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec3.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec3.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec4.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec4.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec4.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec4.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec5.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec5.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec5.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec5.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec6.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec6.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec6.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec6.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec7.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec7.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec7.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec7.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec8.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec8.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec8.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec8.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec9.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec9.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec9.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec9.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-funcdec.sm >& ./tests/semantic-tests/rtownsend/./test-fail-funcdec.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern2.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern2.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern2.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern3.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern3.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern3.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern3.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern4.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern4.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern4.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern4.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern5.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern5.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern5.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern5.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern6.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern6.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern6.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern6.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern7.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern7.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern7.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern7.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-pattern.sm >& ./tests/semantic-tests/rtownsend/./test-fail-pattern.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-typesig1.sm >& ./tests/semantic-tests/rtownsend/./test-fail-typesig1.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-typesig1.sm >& ./tests/semantic-tests/rtownsend/./test-fail-typesig1.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-typesig2.sm >& ./tests/semantic-tests/rtownsend/./test-fail-typesig2.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-typesig2.sm >& ./tests/semantic-tests/rtownsend/./test-fail-typesig2.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-typesig3.sm >& ./tests/semantic-tests/rtownsend/./test-fail-typesig3.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-typesig3.sm >& ./tests/semantic-tests/rtownsend/./test-fail-typesig3.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-vardef1.sm >& ./tests/semantic-tests/rtownsend/./test-fail-vardef1.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-fail-vardef1.sm >& ./tests/semantic-tests/rtownsend/./test-fail-vardef1.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-funcdec2.sm >& ./tests/semantic-tests/rtownsend/./test-funcdec2.out
+FAILED
+  ./tests/semantic-tests/rtownsend/./test-funcdec2.out differs
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-funcdec.sm >& ./tests/semantic-tests/rtownsend/./test-funcdec.out
+FAILED
+  ./tests/semantic-tests/rtownsend/./test-funcdec.out differs
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-pattern.sm >& ./tests/semantic-tests/rtownsend/./test-pattern.out
+FAILED
+  ./tests/semantic-tests/rtownsend/./test-pattern.out differs
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-typesig2.sm >& ./tests/semantic-tests/rtownsend/./test-typesig2.out
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-typesig3.sm >& ./tests/semantic-tests/rtownsend/./test-typesig3.out
+[FAILED] ./smurf.byte failed on ./smurf.byte < ./tests/semantic-tests/rtownsend/test-typesig3.sm >& ./tests/semantic-tests/rtownsend/./test-typesig3.out
+
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-typesig.sm >& ./tests/semantic-tests/rtownsend/./test-typesig.out
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-vardef2.sm >& ./tests/semantic-tests/rtownsend/./test-vardef2.out
+./smurf.byte < ./tests/semantic-tests/rtownsend/test-vardef.sm >& ./tests/semantic-tests/rtownsend/./test-vardef.out
