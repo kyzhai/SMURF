@@ -1,0 +1,12 @@
+Program: 
+	SFuncdec: 
+		f x :: Unknown = 4
+	New Scope: 
+		ID: x :: Unknown
+
+	
+Global Scope: 
+	ID: f :: Unknown
+	ID: print :: Unknown
+	ID: random :: Unknown
+

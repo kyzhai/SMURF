@@ -317,8 +317,7 @@ let rec get_type = function
                            Sast.Note -> Sast.Chord
                          | Sast.Chord -> Sast.System 
                          | _ -> Sast.List(te1))
-                     | _ -> type_error ("The second operand of a cons operator was: " 
-                         ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
+                     | _ -> type_error ("The second operand of a cons operator was: " ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
                 | Ast.Trans -> (* Trans: Int ^^ List *)
                     if te1 <> Sast.Int
                     then type_error ("First element in a Trans expression " ^

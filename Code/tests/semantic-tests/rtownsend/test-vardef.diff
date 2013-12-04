@@ -1,0 +1,8 @@
+3c3
+< 		ID: a :: Num
+---
+> 		ID: a :: Int
+11c11
+< 	ID: a :: Num
+---
+> 	ID: a :: Int

@@ -1,0 +1,25 @@
+Program: 
+	SVardef: 
+		ID: a :: Num
+
+	1 %+ 4
+	SVardef: 
+		ID: b :: Num
+
+	11 %+ 5
+	SVardef: 
+		ID: c :: Num
+
+	9 %- 3
+	SVardef: 
+		ID: d :: Num
+
+	1 %- 5
+Global Scope: 
+	ID: a :: Num
+	ID: b :: Num
+	ID: c :: Num
+	ID: d :: Num
+	ID: print :: Unknown
+	ID: random :: Unknown
+
