@@ -21,21 +21,6 @@ let type_error msg = raise (Type_error msg)
 
 type s_type = Int | Bool | Note | Beat | Chord | System | List of s_type |
               Poly of string | Unknown | Num | Still_unknown | Empty
-
-type s_ids = {
-        name : string;
-        pats : pattern list;
-        v_type : s_type list;
-        v_expr : expr option;
-}
-
-type symbol_table = {
-    parent : symbol_table option;
-    mutable identifiers :  s_ids list; 
-}
-
-
-
 type s_program = {
     mutable decls : s_dec list;
     symtab : symbol_table;
@@ -69,6 +54,21 @@ and  s_func_decl = {
     s_value : s_expr;
     scope : symbol_table;
 }
+
+
+and s_ids = {
+        name : string;
+        pats : pattern list;
+        v_type : s_type list;
+        v_expr : s_expr option;
+}
+
+and symbol_table = {
+    parent : symbol_table option;
+    mutable identifiers :  s_ids list; 
+}
+
+
 
 
 let rec string_of_sexpr = function
