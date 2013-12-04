@@ -1,4 +1,0 @@
-25c25
-< 	ID: g true : false : [] true : false : [true, false] [3, 4, 5] : [] :: [Bool] -> [Bool] -> [[Int]] -> Int
----
-> 	ID: g true : false : [] true : false : [true, false] [3, 4, 5] : [] :: [Bool] -> [Bool] -> [Int] -> Int
