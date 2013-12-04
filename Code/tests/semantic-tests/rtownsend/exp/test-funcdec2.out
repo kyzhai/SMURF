@@ -10,9 +10,11 @@ Program:
 		ID: m  :: Int
 
 	
+	SMain: []
 Global Scope: 
+	ID: main  :: Unknown
 	ID: f 0 :: Int -> Int
 	ID: f m :: Int -> Int
 	ID: print  :: Unknown
-	ID: random  :: Unknown
+	ID: random  :: Int
 

@@ -6,8 +6,10 @@ Program:
 		ID: m  :: Int
 
 	
+	SMain: []
 Global Scope: 
+	ID: main  :: Unknown
 	ID: f x m :: Int -> Int -> Int
 	ID: print  :: Unknown
-	ID: random  :: Unknown
+	ID: random  :: Int
 

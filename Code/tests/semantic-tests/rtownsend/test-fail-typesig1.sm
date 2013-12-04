@@ -2,3 +2,5 @@
 
 a :: Int
 a :: a
+
+main = []

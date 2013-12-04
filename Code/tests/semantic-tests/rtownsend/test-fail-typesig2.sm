@@ -2,3 +2,5 @@
 
 a :: Int
 a :: Bool -> Int
+
+main = []

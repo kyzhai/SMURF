@@ -3,3 +3,5 @@
 f :: Int -> Bool -> Int
 
 f x = 3
+
+main = f 0

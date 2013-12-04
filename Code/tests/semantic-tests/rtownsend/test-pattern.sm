@@ -8,3 +8,5 @@ g True:False:[] True:False:[True, False] [3,4,5]:[] = 1
 
 h :: [[Int]] -> Int
 h [3,4,5]:[[1]] = 2
+
+main = []

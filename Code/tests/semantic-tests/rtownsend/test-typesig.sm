@@ -13,3 +13,5 @@ f :: System
 g :: [Int]
 h :: [Int] -> [[Int]] -> Bool
 i :: a -> a -> b
+
+main = []

@@ -3,3 +3,5 @@ f :: Bool -> Int -> Int -> Int -> Int -> Int
 
 f True _ g 1 a = 4
 f True _ x 1 m = 6
+
+main = []
