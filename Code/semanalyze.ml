@@ -119,7 +119,7 @@ let replace_funcdec program func oldfunc = match func with
 *)
 (* Start with an empty symbol table *)
 let print_var = { name="print"; pats = []; v_type = [Unknown]; v_expr = None}
-let random_var = { name = "random"; pats = [];  v_type = [Unknown]; v_expr = None }
+let random_var = { name = "random"; pats = [];  v_type = [Int]; v_expr = None }
 let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* Check if a type is just a bunch of nested empty lists *)
@@ -547,7 +547,22 @@ let rec walk_decl_second program = function
                                      s_args = info.s_args; s_value = info.s_value;
                                      scope = newscope;}) in
              replace_funcdec program newfunc oldfunc
+		| SMain(expr) -> 
+			let e_type = get_type expr in 
+			(match e_type with
+				Sast.Empty -> program
+			| Sast.Note -> program
+			| Sast.Chord -> program
+			| Sast.System -> program
+			| Sast.List(sys) -> (match sys with 
+					Sast.System -> program
+				| _ -> raise Main_type_mismatch)
+			| _ -> raise Main_type_mismatch)
     | _ -> program
+
+let has_main program = 
+	if(is_declared "main" program.symtab) then program
+	else raise Main_missing
 
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
@@ -556,5 +571,5 @@ let first_pass list_decs =
 
 let second_pass list_decs = 
 		let program = first_pass list_decs in 
-        let real_program = List.fold_left walk_decl_second program program.decls in
+        let real_program = List.fold_left walk_decl_second (has_main program) program.decls in
 		(print_string (string_of_s_program real_program)); real_program.symtab

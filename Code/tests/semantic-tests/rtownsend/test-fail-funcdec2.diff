@@ -1,15 +1,4 @@
-1,12c1
-< Program: 
-< 	SFuncdec: 
-< 		f x :: Unknown = 4
-< 	New Scope: 
-< 		ID: x :: Unknown
-< 
-< 	
-< Global Scope: 
-< 	ID: f :: Unknown
-< 	ID: print :: Unknown
-< 	ID: random :: Unknown
-< 
+1c1
+< Fatal error: exception Sast.Main_missing
 ---
 > Fatal error: exception Sast.No_type_signature_found("f")

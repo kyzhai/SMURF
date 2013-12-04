@@ -1,32 +1,33 @@
-3c3
-< 		ID: a :: Num
+1c1,30
+< Fatal error: exception Sast.Main_missing
 ---
+> Program: 
+> 	SVardef: 
 > 		ID: a :: Int
-7c7
-< 		ID: b :: Num
----
+> 
+> 	4 + 4
+> 	SVardef: 
 > 		ID: b :: Int
-11c11
-< 		ID: c :: Num
----
+> 
+> 	4 - 4
+> 	SVardef: 
 > 		ID: c :: Int
-15c15
-< 		ID: d :: Num
----
+> 
+> 	4 * 4
+> 	SVardef: 
 > 		ID: d :: Int
-19c19
-< 		ID: e :: Num
----
+> 
+> 	4 / 4
+> 	SVardef: 
 > 		ID: e :: Int
-23,27c23,27
-< 	ID: a :: Num
-< 	ID: b :: Num
-< 	ID: c :: Num
-< 	ID: d :: Num
-< 	ID: e :: Num
----
+> 
+> 	4 % 4
+> Global Scope: 
 > 	ID: a :: Int
 > 	ID: b :: Int
 > 	ID: c :: Int
 > 	ID: d :: Int
 > 	ID: e :: Int
+> 	ID: print :: Unknown
+> 	ID: random :: Unknown
+> 

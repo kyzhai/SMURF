@@ -1,1 +1,4 @@
-Fatal error: exception Sast.No_type_signature_found("x")
+plusThree 0 n = 1
+plusThree :: Int-> Bool-> Int
+x n = true
+plusThree x m = x + 3

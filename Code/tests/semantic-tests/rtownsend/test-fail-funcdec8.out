@@ -1,18 +1,1 @@
-Program: 
-	SFuncdec: 
-		f _ m :: Unknown = 6
-	New Scope: 
-		ID: m :: Unknown
-
-	
-	SFuncdec: 
-		f _ a :: Unknown = 4
-	New Scope: 
-		ID: a :: Unknown
-
-	
-Global Scope: 
-	ID: f :: [Int] -> Int -> Int
-	ID: print :: Unknown
-	ID: random :: Unknown
-
+Fatal error: exception Sast.Main_missing

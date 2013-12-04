@@ -1,15 +1,4 @@
-1,12c1
-< Program: 
-< 	SFuncdec: 
-< 		f x :: Unknown = 3
-< 	New Scope: 
-< 		ID: x :: Unknown
-< 
-< 	
-< Global Scope: 
-< 	ID: f :: Int -> Bool -> Int
-< 	ID: print :: Unknown
-< 	ID: random :: Unknown
-< 
+1c1
+< Fatal error: exception Sast.Main_missing
 ---
 > Fatal error: exception Sast.Pattern_num_mismatch(1, 2)

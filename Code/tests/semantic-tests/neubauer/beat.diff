@@ -1,65 +1,56 @@
-3c3
-< 		ID: a :: Num
+1c1,65
+< Fatal error: exception Sast.Main_missing
 ---
+> Program: 
+> 	SVardef: 
 > 		ID: a :: Beat
-7c7
-< 		ID: b :: Num
----
+> 
+> 	4 $+ 4
+> 	SVardef: 
 > 		ID: b :: Beat
-11c11
-< 		ID: c :: Num
----
+> 
+> 	4 $+ 4.
+> 	SVardef: 
 > 		ID: c :: Beat
-15c15
-< 		ID: d :: Num
----
+> 
+> 	4. $+ 4.
+> 	SVardef: 
 > 		ID: d :: Beat
-19c19
-< 		ID: e :: Num
----
+> 
+> 	4 $- 2
+> 	SVardef: 
 > 		ID: e :: Beat
-23c23
-< 		ID: f :: Num
----
+> 
+> 	4. $- 2
+> 	SVardef: 
 > 		ID: f :: Beat
-27c27
-< 		ID: g :: Num
----
+> 
+> 	4. $- 2.
+> 	SVardef: 
 > 		ID: g :: Beat
-31c31
-< 		ID: h :: Num
----
+> 
+> 	4 $* 2
+> 	SVardef: 
 > 		ID: h :: Beat
-35c35
-< 		ID: i :: Num
----
+> 
+> 	4. $* 2
+> 	SVardef: 
 > 		ID: i :: Beat
-39c39
-< 		ID: j :: Num
----
+> 
+> 	4. $* 2.
+> 	SVardef: 
 > 		ID: j :: Beat
-43c43
-< 		ID: k :: Num
----
+> 
+> 	4 $/ 2
+> 	SVardef: 
 > 		ID: k :: Beat
-47c47
-< 		ID: l :: Num
----
+> 
+> 	4. $/ 2
+> 	SVardef: 
 > 		ID: l :: Beat
-51,62c51,62
-< 	ID: a :: Num
-< 	ID: b :: Num
-< 	ID: c :: Num
-< 	ID: d :: Num
-< 	ID: e :: Num
-< 	ID: f :: Num
-< 	ID: g :: Num
-< 	ID: h :: Num
-< 	ID: i :: Num
-< 	ID: j :: Num
-< 	ID: k :: Num
-< 	ID: l :: Num
----
+> 
+> 	4. $/ 2.
+> Global Scope: 
 > 	ID: a :: Beat
 > 	ID: b :: Beat
 > 	ID: c :: Beat
@@ -72,3 +63,6 @@
 > 	ID: j :: Beat
 > 	ID: k :: Beat
 > 	ID: l :: Beat
+> 	ID: print :: Unknown
+> 	ID: random :: Unknown
+> 

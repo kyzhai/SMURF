@@ -1,6 +1,4 @@
-1,2c1,2
-< *** tx: Num  ty: Num
-< Fatal error: exception Sast.Type_error("1 has type of Num but true has type Bool in a same list")
+1c1
+< Fatal error: exception Sast.Main_missing
 ---
-> *** tx: Int  ty: Int
 > Fatal error: exception Sast.Type_error("1 has type of Int but true has type Bool in a same list")
