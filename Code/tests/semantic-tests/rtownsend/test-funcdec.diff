@@ -1,6 +1,0 @@
-5,6c5,6
-< 		ID: x  :: Unknown
-< 		ID: m  :: Unknown
----
-> 		ID: x  :: Int
-> 		ID: m  :: Int

@@ -155,6 +155,8 @@ let rec get_pat_type = function
                                 else Sast.List(els)
     | _ -> raise (Cons_pattern_type_mismatch (string_of_patterns e2)))
 
+
+
 (* Collect Variables in pattern *)
 let rec collect_pat_vars = function
     [] -> []
@@ -427,6 +429,36 @@ let rec get_type = function
                 else () in List.iter (match_type_or_fail hd) el; Sast.System
     | _ -> Sast.Unknown
 
+let rec not_list_of_unknowns = function
+    Sast.Unknown -> false
+    | Sast.List(x) -> not_list_of_unknowns x
+    | _ -> true
+
+let rec check_pat_types types info =
+    (* Check that function value has correct type *)
+    (* TODO: FIX THIS
+    if (List.hd (List.rev types)) <> (get_type info.s_value)
+    then raise (Type_mismatch ("Expression of function " ^ info.s_fname ^
+                    String.concat " " (List.map string_of_patterns info.s_args)))
+    (* Then make sure each pattern has correct type if not a var, and update the scope *)
+    else *)let exp_pattypes = (List.rev (List.tl (List.rev types))) in
+         let act_pattypes = (List.map get_pat_type info.s_args) in
+         if List.mem true (List.map2 (fun epat apat -> apat <> Sast.Unknown &&
+                                                       not_list_of_unknowns apat && epat <> apat)
+                      exp_pattypes act_pattypes) then
+            raise (Type_mismatch (info.s_fname ^ 
+                    String.concat " " (List.map string_of_patterns info.s_args)))
+         else let pat_pairs = List.combine info.s_args exp_pattypes in
+              let rec gen_scope = function
+                  [] -> []
+                 | (p, ty) :: rest when get_pat_type p = Sast.Unknown ->
+                          {name = string_of_patterns p; pats = []; v_type = [ty];
+                           v_expr = None} :: gen_scope rest
+                 | (p, ty) :: rest when not (not_list_of_unknowns (get_pat_type p)) ->
+                                (*TODO: NEED TO ASSING TYPES TO EACH ELEMENT OF LIST *) gen_scope rest
+                 | _ :: rest -> gen_scope rest in
+         info.scope.identifiers <- gen_scope pat_pairs; info.scope
+
 (* First pass walk_decl -> Try to construct a symbol table *)
 let rec walk_decl prog = function
     Ast.Tysig(id,types) -> 
@@ -507,15 +539,14 @@ let rec walk_decl_second program = function
         let tyl = List.length types in
         if (argl <> tyl - 1) then raise (Pattern_num_mismatch( argl, tyl - 1))
         else let search_decls = List.filter (fun v -> v <> oldfunc) program.decls in
-            if (List.length search_decls < (List.length program.decls) - 1)
+            if (List.length search_decls < (List.length program.decls) - 1) 
+                || (same_pats info search_decls)
             then raise (Multiple_identical_pattern_lists 
                         (String.concat " " (List.map string_of_patterns info.s_args)))
-            else if (same_pats info search_decls)
-            then raise (Multiple_identical_pattern_lists 
-                        (String.concat " " (List.map string_of_patterns info.s_args)))
-        else let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
+            else let newscope = check_pat_types types info in
+                 let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
                                      s_args = info.s_args; s_value = info.s_value;
-                                     scope = info.scope;}) in
+                                     scope = newscope;}) in
              replace_funcdec program newfunc oldfunc
     | _ -> program
 
