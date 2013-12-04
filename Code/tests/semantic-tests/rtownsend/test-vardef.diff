@@ -1,0 +1,18 @@
+1c1,15
+< Fatal error: exception Sast.Main_missing
+---
+> Program: 
+> 	SVardef: 
+> 		ID: a :: Int
+> 
+> 	3
+> 	SVardef: 
+> 		ID: b :: Unknown
+> 
+> 	a
+> Global Scope: 
+> 	ID: a :: Int
+> 	ID: b :: Unknown
+> 	ID: print :: Unknown
+> 	ID: random :: Unknown
+> 

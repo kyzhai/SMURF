@@ -1,0 +1,68 @@
+1c1,65
+< Fatal error: exception Sast.Main_missing
+---
+> Program: 
+> 	SVardef: 
+> 		ID: a :: Beat
+> 
+> 	4 $+ 4
+> 	SVardef: 
+> 		ID: b :: Beat
+> 
+> 	4 $+ 4.
+> 	SVardef: 
+> 		ID: c :: Beat
+> 
+> 	4. $+ 4.
+> 	SVardef: 
+> 		ID: d :: Beat
+> 
+> 	4 $- 2
+> 	SVardef: 
+> 		ID: e :: Beat
+> 
+> 	4. $- 2
+> 	SVardef: 
+> 		ID: f :: Beat
+> 
+> 	4. $- 2.
+> 	SVardef: 
+> 		ID: g :: Beat
+> 
+> 	4 $* 2
+> 	SVardef: 
+> 		ID: h :: Beat
+> 
+> 	4. $* 2
+> 	SVardef: 
+> 		ID: i :: Beat
+> 
+> 	4. $* 2.
+> 	SVardef: 
+> 		ID: j :: Beat
+> 
+> 	4 $/ 2
+> 	SVardef: 
+> 		ID: k :: Beat
+> 
+> 	4. $/ 2
+> 	SVardef: 
+> 		ID: l :: Beat
+> 
+> 	4. $/ 2.
+> Global Scope: 
+> 	ID: a :: Beat
+> 	ID: b :: Beat
+> 	ID: c :: Beat
+> 	ID: d :: Beat
+> 	ID: e :: Beat
+> 	ID: f :: Beat
+> 	ID: g :: Beat
+> 	ID: h :: Beat
+> 	ID: i :: Beat
+> 	ID: j :: Beat
+> 	ID: k :: Beat
+> 	ID: l :: Beat
+> 	ID: print :: Unknown
+> 	ID: random :: Unknown
+> 

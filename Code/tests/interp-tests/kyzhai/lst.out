@@ -1,0 +1,132 @@
+GlobalE: 
+	a -> Unresolved
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval lit: 1
+*** eval lit: 2
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 2
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 3
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 10
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** eval lit: 10
+*** eval lit: 2
+*** eval lit: 2
+*** eval beat: 
+*** eval note: 
+*** eval lit: 8
+*** eval lit: 3
+*** eval lit: 2
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 11
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 10
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** eval lit: -1
+*** eval lit: 2
+*** eval lit: 4
+*** eval beat: 
+*** eval note: 
+*** eval lit: 2
+*** eval lit: 3
+*** eval lit: 4
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 8
+*** eval lit: 0
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 9
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** eval list: 
+*** [[[ (1, 2)$1.., (2, 3)$1..],[ (3, 3)$1.., (10, 3)$1..]],[[ (10, 2)$2.., (8, 3)$2..],[ (11, 3)$1.., (10, 3)$1..]],[[ (-1, 2)$4.., (2, 3)$4..],[ (8, 0)$1.., (9, 3)$1..]]]
+GlobalE: 
+	a -> [[[ (1, 2)$1.., (2, 3)$1..],[ (3, 3)$1.., (10, 3)$1..]],[[ (10, 2)$2.., (8, 3)$2..],[ (11, 3)$1.., (10, 3)$1..]],[[ (-1, 2)$4.., (2, 3)$4..],[ (8, 0)$1.., (9, 3)$1..]]]
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval var: a
+tob: 1 2
+tob: 1 2
+tob: 1 2
+tob: 1 2
+tob: 2 2
+tob: 2 2
+tob: 1 2
+tob: 1 2
+tob: 4 2
+tob: 4 2
+tob: 1 2
+tob: 1 2
+vchord: 
+tob: 1 2
+tob: 1 2
+nt: 28, note: 61
+tob: 1 2
+nt: 28, note: 74
+vchord: 
+tob: 1 2
+tob: 1 2
+nt: 28, note: 75
+tob: 1 2
+nt: 28, note: 82
+vchord: 
+tob: 2 2
+tob: 2 2
+nt: 14, note: 70
+tob: 2 2
+nt: 14, note: 80
+vchord: 
+tob: 1 2
+tob: 1 2
+nt: 28, note: 83
+tob: 1 2
+nt: 28, note: 82
+vchord: 
+tob: 4 2
+tob: 4 2
+nt: 7, note: -1
+tob: 4 2
+nt: 7, note: 74
+vchord: 
+tob: 1 2
+tob: 1 2
+nt: 28, note: 44
+tob: 1 2
+nt: 28, note: 81
+*** exec smain
+*** calling run

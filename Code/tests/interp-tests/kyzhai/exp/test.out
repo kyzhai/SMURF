@@ -1,3 +1,113 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+Program: 
+	SVardef: 
+		ID: d :: Int
+
+	if true then 1 else 0
+	SVardef: 
+		ID: a :: Int
+
+	1
+	SVardef: 
+		ID: b :: Unknown
+
+	a
+	SVardef: 
+		ID: e :: Unknown
+
+	let  NEED TO FIX THIS PART  in a
+	SVardef: 
+		ID: c :: Bool
+
+	true
+	SVardef: 
+		ID: lst :: [Int]
+
+	[1, 2, 3]
+	SVardef: 
+		ID: lst2 :: [Unknown]
+
+	[a, b, c]
+Global Scope: 
+	ID: d :: Int
+	ID: a :: Int
+	ID: b :: Unknown
+	ID: e :: Unknown
+	ID: c :: Bool
+	ID: lst :: [Int]
+	ID: lst2 :: [Unknown]
+	ID: print :: Unknown
+	ID: random :: Unknown
+
+=======
+GlobalE: 
+	a -> Unresolved
+	b -> Unresolved
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval lit: 1
+*** eval lit: 2
+*** eval lit: 2
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** [ (1, 2)$2..]
+GlobalE: 
+	a -> [ (1, 2)$2..]
+	b -> Unresolved
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval var: a
+*** eval var: a
+*** eval var: a
+*** eval var: a
+*** eval var: a
+*** eval var: a
+*** eval var: a
+*** eval var: a
+*** eval list: 
+*** [[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..]]
+GlobalE: 
+	a -> [ (1, 2)$2..]
+	b -> [[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..],[ (1, 2)$2..]]
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval var: b
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+tob: 2 2
+total number of ticks is: 14
+total number of ticks is: 14
+total number of ticks is: 14
+Dim: 14	3
+*** l 138
+wta: 0 0 0 
+Fatal error: exception Output.Output_error("Error in write_to_array: Must be a list of systems")
+>>>>>>> interp_dev
+=======
 GlobalE: 
 	a -> Unresolved
 	b -> Unresolved
@@ -119,3 +229,4 @@ GlobalE:
 	print -> Unresolved
 	random -> Unresolved
 *** calling run
+>>>>>>> 1cd918d265f85f24fc716e2dee0292ac5830d1fe

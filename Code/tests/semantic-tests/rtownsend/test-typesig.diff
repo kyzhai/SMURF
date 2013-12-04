@@ -1,0 +1,18 @@
+1c1,15
+< Fatal error: exception Sast.Main_missing
+---
+> Program: 
+> 	
+> Global Scope: 
+> 	ID: i :: a -> a -> b
+> 	ID: h :: [Int] -> [[Int]] -> Bool
+> 	ID: g :: [Int]
+> 	ID: f :: System
+> 	ID: e :: Chord
+> 	ID: d :: Beat
+> 	ID: c :: Note
+> 	ID: b :: Bool
+> 	ID: a :: Int
+> 	ID: print :: Unknown
+> 	ID: random :: Unknown
+> 

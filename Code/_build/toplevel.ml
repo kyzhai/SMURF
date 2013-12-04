@@ -5,8 +5,6 @@
 open Util
 open Interpreter
 open Lexing
-open Output
-open Values
 (*
 *)
 
@@ -59,13 +57,20 @@ let _ =
                             (List.fold_left exec_decl !globalE cmd)
                             in globalE := env'
                         with 
-                              Interp_error msg -> fatal_error (msg)
+                              Interpreter.Interp_error msg -> fatal_error (msg)
                             | Fatal_error msg -> print_endline msg
-                            | Output_error msg -> print_endline msg
                     with 
-                          Interp_error msg -> fatal_error (msg)      
+                          Interpreter.Interp_error msg -> fatal_error (msg)      
                         | Fatal_error msg -> print_endline msg
                 done
                 with End_of_file -> print_endline "\nGood bye!"
             )(* End of ignore *)
 
+(*
+let s_cmd = 
+    try 
+        Semanalyze.first_pass cmd 
+    with 
+        Sast.Type_error msg -> shell_error (msg)
+in
+*)

@@ -1,0 +1,4 @@
+1c1
+< Fatal error: exception Sast.Main_missing
+---
+> Fatal error: exception Sast.Multiple_identical_pattern_lists("_ m")

@@ -1,0 +1,53 @@
+GlobalE: 
+	a -> Unresolved
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval lit: 1
+*** eval lit: 2
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 2
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval lit: 3
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 10
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** eval System: 
+*** [[ (1, 2)$1.., (2, 3)$1..],[ (3, 3)$1.., (10, 3)$1..]]
+GlobalE: 
+	a -> [[ (1, 2)$1.., (2, 3)$1..],[ (3, 3)$1.., (10, 3)$1..]]
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval var: a
+tob: 1 2
+tob: 1 2
+tob: 1 2
+tob: 1 2
+vchord: 
+tob: 1 2
+tob: 1 2
+nt: 28, note: 61
+tob: 1 2
+nt: 28, note: 74
+vchord: 
+tob: 1 2
+tob: 1 2
+nt: 28, note: 75
+tob: 1 2
+nt: 28, note: 82
+*** exec smain
+*** calling run
