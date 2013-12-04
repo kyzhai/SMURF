@@ -1,25 +1,27 @@
 Program: 
 	SVardef: 
-		ID: a :: Int
+		ID: a  :: Int
 
 	1 %+ 4
 	SVardef: 
-		ID: b :: Int
+		ID: b  :: Int
 
 	11 %+ 5
 	SVardef: 
-		ID: c :: Int
+		ID: c  :: Int
 
 	9 %- 3
 	SVardef: 
-		ID: d :: Int
+		ID: d  :: Int
 
 	1 %- 5
+	SMain: []
 Global Scope: 
-	ID: a :: Int
-	ID: b :: Int
-	ID: c :: Int
-	ID: d :: Int
-	ID: print :: Unknown
-	ID: random :: Unknown
+	ID: a  :: Int
+	ID: b  :: Int
+	ID: c  :: Int
+	ID: d  :: Int
+	ID: main  :: Unknown
+	ID: print x :: a -> a
+	ID: random  :: Int
 

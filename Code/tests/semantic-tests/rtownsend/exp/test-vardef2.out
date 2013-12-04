@@ -7,6 +7,6 @@ Program:
 Global Scope: 
 	ID: a  :: Int
 	ID: main  :: Unknown
-	ID: print  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 

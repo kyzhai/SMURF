@@ -57,6 +57,6 @@ Global Scope:
 	ID: aa  :: Chord
 	ID: bb  :: System
 	ID: main  :: Unknown
-	ID: print  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 

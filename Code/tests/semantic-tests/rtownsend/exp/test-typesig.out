@@ -11,6 +11,6 @@ Global Scope:
 	ID: c  :: Note
 	ID: b  :: Bool
 	ID: a  :: Int
-	ID: print  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 

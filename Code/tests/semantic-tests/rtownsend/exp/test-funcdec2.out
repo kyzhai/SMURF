@@ -15,6 +15,6 @@ Global Scope:
 	ID: main  :: Unknown
 	ID: f 0 :: Int -> Int
 	ID: f m :: Int -> Int
-	ID: print  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 

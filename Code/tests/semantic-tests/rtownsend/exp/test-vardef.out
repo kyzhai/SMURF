@@ -1,17 +1,8 @@
-Program: 
-	SVardef: 
-		ID: a  :: Int
-
-	3
-	SVardef: 
-		ID: b  :: Unknown
-
-	a
-	SMain: []
 Global Scope: 
-	ID: a  :: Int
-	ID: b  :: Unknown
 	ID: main  :: Unknown
-	ID: print  :: Unknown
+	ID: b  :: Unknown
+	ID: a  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 
+Fatal error: exception Sast.No_type_signature_found("a")

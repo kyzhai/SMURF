@@ -10,6 +10,6 @@ Program:
 Global Scope: 
 	ID: main  :: Unknown
 	ID: f x m :: Int -> Int -> Int
-	ID: print  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 
