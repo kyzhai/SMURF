@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SMURF="./smurf.byte"
-TESTDIR="./tests/semantic-tests"
+SMURF="./toplevel.byte"
+TESTDIR="./tests/interp-tests"
 
 # Set time limit for all operations
 ulimit -t 30

@@ -1,1 +1,5 @@
-Fatal error: exception Sast.Type_error("a == b has type Unknown but is used as if it has type Bool")
+a = 3
+b = a
+c = [1, 2, 3]
+d = if a then a else if c == b then b else c
+e = if a == b then a else if b == c then b else c
