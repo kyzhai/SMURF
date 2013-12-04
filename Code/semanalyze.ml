@@ -205,13 +205,15 @@ let rec gen_new_scope = function
                            v_expr = None} :: gen_new_scope rest
 
 (* Returns a type from an expression*)
-let rec get_type = function
+let rec get_type symtab= function
       SLiteral(l) -> Int
     | SBoolean(b) -> Bool
-    | SVariable(s) -> Unknown (* look up in symbol table? *)
+    | SVariable(s) -> let v_types = get_types_p s symtab in 
+        if(List.length v_types <>1) then raise (Function_used_as_variable s)
+        else List.hd v_types 
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
-        let te1 = get_type e1
-        and te2 = get_type e2 in
+        let te1 = get_type symtab e1
+        and te2 = get_type symtab e2 in
             (match o with
                 Ast.Add | Ast.Sub | Ast.Mul | Ast.Div | Ast. Mod |
                 Ast.PCAdd | Ast.PCSub ->
@@ -331,7 +333,7 @@ let rec get_type = function
                         else te2
             )
     | SPrefix(o, e) -> (* Prefix Operators *)
-        let te = get_type e in
+        let te = get_type symtab e in
         (match o with
             Ast.Not -> (* Not: ! Bool *)
                 if te <> Sast.Bool
@@ -345,19 +347,19 @@ let rec get_type = function
                 else te
         )
     | SIf(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
-        let te1 = get_type e1 in 
+        let te1 = get_type symtab e1 in 
         if te1 <> Sast.Bool then 
             type_error (string_of_sexpr e1 ^ " has type " ^ string_of_s_type te1
             ^ " but is used as if it has type " ^ string_of_s_type Sast.Bool)
-        else let te2 = get_type e2 in 
-             let te3 = get_type e3 in 
+        else let te2 = get_type symtab e2 in 
+             let te3 = get_type symtab e3 in 
              if te2 <> te3 then
                 type_error (string_of_sexpr e2 ^ " has type " ^ string_of_s_type te2 
                 ^ " but " ^ string_of_sexpr e3 ^ " has type " ^ string_of_s_type te3 
                 ^ " which is not allowed in conditional statement")
                 else te2
     | SBeat(i1, i2) -> 
-        let ti1 = get_type i1 in
+        let ti1 = get_type symtab i1 in
         if ti1 <> Sast.Int
         then type_error ("First element in a Beat must be of type Int " ^
             "and a power of 2 between 1 and 16. The given element was of type " ^
@@ -368,9 +370,9 @@ let rec get_type = function
             then type_error ("Dots may not increase Beat value past 16th")
             else Sast.Beat
     | SNote(pc, reg, b) ->
-        let tpc = get_type pc
-        and treg = get_type reg
-        and tb = get_type b in
+        let tpc = get_type symtab pc
+        and treg = get_type symtab reg
+        and tb = get_type symtab b in
         if tpc <> Sast.Int
         then type_error ("First element in Note (pitch class) must be of type Int " ^
             "between -1 and 11 but element was of type " ^ Sast.string_of_s_type tpc)
@@ -388,20 +390,20 @@ let rec get_type = function
           [] -> Sast.Empty
         | _ -> let hd = List.hd el in 
              let match_type_or_fail x y = 
-                let tx = (get_type x) in
-                let ty = (get_type y) in
+                let tx = (get_type symtab x) in
+                let ty = (get_type symtab y) in
                 if tx <> ty 
                     then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
                 else () 
-            in List.iter (match_type_or_fail hd) el; Sast.List(get_type(hd)))
+            in List.iter (match_type_or_fail hd) el; Sast.List(get_type symtab (hd)))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
-                let tx = (get_type x) in 
-                let ty = (get_type y) in 
+                let tx = (get_type symtab x) in 
+                let ty = (get_type symtab y) in 
                 if tx <> ty 
                     then type_error ("Elements in Chord should all have type of " 
                     ^ Ast.string_of_types Ast.TNote ^ " but the element of " 
@@ -419,8 +421,8 @@ let rec get_type = function
     | SSystem(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
-                let tx = (get_type x) in 
-                let ty = (get_type y) in 
+                let tx = (get_type symtab x) in 
+                let ty = (get_type symtab y) in 
                 if tx <> ty 
                     then type_error ("Elements in Chord should all have type of " 
                     ^ string_of_s_type Sast.Chord ^ " but the element of " 
@@ -491,7 +493,7 @@ let rec walk_decl prog = function
     | Main(expr) -> 
         if(prog.symtab.parent = None) then 
             if( is_declared "main" prog.symtab) then raise (Multiple_declarations "main")
-		    else let mainvar = {name = "main"; pats = []; v_type = [Unknown]; v_expr = Some(expr)}
+        else let mainvar = {name = "main"; pats = []; v_type = [Unknown]; v_expr = Some(expr)}
             in prog.symtab.identifiers <- (mod_var mainvar prog.symtab);
                { decls = (prog.decls @ [SMain(to_sexpr prog.symtab expr)]); symtab = prog.symtab }
          else raise Main_wrong_scope
@@ -518,7 +520,7 @@ and to_sexpr symbol = function
 (* Second pass -> use symbol table to resolve all semantic checks *)
 let rec walk_decl_second program = function
     | SVardef(s_id, s_expr) as oldvar -> 
-        let texpr = [get_type s_expr] in
+        let texpr = [get_type program.symtab s_expr] in
         if s_id.v_type = [Unknown] then
             let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
                                let set_type = get_typesig s_id.name program.symtab.identifiers in
@@ -547,22 +549,22 @@ let rec walk_decl_second program = function
                                      s_args = info.s_args; s_value = info.s_value;
                                      scope = newscope;}) in
              replace_funcdec program newfunc oldfunc
-		| SMain(expr) -> 
-			let e_type = get_type expr in 
-			(match e_type with
-				Sast.Empty -> program
-			| Sast.Note -> program
-			| Sast.Chord -> program
-			| Sast.System -> program
-			| Sast.List(sys) -> (match sys with 
-					Sast.System -> program
-				| _ -> raise Main_type_mismatch)
-			| _ -> raise Main_type_mismatch)
+  | SMain(expr) -> 
+      let e_type = get_type program.symtab expr in 
+        (match e_type with
+       Sast.Empty -> program
+      | Sast.Note -> program
+      | Sast.Chord -> program
+      | Sast.System -> program
+      | Sast.List(sys) -> (match sys with 
+          Sast.System -> program
+        | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
+      | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
     | _ -> program
 
 let has_main program = 
-	if(is_declared "main" program.symtab) then program
-	else raise Main_missing
+  if(is_declared "main" program.symtab) then program
+  else raise Main_missing
 
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
@@ -570,6 +572,6 @@ let first_pass list_decs =
     in (*(print_string (string_of_s_program program));*) program
 
 let second_pass list_decs = 
-		let program = first_pass list_decs in 
+    let program = first_pass list_decs in 
         let real_program = List.fold_left walk_decl_second (has_main program) program.decls in
-		(print_string (string_of_s_program real_program)); real_program.symtab
+    (print_string (string_of_s_program real_program)); real_program.symtab
