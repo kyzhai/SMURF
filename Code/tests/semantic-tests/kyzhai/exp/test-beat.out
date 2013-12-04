@@ -1,10 +1,12 @@
 Program: 
 	SVardef: 
-		ID: a :: Beat
+		ID: a  :: Beat
 
 	4...
+	SMain: []
 Global Scope: 
-	ID: a :: Beat
-	ID: print :: Unknown
-	ID: random :: Unknown
+	ID: a  :: Beat
+	ID: main  :: Unknown
+	ID: print  :: Unknown
+	ID: random  :: Int
 

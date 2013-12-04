@@ -1,11 +1,6 @@
 Program: 
-	SVardef: 
-		ID: a  :: Bool
-
-	if true then true else false
-	SMain: []
+	SMain:  (1, 1)$2
 Global Scope: 
-	ID: a  :: Bool
 	ID: main  :: Unknown
 	ID: print  :: Unknown
 	ID: random  :: Int

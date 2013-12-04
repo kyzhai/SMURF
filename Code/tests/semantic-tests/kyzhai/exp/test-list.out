@@ -1,60 +1,62 @@
 Program: 
 	SVardef: 
-		ID: a :: []
+		ID: a  :: []
 
 	[]
 	SVardef: 
-		ID: b :: [[]]
+		ID: b  :: [[]]
 
 	[[]]
 	SVardef: 
-		ID: c :: []
+		ID: c  :: []
 
 	[] ++ []
 	SVardef: 
-		ID: f :: [[]]
+		ID: f  :: [[]]
 
 	[[]] ++ []
 	SVardef: 
-		ID: d :: [Int]
+		ID: d  :: [Int]
 
 	[1] ++ [2]
 	SVardef: 
-		ID: g :: [Int]
+		ID: g  :: [Int]
 
 	[] ++ [1, 2, 3, 4]
 	SVardef: 
-		ID: h :: [[]]
+		ID: h  :: [[]]
 
 	[] : []
 	SVardef: 
-		ID: i :: [Int]
+		ID: i  :: [Int]
 
 	1 : []
 	SVardef: 
-		ID: j :: [[Int]]
+		ID: j  :: [[Int]]
 
 	[1, 2] : [[1], [2, 3]]
 	SVardef: 
-		ID: aa :: Chord
+		ID: aa  :: Chord
 
 	[ (1, 2)$2..] ++ []
 	SVardef: 
-		ID: bb :: System
+		ID: bb  :: System
 
 	[ (1, 2)$2..] : []
+	SMain: []
 Global Scope: 
-	ID: a :: []
-	ID: b :: [[]]
-	ID: c :: []
-	ID: f :: [[]]
-	ID: d :: [Int]
-	ID: g :: [Int]
-	ID: h :: [[]]
-	ID: i :: [Int]
-	ID: j :: [[Int]]
-	ID: aa :: Chord
-	ID: bb :: System
-	ID: print :: Unknown
-	ID: random :: Unknown
+	ID: a  :: []
+	ID: b  :: [[]]
+	ID: c  :: []
+	ID: f  :: [[]]
+	ID: d  :: [Int]
+	ID: g  :: [Int]
+	ID: h  :: [[]]
+	ID: i  :: [Int]
+	ID: j  :: [[Int]]
+	ID: aa  :: Chord
+	ID: bb  :: System
+	ID: main  :: Unknown
+	ID: print  :: Unknown
+	ID: random  :: Int
 

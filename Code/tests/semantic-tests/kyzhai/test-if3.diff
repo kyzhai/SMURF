@@ -1,4 +1,0 @@
-1c1
-< Fatal error: exception Sast.Main_missing
----
-> Fatal error: exception Sast.Type_error("true has type Bool but 2 has type Int which is not allowed in conditional statement")

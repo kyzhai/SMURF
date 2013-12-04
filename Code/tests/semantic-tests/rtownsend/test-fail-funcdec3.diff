@@ -1,4 +1,0 @@
-1c1
-< Fatal error: exception Sast.Main_missing
----
-> Fatal error: exception Sast.Pattern_num_mismatch(1, 2)
