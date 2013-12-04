@@ -1,6 +1,16 @@
 Program: 
+	SVardef: 
+		ID: a  :: Int
+
+	b
+	SVardef: 
+		ID: b  :: Int
+
+	1
 	SMain: []
 Global Scope: 
+	ID: a  :: Int
+	ID: b  :: Int
 	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int

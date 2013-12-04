@@ -2,6 +2,6 @@ Program:
 	SMain: []
 Global Scope: 
 	ID: main  :: Unknown
-	ID: print x :: a -> a
+	ID: print  :: Unknown
 	ID: random  :: Int
 

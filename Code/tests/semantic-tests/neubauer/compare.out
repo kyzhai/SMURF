@@ -1,1 +1,77 @@
-Fatal error: exception Sast.Main_missing
+Program: 
+	SVardef: 
+		ID: a  :: Int
+
+	1 < 2
+	SVardef: 
+		ID: b  :: Int
+
+	1 > 2
+	SVardef: 
+		ID: c  :: Int
+
+	1 <= 2
+	SVardef: 
+		ID: d  :: Int
+
+	1 >= 2
+	SVardef: 
+		ID: e  :: Beat
+
+	1 $< 2
+	SVardef: 
+		ID: f  :: Beat
+
+	1. $< 2
+	SVardef: 
+		ID: g  :: Beat
+
+	1 $> 2
+	SVardef: 
+		ID: h  :: Beat
+
+	1 $> 2.
+	SVardef: 
+		ID: i  :: Beat
+
+	1 $<= 2
+	SVardef: 
+		ID: j  :: Beat
+
+	1 $<= 2.
+	SVardef: 
+		ID: k  :: Beat
+
+	1 $>= 2
+	SVardef: 
+		ID: l  :: Beat
+
+	1. $>= 2
+	SVardef: 
+		ID: m  :: Int
+
+	4 == 4
+	SVardef: 
+		ID: n  :: Int
+
+	4 == 3
+	SMain: []
+Global Scope: 
+	ID: a  :: Int
+	ID: b  :: Int
+	ID: c  :: Int
+	ID: d  :: Int
+	ID: e  :: Beat
+	ID: f  :: Beat
+	ID: g  :: Beat
+	ID: h  :: Beat
+	ID: i  :: Beat
+	ID: j  :: Beat
+	ID: k  :: Beat
+	ID: l  :: Beat
+	ID: m  :: Int
+	ID: n  :: Int
+	ID: main  :: Unknown
+	ID: print x :: a -> a
+	ID: random  :: Int
+
