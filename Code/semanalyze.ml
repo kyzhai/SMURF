@@ -119,7 +119,7 @@ let replace_funcdec program func oldfunc = match func with
 *)
 (* Start with an empty symbol table *)
 let print_var = { name="print"; pats = []; v_type = [Unknown]; v_expr = None}
-let random_var = { name = "random"; pats = [];  v_type = [Unknown]; v_expr = None }
+let random_var = { name = "random"; pats = [];  v_type = [Int]; v_expr = None }
 let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* Check if a type is just a bunch of nested empty lists *)
