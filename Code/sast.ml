@@ -12,8 +12,9 @@ exception No_func_dec of string
 exception Pattern_num_mismatch of int * int
 exception Type_mismatch of string
 exception Main_wrong_scope
-exception Main_type_mismatch
+exception Main_type_mismatch of string
 exception Main_missing 
+exception Function_used_as_variable of string
 
 exception Type_error of string
 let type_error msg = raise (Type_error msg)
