@@ -45,7 +45,6 @@ let rec get_types_p id symtab =
         | Some(psym) -> get_types_p id psym
         | None -> raise (No_type_signature_found id)
 
-
 (* Check if a vardef or funcdec exists for an id in the current scope *)
 let rec exists_dec id ty = function
     [] -> false
@@ -208,9 +207,8 @@ let rec gen_new_scope = function
 let rec get_type symtab= function
       SLiteral(l) -> Int
     | SBoolean(b) -> Bool
-    | SVariable(s) -> let v_types = get_types_p s symtab in 
-        if(List.length v_types <>1) then raise (Function_used_as_variable s)
-        else List.hd v_types 
+    | SVariable(s) -> print_string (string_of_symbol_table symtab); 
+        List.hd (get_types_p s symtab)
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
         let te1 = get_type symtab e1
         and te2 = get_type symtab e2 in
@@ -519,7 +517,7 @@ and to_sexpr symbol = function
 
 (* Second pass -> use symbol table to resolve all semantic checks *)
 let rec walk_decl_second program = function
-    | SVardef(s_id, s_expr) as oldvar -> 
+    | SVardef(s_id, s_expr) as oldvar -> (*(print_string (string_of_s_program program));*)
         let texpr = [get_type program.symtab s_expr] in
         if s_id.v_type = [Unknown] then
             let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
