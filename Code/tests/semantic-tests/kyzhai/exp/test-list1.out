@@ -1,10 +1,12 @@
 Program: 
 	SVardef: 
-		ID: a :: [Bool]
+		ID: a  :: [Bool]
 
 	[true, false, true, false]
+	SMain: []
 Global Scope: 
-	ID: a :: [Bool]
-	ID: print :: Unknown
-	ID: random :: Unknown
+	ID: a  :: [Bool]
+	ID: main  :: Unknown
+	ID: print  :: Unknown
+	ID: random  :: Int
 
