@@ -53,8 +53,14 @@ and s_expr =
     | SList of s_expr list                     (* [1,2,3,4] *)
     | SChord of s_expr list                    (* [(11,3)$4., (5,2)$4.]*)
     | SSystem of s_expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
-    | SCall of s_expr * s_expr                   (* foo a *)
+    | SCall of string * s_arg list             (* foo a b *)
     | SLet of s_program * s_expr               (* let x = 4 in x + 2 *)
+
+and s_arg =
+    SArgconst of int                           (* integer *)
+    | SArgbool of bool                         (* boolean *)
+    | SArgvar of string                        (* identifiers *)
+    | SArgparens of s_expr                     (* parenthesized expressions *)
 
 and s_dec = 
       STypesig of s_ids 
@@ -100,9 +106,16 @@ let rec string_of_sexpr = function
   | SList(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
   | SChord(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
   | SSystem(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
-  | SCall(exp1,exp2) -> string_of_sexpr exp1 ^ " " ^ string_of_sexpr exp2
+  | SCall(fname,args) -> fname ^ " " ^ (String.concat " " (List.map string_of_sfargs args))
   | SLet(decs, exp) -> "let " ^ (String.concat " " (List.map string_of_s_dec decs.decls)) ^ 
                       " in " ^ string_of_sexpr exp
+
+and string_of_sfargs = function
+    SArgconst(l) -> string_of_int l
+  | SArgbool(b) -> string_of_bool b
+  | SArgvar(s) -> s
+  | SArgparens(p) -> "(" ^ (string_of_sexpr p)  ^ ")"
+
 and string_of_s_dec = function
       STypesig(i) -> "STypesig: \n\t\t" ^ string_of_s_ids i
     | SFuncdec(f) -> "SFuncdec: \n\t\t" ^ string_of_s_func_decl f
