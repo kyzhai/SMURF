@@ -4,14 +4,14 @@ Program:
 
 	3
 	SVardef: 
-		ID: b  :: Unknown
+		ID: b  :: Int
 
 	a
 	SMain: []
 Global Scope: 
 	ID: a  :: Int
-	ID: b  :: Unknown
+	ID: b  :: Int
 	ID: main  :: Unknown
-	ID: print  :: Unknown
+	ID: print x :: a -> a
 	ID: random  :: Int
 

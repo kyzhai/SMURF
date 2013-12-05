@@ -207,8 +207,15 @@ let rec gen_new_scope = function
 let rec get_type symtab= function
       SLiteral(l) -> Int
     | SBoolean(b) -> Bool
-    | SVariable(s) -> print_string (string_of_symbol_table symtab); 
-        List.hd (get_types_p s symtab)
+    | SVariable(s) -> 
+			let var =(List.find (fun t -> t.name = s) symtab.identifiers) in 
+				let ts = var.v_type in 
+				if(List.length ts <> 1) then raise (Function_used_as_variable s)
+				else let t = List.hd ts in 
+					if(t <> Unknown) then t
+					else (match var.v_expr with 
+						Some(expr) -> get_type symtab expr
+						| None -> raise (No_type_signature_found s))
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
         let te1 = get_type symtab e1
         and te2 = get_type symtab e2 in
@@ -467,7 +474,7 @@ let rec walk_decl prog = function
                     then raise (Multiple_type_sigs id)
                 else prog.symtab.identifiers <- mod_var entry prog.symtab; prog
     | Ast.Vardef(id, expr) -> 
-                let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(expr)} in
+                let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(to_sexpr prog.symtab expr)} in
                 if(exists_dec id "var" prog.decls) 
                     then raise (Multiple_declarations id)
                 else prog.symtab.identifiers <- mod_var var prog.symtab;
@@ -485,13 +492,13 @@ let rec walk_decl prog = function
                                                 s_value = to_sexpr prog.symtab fdec.value;
                                                 scope = new_scope;}) in 
                 let var = {name = fdec.fname; pats = fdec.args;  v_type = [Unknown]; 
-                           v_expr = Some(fdec.value)} in
+                           v_expr = Some(to_sexpr prog.symtab fdec.value)} in
                     prog.symtab.identifiers <- mod_var var prog.symtab;
                     { decls = funcdef :: prog.decls; symtab = prog.symtab }
     | Main(expr) -> 
         if(prog.symtab.parent = None) then 
             if( is_declared "main" prog.symtab) then raise (Multiple_declarations "main")
-        else let mainvar = {name = "main"; pats = []; v_type = [Unknown]; v_expr = Some(expr)}
+        else let mainvar = {name = "main"; pats = []; v_type = [Unknown]; v_expr = Some(to_sexpr prog.symtab expr)}
             in prog.symtab.identifiers <- (mod_var mainvar prog.symtab);
                { decls = (prog.decls @ [SMain(to_sexpr prog.symtab expr)]); symtab = prog.symtab }
          else raise Main_wrong_scope
