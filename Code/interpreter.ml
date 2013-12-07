@@ -63,6 +63,10 @@ let rec eval env = function
                     | Div -> VInt(x/y),env2
                     | Mod -> VInt(x mod y),env2
                     | _ -> interp_error ("Not expected op for Ints"))
+            | VList(lx), VList(ly) -> 
+                (match op with
+                      Concat -> VList(lx @ ly),env2
+                    | _ -> interp_error ("Not expected op for Lists"))
             | _ -> interp_error ("Not expected operands")
          ))
     | Ast.Prefix(op, e) -> (*Incomplete*)
