@@ -93,7 +93,11 @@ comma_patterns:
 |   comma_patterns COMMA pattern    { $3 :: $1 }
 
 expr:
-    expr PLUS expr          { Binop($1, Add, $3) }
+    LITERAL                 { Literal($1) }
+|   VARIABLE                { Variable($1) }
+|   BOOLEAN                 { Boolean($1) }
+|   LPAREN expr RPAREN      { $2 }
+|   expr PLUS expr          { Binop($1, Add, $3) }
 |   expr MINUS expr         { Binop($1, Sub, $3) }
 |   expr TIMES expr         { Binop($1, Mul, $3) }
 |   expr DIV expr           { Binop($1, Div, $3) }
@@ -144,17 +148,17 @@ expr:
                                   | _ -> List($2)) }
 |   LET program IN expr     { Let($2, $4) }
 
-|   callexpr                { $1 }
+|   VARIABLE args           { Call($1,$2) }
 
-callexpr:
-    callexpr cexpr          { Call($1,$2) }
-|   cexpr                   { $1 }
+args:
+    arg                     { [$1] }
+|   args arg                { $2 :: $1 }
 
-cexpr:
-    LITERAL                 { Literal($1) }
-|   VARIABLE                { Variable($1) }
-|   BOOLEAN                 { Boolean($1) }
-|   LPAREN expr RPAREN      { $2 }
+arg:
+    LITERAL                 { Argconst($1) }
+|   BOOLEAN                 { Argbool($1) }
+|   VARIABLE                { Argvar($1) }
+|   LPAREN expr RPAREN      { Argparens($2) }
 
 dots:
     PERIOD        { 1 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SMURF="./smurf.byte"
-TESTDIR="./tests/semantic-tests"
+SMURF="./toplevel.byte"
+TESTDIR="./tests/interp-tests"
 
 # Set time limit for all operations
 ulimit -t 30
@@ -13,6 +13,7 @@ globalerror=0
 numtests=0
 numpass=0
 keep=0
+delete=0
 
 Usage() {
     echo "Usage: testall.sh [options] [.sm files]"
@@ -78,6 +79,9 @@ Check() {
     numpass=$((numpass+1))
     echo "$basename: PASS" 1>&2
     else
+    if [ $delete -eq 1 ] ; then
+        rm -f $generatedfiles
+    fi
     echo -e '\E[37;44m'"$basename: \033[1mFAIL\033[0m" 1>&2
     globalerror=$error
     fi
@@ -90,6 +94,9 @@ while getopts kdpsh c; do
         ;;
     h) # Help
         Usage
+        ;;
+    d) # delete intermediate files on fail
+        delete=1 
         ;;
     esac
 done

@@ -524,10 +524,16 @@ and to_sexpr symbol = function
     | Ast.List(elist) -> SList(List.map (fun s -> to_sexpr symbol s) elist)
     | Ast.Chord(elist) -> SChord(List.map (fun s -> to_sexpr symbol s) elist)
     | Ast.System(elist) -> SSystem(List.map (fun s -> to_sexpr symbol s) elist)
-    | Ast.Call(e1, e2) -> SCall(to_sexpr symbol e1, to_sexpr symbol e2)
+    | Ast.Call(e1, e2) -> SCall(e1, (List.map (fun s -> to_sarg symbol s)  e2))
     | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in
                            let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs
                            in SLet(nested_prog, to_sexpr symbol e)
+
+and to_sarg symbol = function
+    | Ast.Argconst(i)  -> SArgconst(i)
+    | Ast.Argbool(b)   -> SArgbool(b)
+    | Ast.Argvar(s)    -> SArgvar(s)
+    | Ast.Argparens(p) -> SArgparens(to_sexpr symbol p)
 
 (* Second pass -> use symbol table to resolve all semantic checks *)
 let rec walk_decl_second program = function

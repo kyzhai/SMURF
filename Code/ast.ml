@@ -23,7 +23,7 @@ type expr =                                 (* Expressions *)
     | List of expr list                     (* [1,2,3,4] *)
     | Chord of expr list                    (* [(11,3)$4., (5,2)$4.]*)
     | System of expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
-    | Call of expr * expr                   (* foo a *)
+    | Call of string * fargs list           (* foo a *)
     | Let of dec list * expr                (* let x = 4 in x + 2 *)
 
 and dec =                                   (* Declarations *)
@@ -45,6 +45,13 @@ and pattern =                          (* Patterns *)
     | Patwild                               (* wildcard *)
     | Patcomma of pattern list              (* [pattern, pattern, pattern, ... ] or [] *)
     | Patcons of pattern * pattern          (* pattern : pattern *)
+
+and fargs =                                 (* Function Arguments *)
+    Argconst of int                         (* integer *)
+    | Argbool of bool                       (* boolean *)
+    | Argvar of string                      (* identifiers *)
+    | Argparens of expr                     (* parenthesized expressions *)
+
 
 type program = dec list                     (* A program is a list of declarations *)
 
@@ -77,7 +84,7 @@ let rec string_of_expr = function
   | List(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | Chord(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
   | System(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
-  | Call(exp1,exp2) -> string_of_expr exp1 ^ " " ^ string_of_expr exp2
+  | Call(fname,args) -> fname ^ " " ^ (String.concat " " (List.map string_of_args args))
   | Let(decl, exp) -> "let " ^ (String.concat " " (List.map string_of_dec decl)) ^ 
                       " in " ^ string_of_expr exp
 
@@ -104,6 +111,12 @@ and string_of_types  = function
     TInt -> "Int" | TBool -> "Bool" | TChord -> "Chord"
   | TNote -> "Note" | TBeat -> "Beat" | TSystem -> "System"
   | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^ v
+
+and string_of_args  = function
+    Argconst(l) -> string_of_int l
+  | Argbool(b) -> string_of_bool b
+  | Argvar(s) -> s
+  | Argparens(p) -> "(" ^ (string_of_expr p)  ^ ")"
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
