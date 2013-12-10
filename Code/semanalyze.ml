@@ -440,14 +440,13 @@ let rec not_list_of_unknowns = function
     | Sast.List(x) -> not_list_of_unknowns x
     | _ -> true
 
-let rec check_pat_types types info =
+let rec check_pat_types symtab types info =
     (* Check that function value has correct type *)
-    (* TODO: FIX THIS
-    if (List.hd (List.rev types)) <> (get_type info.s_value)
+    if ((List.hd (List.rev types)) <> (get_type symtab info.s_value))
     then raise (Type_mismatch ("Expression of function " ^ info.s_fname ^
-                    String.concat " " (List.map string_of_patterns info.s_args)))
+                    " " ^ String.concat " " (List.map string_of_patterns info.s_args)))
     (* Then make sure each pattern has correct type if not a var, and update the scope *)
-    else *)let exp_pattypes = (List.rev (List.tl (List.rev types))) in
+    else let exp_pattypes = (List.rev (List.tl (List.rev types))) in
          let act_pattypes = (List.map get_pat_type info.s_args) in
          if List.mem true (List.map2 (fun epat apat -> apat <> Sast.Unknown &&
                                                        not_list_of_unknowns apat && epat <> apat)
@@ -555,7 +554,7 @@ let rec walk_decl_second program = function
                 || (same_pats info search_decls)
             then raise (Multiple_identical_pattern_lists 
                         (String.concat " " (List.map string_of_patterns info.s_args)))
-            else let newscope = check_pat_types types info in
+            else let newscope = check_pat_types program.symtab types info in
                  let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
                                      s_args = info.s_args; s_value = info.s_value;
                                      scope = newscope;}) in
