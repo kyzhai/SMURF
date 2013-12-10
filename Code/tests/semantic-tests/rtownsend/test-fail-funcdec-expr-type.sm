@@ -1,0 +1,7 @@
+/* The type of the expression bound to a function declaration must match the last type
+	 in the function's type signature */
+
+f :: Int -> Int
+f n = False
+
+main = []

@@ -1,4 +1,12 @@
 Program: 
+	SVardef: 
+		ID: x  :: Int
+
+	5
+	SVardef: 
+		ID: m  :: Int
+
+	x + 2
 	SFuncdec: 
 		f x m :: Unknown = 3 + x / m
 	New Scope: 
@@ -8,6 +16,8 @@ Program:
 	
 	SMain: []
 Global Scope: 
+	ID: x  :: Int
+	ID: m  :: Int
 	ID: main  :: Unknown
 	ID: f x m :: Int -> Int -> Int
 	ID: print x :: a -> a
