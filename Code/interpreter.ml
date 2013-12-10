@@ -39,16 +39,18 @@ let rec update_env env name v =
 
 
 (* searching for the definition of a name, returns its value *)
-(* environment -> string -> value *)
+(* environment -> string -> value,environment' *)
 let rec resolve_name env name =
     match NameMap.mem name env.ids with
           true -> let id=(NameMap.find name env.ids) in 
-                    (match id.v_expr with
-                          Some expr -> let (v,env')=(eval env expr) in v
-                        | None -> id.v_value)
+            (match id.v_expr with
+                  Some expr -> let (v,env1)=(eval env expr) in 
+                    let env2 = update_env env1 name v in v,env2
+                | None -> id.v_value,env)
         | false -> match env.parent with
               None -> interp_error ("Can't find binding to " ^ name)
             | Some par -> resolve_name par name
+
 (* eval : env -> Sast.expression -> (value, env') *)
 (* evaluate the expression, return the result and the updated 
  * environment, the environment updated includes the 
@@ -58,10 +60,11 @@ let rec resolve_name env name =
 and eval env = function
       Sast.SLiteral(x) -> (VInt(x), env)
     | Sast.SBoolean(x) -> (VBool(x), env)
-    | Sast.SVariable(str) -> (resolve_name env str, env)
-    | Sast.SBeat(e, n) -> trace ("eval beat: ") 
+    | Sast.SVariable(str) -> 
+        let v,env' = resolve_name env str in v,env'
+    | Sast.SBeat(e, n) -> 
         (let (v,env') = eval env e in VBeat(v,n), env')
-    | Sast.SNote(e1, e2, e3) -> trace ("eval note: ") 
+    | Sast.SNote(e1, e2, e3) -> 
         (let (v1,env1) = eval env e1 in 
          let (v2,env2) = eval env1 e2 in 
          let (v3,env3) = eval env2 e3 in VNote(v1,v2,v3),env3)
@@ -98,50 +101,33 @@ and eval env = function
             | _ -> interp_error ("Unexpected operand for prefix op")
          )
     | Sast.SIf(e1, e2, e3) -> 
-        trace "eval if: " (match eval env e1 with
-            | VBool(true), env -> trace "true branch" eval env e2 
-            | VBool(false), env -> trace "false branch" eval env e3
+        (match eval env e1 with
+            | VBool(true), env -> eval env e2 
+            | VBool(false), env -> eval env e3
             | _ -> interp_error ("error in If expr"))
     | Sast.SList(el) -> (*updating evironment after eval every expression*)
-        trace "eval list: " 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VList(List.rev lst), env')
     | Sast.SChord(el) -> 
-        trace "eval Chord: " 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VChord(List.rev lst), env')
     | Sast.SSystem(el) -> 
-        trace "eval System: " 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VSystem(List.rev lst), env')
-    | Sast.SCall(e1, e2) -> trace "eval Call: Why the function call only takes one parementer?" (VUnknown, env)
+    | Sast.SCall(e1, e2) -> trace "TODO" (VUnknown, env)
     | Sast.SLet(s_prog,e) -> (* reutrn the original env *)
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
-
-        (*
-    | Sast.SLet(dl, e) -> 
-        let new_env = (List.fold_left 
-                (fun env' dec -> match dec with
-                      Vardef(str, e) -> let v, env = eval env e in 
-                      {parent=env'.parent; 
-                       ids=NameMap.add str {v_value=v;v_expr=None} env'.ids}
-                    | _ -> interp_error 
-                    ("Declaration in let binding must be a variable definition"))
-                {parent=Some env; ids=NameMap.empty} dl) in 
-            show_env new_env; 
-            let v, new_env = (eval new_env e) in
-                v, env (* reutrn the original env *)
-                *)
         
 
 (* exec_decl : env -> decl -> env' *)
 (* execute the top-level declaration, in the global enviroment, 
- * return the updated global environment *)
+ * return the updated global environment. Seems several decls needn't 
+ * be execed as we only evaluate the dependencies of main *)
 (* environment -> Sast.s_dec -> environment' *)
 and exec_decl env = function
     (*
@@ -154,24 +140,30 @@ and exec_decl env = function
                             let vfun = VFun(name, fsig, f_decl::def) in update_env env name vfun
                         | _ -> interp_error("Not defined as a signature"))
             | false -> interp_error ("Function definition without a signature"))
-    *)
     | Sast.SVardef(sid,se) -> 
         let v,env' = eval env se in
             update_env env' sid.name v
-    | Sast.SMain(e) -> trace "exec smain" 
-        (let v, env = eval env e in 
-            write_to_file "testout.csv" v; env)
-    | _ -> env
+    *)
+    | Sast.SMain(e) -> 
+        (let v, env' = eval env e in 
+            write_to_file "testout.csv" v; update_env env' "main" v)
+    | _ -> trace ("Unsupported!") env
 
 
-let solve_main symtab =
-    let env = (st_to_env None symtab) in
-    let v = resolve_name env "main"
-    in print_string (string_of_value v ^ "\n")
+(* The entry of evaluation of the program *)
+(* environment -> unit *)
+let exec_main symtab = 
+    let globalE=(st_to_env None symtab) in 
+    let main_entry = NameMap.find "main" globalE.ids in
+    let main_expr = (match main_entry.v_expr with 
+              None -> interp_error "main has no definition!"
+            | Some expr -> expr) in
+    let _ = exec_decl globalE (Sast.SMain(main_expr)) in 
+    print_string ("===== Program Successfully Finished =====\n")
 
 
 (* run : program -> () *)
-(* run the program *)
+(* run the program. original one, depreciated *)
 let run program s_prog = 
 
 let decls = program in 

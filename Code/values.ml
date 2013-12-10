@@ -73,6 +73,13 @@ let rec show_env env = match debug with
               ^ string_of_value v ^ "\n")) env.ids; show_env x)
     | false -> ()
 
+let rec string_of_env env = (match env.parent with
+      None -> "GlobalE: \n"  
+        ^ (NameMap.fold (fun key {v_value=v} str -> str ^ ("\t" ^ key ^ " -> " 
+          ^ string_of_value v ^ "\n")) env.ids "")
+    | Some par -> "LocalE: \n" 
+        ^ (NameMap.fold (fun key {v_value=v} str -> str ^ ("\t" ^ key ^ " -> " 
+          ^ string_of_value v ^ "\n")) env.ids "") ^ string_of_env par)
 
-    
+
 

@@ -37,7 +37,7 @@ let _ =
             ignore(let lexbuf = Lexing.from_channel stdin in 
             let program = Parser.program Scanner.token lexbuf in 
             let symtab = Semanalyze.second_pass program in 
-                (solve_main symtab))
+                (exec_main symtab))
         | _ -> ()
     (*
         | Interactive -> 

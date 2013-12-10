@@ -1,0 +1,11 @@
+a = if False then d else f
+
+d = 2
+
+f = 3
+
+c = [((a+d),2)$2.., (-1,2)$2..]
+
+cc = c
+
+main = c
