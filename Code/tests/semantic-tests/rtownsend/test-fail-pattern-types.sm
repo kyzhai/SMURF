@@ -1,0 +1,8 @@
+/* The types of the patterns for a function declaration must match with their corresponding
+	 types in the type signature for that function */
+
+f :: Int -> Int
+
+f True = 0
+
+main = []

@@ -451,8 +451,8 @@ let rec check_pat_types symtab types info =
          if List.mem true (List.map2 (fun epat apat -> apat <> Sast.Unknown &&
                                                        not_list_of_unknowns apat && epat <> apat)
                       exp_pattypes act_pattypes) then
-            raise (Type_mismatch (info.s_fname ^ 
-                    String.concat " " (List.map string_of_patterns info.s_args)))
+            raise (Type_mismatch ("Patterns don't match type signature for " ^ info.s_fname ^ 
+                    " " ^ String.concat " " (List.map string_of_patterns info.s_args)))
          else let pat_pairs = List.combine info.s_args exp_pattypes in
               let rec gen_scope = function
                   [] -> []
