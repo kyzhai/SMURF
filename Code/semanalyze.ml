@@ -456,12 +456,21 @@ let rec check_pat_types symtab types info =
          else let pat_pairs = List.combine info.s_args exp_pattypes in
               let rec gen_scope = function
                   [] -> []
-                 | (p, ty) :: rest when get_pat_type p = Sast.Unknown ->
-                          {name = string_of_patterns p; pats = []; v_type = [ty];
-                           v_expr = None} :: gen_scope rest
-                 | (p, ty) :: rest when not (not_list_of_unknowns (get_pat_type p)) ->
-                                (*TODO: NEED TO ASSING TYPES TO EACH ELEMENT OF LIST *) gen_scope rest
-                 | _ :: rest -> gen_scope rest in
+                 | (p, ty) :: rest ->
+                    (match p, ty with
+                     Patvar(s), _ -> {name = s; pats = []; v_type = [ty];
+                                     v_expr = None} :: gen_scope rest
+                    | Patcomma(l), Sast.List(lty) -> 
+                        let tups = List.map (fun v -> (v, lty)) l in
+                        (gen_scope tups) @ gen_scope rest
+                    | Patcons(l1,l2), Sast.List(lty) ->
+                        (gen_scope [(l1, lty)]) @ (match l2 with
+                                                    | Patvar(s) -> [{name = s; pats = [];
+                                                                    v_type = [ty];
+                                                                    v_expr = None}]
+                                                    | _ -> (gen_scope [(l2, ty)])) 
+                        @ gen_scope rest
+                    | _ -> gen_scope rest) in
          info.scope.identifiers <- gen_scope pat_pairs; info.scope
 
 (* First pass walk_decl -> Try to construct a symbol table *)

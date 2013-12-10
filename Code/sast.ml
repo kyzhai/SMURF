@@ -129,8 +129,8 @@ and string_of_s_ids i =
     (List.map string_of_s_type i.v_type) ^ "\n" 
 
 and string_of_s_func_decl f = 
-        f.s_fname ^ " " ^ String.concat " " 
-        (List.map Ast.string_of_patterns f.s_args) ^ " :: " ^ 
+        f.s_fname ^ " (" ^ String.concat ") (" 
+        (List.map Ast.string_of_patterns f.s_args) ^ ") :: " ^ 
         String.concat " -> " (List.map string_of_s_type f.type_sig) ^ " = " 
         ^ string_of_sexpr f.s_value ^ "\n" ^ string_of_symbol_table f.scope
 
