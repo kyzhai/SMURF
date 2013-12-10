@@ -1,4 +1,0 @@
-10c10
-< 	ID: print x :: a -> a
----
-> 	ID: print  :: Unknown
