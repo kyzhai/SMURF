@@ -1,9 +1,0 @@
-18d17
-< 	SMain: []
-24,26c23,24
-< 	ID: main  :: Unknown
-< 	ID: print x :: a -> a
-< 	ID: random  :: Int
----
-> 	ID: print :: Unknown
-> 	ID: random :: Unknown

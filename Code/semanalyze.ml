@@ -536,7 +536,7 @@ let rec walk_decl_second program = function
             let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
                                let set_type = get_typesig s_id.name program.symtab.identifiers in
                                if diff_types set_type texpr then
-                                raise (Type_mismatch s_id.name)
+                                    raise (Type_mismatch s_id.name)
                                else set_type
                            else texpr in 
             let newvar = SVardef({name = s_id.name; pats = []; v_type = new_type; 

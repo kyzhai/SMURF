@@ -37,7 +37,7 @@ let _ =
             ignore(let lexbuf = Lexing.from_channel stdin in 
             let program = Parser.program Scanner.token lexbuf in 
             let s_prog = Semanalyze.first_pass program in 
-                trace "calling run" (run program s_prog))
+                (run program s_prog))
         | Interactive -> 
             ignore(
                 let initalE = {parent=None; ids=NameMap.empty} in
