@@ -107,15 +107,16 @@ let replace_vardef program var oldvar = match var with
 
 (* Update type and scope of function declaration in our symbol table and our list of declarations *)
 let replace_funcdec program func oldfunc = match func with
-    | _ -> program
-(*
     | SFuncdec(info) -> 
         let newdecls = List.filter (fun dec -> dec <> oldfunc) program.decls in
-        let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
-        let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
+        let newsym = List.filter (fun v -> v.name <> info.s_fname || v.pats <> info.s_args) 
+                     program.symtab.identifiers in
+        let newentry = {name = info.s_fname; v_type = info.type_sig; 
+                        pats = info.s_args; v_expr = Some(info.s_value)} in
         program.symtab.identifiers <- newentry :: newsym;
         program.decls <- (func :: newdecls); program
-*)
+    | _ -> program
+
 (* Start with an empty symbol table *)
 let print_var = { name="print"; pats = [Patvar("x")]; v_type = [Poly("a"); Poly("a")]; v_expr = None}
 let random_var = { name = "random"; pats = [];  v_type = [Int]; v_expr = None }
@@ -482,7 +483,8 @@ let rec walk_decl prog = function
                     then raise (Multiple_type_sigs id)
                 else prog.symtab.identifiers <- mod_var entry prog.symtab; prog
     | Ast.Vardef(id, expr) -> 
-                let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(to_sexpr prog.symtab expr)} in
+                let var = {name=id; pats = []; v_type = [Unknown]; 
+                          v_expr = Some(to_sexpr prog.symtab expr)} in
                 if(exists_dec id "var" prog.decls) 
                     then raise (Multiple_declarations id)
                 else prog.symtab.identifiers <- mod_var var prog.symtab;
