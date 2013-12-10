@@ -36,8 +36,10 @@ let _ =
           Interpreter -> 
             ignore(let lexbuf = Lexing.from_channel stdin in 
             let program = Parser.program Scanner.token lexbuf in 
-            let s_prog = Semanalyze.first_pass program in 
-                (run program s_prog))
+            let symtab = Semanalyze.second_pass program in 
+                (solve_main symtab))
+        | _ -> ()
+    (*
         | Interactive -> 
             ignore(
                 let initalE = {parent=None; ids=NameMap.empty} in
@@ -68,4 +70,4 @@ let _ =
                 done
                 with End_of_file -> print_endline "\nGood bye!"
             )(* End of ignore *)
-
+*)
