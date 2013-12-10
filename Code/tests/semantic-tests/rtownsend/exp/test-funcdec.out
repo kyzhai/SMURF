@@ -8,7 +8,7 @@ Program:
 
 	x + 2
 	SFuncdec: 
-		f x m :: Unknown = 3 + x / m
+		f (x) (m) :: Unknown = 3 + x / m
 	New Scope: 
 		ID: x  :: Int
 		ID: m  :: Int
