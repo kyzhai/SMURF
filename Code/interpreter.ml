@@ -8,6 +8,10 @@ open Printf
 open Values
 open Output
     
+let r_max = 1000000
+
+let bytecode_name = "testout.csv"
+
 (* convernt the symbol table defined in Sast to environment defined in Values 
  * and set the parent of the new environment to the one passed to it 
  *)
@@ -122,6 +126,8 @@ and eval env = function
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
+    | Sast.SRandom -> (VInt(Random.int r_max), env)
+    | Sast.SPrint(e1) -> (*print ;*) eval env e1 
         
 
 (* exec_decl : env -> decl -> env' *)
@@ -146,7 +152,7 @@ and exec_decl env = function
     *)
     | Sast.SMain(e) -> 
         (let v, env' = eval env e in 
-            write_to_file "testout.csv" v; update_env env' "main" v)
+            write_to_file bytecode_name v; update_env env' "main" v)
     | _ -> trace ("Unsupported!") env
 
 
@@ -159,7 +165,9 @@ let exec_main symtab =
               None -> interp_error "main has no definition!"
             | Some expr -> expr) in
     let _ = exec_decl globalE (Sast.SMain(main_expr)) in 
-    print_string ("===== Program Successfully Finished =====\n")
+    print_string ("===== Program Successfully Finished =====\n");
+    print_string ("===== Result Writen to " ^ bytecode_name ^ " =====\n")
+
 
 
 (* run : program -> () *)

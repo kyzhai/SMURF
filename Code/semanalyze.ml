@@ -118,9 +118,23 @@ let replace_funcdec program func oldfunc = match func with
     | _ -> program
 
 (* Start with an empty symbol table *)
-let print_var = { name="print"; pats = [Patvar("x")]; v_type = [Poly("a"); Poly("a")]; v_expr = None}
-let random_var = { name = "random"; pats = [];  v_type = [Int]; v_expr = None }
-let global_env = { identifiers = [print_var; random_var]; parent = None } 
+let print_var = { name="print"; 
+                  pats = [Patvar("x")]; 
+                  v_type = [Poly("a"); Poly("a")]; 
+                  v_expr = Some(SPrint(SVariable("x")))}
+let random_var = { name = "random"; 
+                   pats = [];  
+                   v_type = [Int]; 
+                   v_expr = Some(SRandom) }
+let head_var = { name = "head"; 
+                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
+                 v_type = [Sast.List(Poly("a"));Poly("a")]; 
+                 v_expr = Some(SVariable("h"))}
+let tail_var = { name = "tail"; 
+                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
+                 v_type = [Sast.List(Poly("a"));Sast.List(Poly("a"))]; 
+                 v_expr = Some(SVariable("t"))}
+let global_env = { identifiers = [print_var; random_var; head_var; tail_var]; parent = None } 
 
 (* Check if a type is just a bunch of nested empty lists *)
 let rec only_empties = function
