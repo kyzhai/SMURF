@@ -14,7 +14,7 @@ open Output
 (* Values.environment -> Sast.symbol_table -> Values.environment' *)
 let st_to_env par st = 
     let newmap = List.fold_left (fun mp {name=nm; v_expr=ve} -> 
-            NameMap.add nm {v_expr=ve; v_value=VUnknown} mp) 
+            NameMap.add nm {nm_expr=ve; nm_value=VUnknown} mp) 
         NameMap.empty st.identifiers 
     in {parent=par; ids=newmap}
 
@@ -30,10 +30,10 @@ let st_to_env par st =
 let rec update_env env name v = 
     match NameMap.mem name env.ids with
           true -> let newE = {parent=env.parent; 
-              ids=NameMap.add name {v_value=v;v_expr=None} env.ids} in show_env newE; newE
+              ids=NameMap.add name {nm_value=v;nm_expr=None} env.ids} in show_env newE; newE
         | false -> match env.parent with
               None -> let newE = {parent=env.parent; 
-                  ids=NameMap.add name {v_value=v;v_expr=None} env.ids} in show_env newE; newE
+                  ids=NameMap.add name {nm_value=v;nm_expr=None} env.ids} in show_env newE; newE
             | Some par -> let newE  = {parent=Some (update_env par name v); 
                 ids=env.ids} in show_env newE; newE
 
@@ -43,10 +43,10 @@ let rec update_env env name v =
 let rec resolve_name env name =
     match NameMap.mem name env.ids with
           true -> let id=(NameMap.find name env.ids) in 
-            (match id.v_expr with
+            (match id.nm_expr with
                   Some expr -> let (v,env1)=(eval env expr) in 
                     let env2 = update_env env1 name v in v,env2
-                | None -> id.v_value,env)
+                | None -> id.nm_value,env)
         | false -> match env.parent with
               None -> interp_error ("Can't find binding to " ^ name)
             | Some par -> resolve_name par name
@@ -136,7 +136,7 @@ and exec_decl env = function
     | Sast.SFuncdec(f_decl) -> (* fun decl will be added to current *)
         (match NameMap.mem f_decl.fname env.ids with
               true -> (match (NameMap.find f_decl.fname env.ids) with 
-                        | {v_value=VFun(name,fsig,def)} -> 
+                        | {nm_value=VFun(name,fsig,def)} -> 
                             let vfun = VFun(name, fsig, f_decl::def) in update_env env name vfun
                         | _ -> interp_error("Not defined as a signature"))
             | false -> interp_error ("Function definition without a signature"))
@@ -155,7 +155,7 @@ and exec_decl env = function
 let exec_main symtab = 
     let globalE=(st_to_env None symtab) in 
     let main_entry = NameMap.find "main" globalE.ids in
-    let main_expr = (match main_entry.v_expr with 
+    let main_expr = (match main_entry.nm_expr with 
               None -> interp_error "main has no definition!"
             | Some expr -> expr) in
     let _ = exec_decl globalE (Sast.SMain(main_expr)) in 
@@ -169,7 +169,7 @@ let run program s_prog =
 let decls = program in 
 let globalE = {parent = None; 
         ids = List.fold_left (fun mp lst -> 
-        NameMap.add lst.name {v_value=VUnknown;v_expr=None} mp) 
+        NameMap.add lst.name {nm_value=VUnknown;nm_expr=None} mp) 
         NameMap.empty s_prog.symtab.identifiers}
 in let _ = show_env globalE in
 

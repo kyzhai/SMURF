@@ -28,8 +28,8 @@ type value =
     | VUnknown
 
 and nm_entry = {
-    v_expr : s_expr option;
-    v_value : value;
+    nm_expr : s_expr option;
+    nm_value : value;
 }
 
 type enviroment = {
@@ -66,19 +66,19 @@ let rec show_env env = match debug with
       true -> 
         (match env.parent with
               None -> printf "GlobalE: \n"; NameMap.iter 
-              (fun key {v_value=v} -> print_string ("\t" ^ key ^ " -> " 
+              (fun key {nm_value=v} -> print_string ("\t" ^ key ^ " -> " 
               ^ string_of_value v ^ "\n")) env.ids
             | Some x -> printf "LocalE: \n"; NameMap.iter 
-              (fun key {v_value=v} -> print_string ("\t" ^ key ^ " -> " 
+              (fun key {nm_value=v} -> print_string ("\t" ^ key ^ " -> " 
               ^ string_of_value v ^ "\n")) env.ids; show_env x)
     | false -> ()
 
 let rec string_of_env env = (match env.parent with
       None -> "GlobalE: \n"  
-        ^ (NameMap.fold (fun key {v_value=v} str -> str ^ ("\t" ^ key ^ " -> " 
+        ^ (NameMap.fold (fun key {nm_value=v} str -> str ^ ("\t" ^ key ^ " -> " 
           ^ string_of_value v ^ "\n")) env.ids "")
     | Some par -> "LocalE: \n" 
-        ^ (NameMap.fold (fun key {v_value=v} str -> str ^ ("\t" ^ key ^ " -> " 
+        ^ (NameMap.fold (fun key {nm_value=v} str -> str ^ ("\t" ^ key ^ " -> " 
           ^ string_of_value v ^ "\n")) env.ids "") ^ string_of_env par)
 
 
