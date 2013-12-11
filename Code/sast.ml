@@ -40,6 +40,8 @@ and s_expr =
     | SSystem of s_expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
     | SCall of string * s_arg list             (* foo a b *)
     | SLet of s_program * s_expr               (* let x = 4 in x + 2 *)
+    | SRandom
+    | SPrint of s_expr
 
 and s_arg =
     SArgconst of int                           (* integer *)
@@ -109,6 +111,8 @@ let rec string_of_sexpr = function
   | SCall(fname,args) -> fname ^ " " ^ (String.concat " " (List.map string_of_sfargs args))
   | SLet(decs, exp) -> "let " ^ (String.concat " " (List.map string_of_s_dec decs.decls)) ^ 
                       " in " ^ string_of_sexpr exp
+  | SRandom -> "random"
+  | SPrint(e) -> "print" ^ string_of_sexpr e
 
 and string_of_sfargs = function
     SArgconst(l) -> string_of_int l

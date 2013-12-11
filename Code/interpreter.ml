@@ -8,6 +8,8 @@ open Printf
 open Values
 open Output
     
+let r_max = 1000000
+
 (* convernt the symbol table defined in Sast to environment defined in Values 
  * and set the parent of the new environment to the one passed to it 
  *)
@@ -122,6 +124,8 @@ and eval env = function
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
+    | Sast.SRandom -> (VInt(Random.int r_max), env)
+    | Sast.SPrint(e1) -> (*print ;*) eval env e1 
         
 
 (* exec_decl : env -> decl -> env' *)
