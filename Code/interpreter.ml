@@ -10,6 +10,8 @@ open Output
     
 let r_max = 1000000
 
+let bytecode_name = "testout.csv"
+
 (* convernt the symbol table defined in Sast to environment defined in Values 
  * and set the parent of the new environment to the one passed to it 
  *)
@@ -150,7 +152,7 @@ and exec_decl env = function
     *)
     | Sast.SMain(e) -> 
         (let v, env' = eval env e in 
-            write_to_file "testout.csv" v; update_env env' "main" v)
+            write_to_file bytecode_name v; update_env env' "main" v)
     | _ -> trace ("Unsupported!") env
 
 
@@ -163,7 +165,9 @@ let exec_main symtab =
               None -> interp_error "main has no definition!"
             | Some expr -> expr) in
     let _ = exec_decl globalE (Sast.SMain(main_expr)) in 
-    print_string ("===== Program Successfully Finished =====\n")
+    print_string ("===== Program Successfully Finished =====\n");
+    print_string ("===== Result Writen to " ^ bytecode_name ^ " =====\n")
+
 
 
 (* run : program -> () *)
