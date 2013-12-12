@@ -49,6 +49,7 @@ Program:
 	4. $/ 2.
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: a  :: Beat
 	ID: b  :: Beat
 	ID: c  :: Beat
@@ -61,7 +62,6 @@ Global Scope:
 	ID: j  :: Beat
 	ID: k  :: Beat
 	ID: l  :: Beat
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

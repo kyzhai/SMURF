@@ -117,6 +117,11 @@ let replace_funcdec program func oldfunc = match func with
         program.decls <- (func :: newdecls); program
     | _ -> program
 
+let replace_main program new_main = 
+	let newsym = List.filter (fun v -> v.name <> new_main.name) program.symtab.identifiers in
+	program.symtab.identifiers <- new_main :: newsym;
+	program
+
 (* Start with an empty symbol table *)
 let print_var = { name="print"; 
                   pats = [Patvar("x")]; 
@@ -593,7 +598,9 @@ let rec walk_decl_second program = function
              replace_funcdec program newfunc oldfunc
   | SMain(expr) -> 
       let e_type = get_type program expr in 
-        (match e_type with
+				let new_main = {name = "main"; pats = []; v_type = [e_type]; v_expr = Some(expr)} in
+				let program = replace_main program new_main in 
+				(match e_type with
        Sast.Empty -> program
       | Sast.Note -> program
       | Sast.Chord -> program

@@ -12,9 +12,9 @@ Program:
 	
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: f m :: Int -> Int
 	ID: f 0 :: Int -> Int
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

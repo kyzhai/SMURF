@@ -1,7 +1,7 @@
 Program: 
 	SMain:  (1, 1)$2
 Global Scope: 
-	ID: main  :: Unknown
+	ID: main  :: Note
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

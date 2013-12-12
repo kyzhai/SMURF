@@ -57,6 +57,7 @@ Program:
 	4 == 3
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: a  :: Int
 	ID: b  :: Int
 	ID: c  :: Int
@@ -71,7 +72,6 @@ Global Scope:
 	ID: l  :: Beat
 	ID: m  :: Int
 	ID: n  :: Int
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

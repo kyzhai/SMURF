@@ -1,7 +1,7 @@
 Program: 
 	SMain: []
 Global Scope: 
-	ID: main  :: Unknown
+	ID: main  :: []
 	ID: i  :: a -> a -> b
 	ID: h  :: [Int] -> [[Int]] -> Bool
 	ID: g  :: [Int]

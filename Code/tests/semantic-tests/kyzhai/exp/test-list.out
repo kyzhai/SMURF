@@ -45,6 +45,7 @@ Program:
 	[ (1, 2)$2..] : []
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: a  :: []
 	ID: b  :: [[]]
 	ID: c  :: []
@@ -56,7 +57,6 @@ Global Scope:
 	ID: j  :: [[Int]]
 	ID: aa  :: Chord
 	ID: bb  :: System
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

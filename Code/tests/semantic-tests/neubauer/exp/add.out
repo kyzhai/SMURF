@@ -21,12 +21,12 @@ Program:
 	4 % 4
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: a  :: Int
 	ID: b  :: Int
 	ID: c  :: Int
 	ID: d  :: Int
 	ID: e  :: Int
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

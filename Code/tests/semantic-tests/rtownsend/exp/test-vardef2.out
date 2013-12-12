@@ -5,8 +5,8 @@ Program:
 	3
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: a  :: Int
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

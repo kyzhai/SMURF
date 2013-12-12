@@ -25,13 +25,13 @@ Program:
 	true || false
 	SMain: []
 Global Scope: 
+	ID: main  :: []
 	ID: a  :: Bool
 	ID: b  :: Bool
 	ID: c  :: Bool
 	ID: d  :: Bool
 	ID: e  :: Bool
 	ID: f  :: Bool
-	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a
