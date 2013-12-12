@@ -1,0 +1,21 @@
+Program: 
+	SFuncdec: 
+		f (x) :: Int -> Int = x
+	New Scope: 
+		ID: x  :: Int
+
+	
+	SVardef: 
+		ID: y  :: Still Unknown
+
+	f 1
+	SMain: []
+Global Scope: 
+	ID: main  :: []
+	ID: f x :: Int -> Int
+	ID: y  :: Still Unknown
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+

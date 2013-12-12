@@ -1,0 +1,4 @@
+f :: Int-> Int
+f x = x
+y = f 1
+main = []

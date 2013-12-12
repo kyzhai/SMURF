@@ -15,7 +15,8 @@ exception Main_wrong_scope
 exception Main_type_mismatch of string
 exception Main_missing 
 exception Function_used_as_variable of string
-exception Missing_variable_definiteion of string
+exception Missing_variable_definition of string
+exception Function_not_defined of string
 
 exception Type_error of string
 let type_error msg = raise (Type_error msg)
