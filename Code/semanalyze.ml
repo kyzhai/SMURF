@@ -586,7 +586,7 @@ let rec walk_decl_second program = function
                 || (same_pats info search_decls)
             then raise (Multiple_identical_pattern_lists 
                         (String.concat " " (List.map string_of_patterns info.s_args)))
-            else let newscope = check_pat_types program.symtab types info in
+            else let newscope = check_pat_types program types info in
                  let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
                                      s_args = info.s_args; s_value = info.s_value;
                                      scope = newscope;}) in
