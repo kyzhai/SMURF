@@ -107,6 +107,12 @@ public class CSV2MIDI{
 
 		int channel=0,note=0,tick=0,velocity=90,column=0;
 
+        int previous_note[] = new int[nChannels];
+        int previous_vol[] = new int[nChannels];
+        for(int i=0; i<nChannels; ++i){
+            previous_note[i] = -1;
+            previous_vol[i] = -1;
+        }
 		//go through each of the following lines and add notes
         for(;currentCSVPos<csvFile.data.size();){							//loop through rest of CSV file
             try{																																			  //check that the current CSV position is an integer
@@ -118,7 +124,18 @@ public class CSV2MIDI{
                 currentCSVPos++;
                 channel=column/3;
                 column+=2;
-                track[channel].add(createNoteOnEvent(note,tick,channel,velocity));				//add note to this track
+
+                //System.out.println("*** trace" + channel + " size: " + track[channel].size());
+
+                if(previous_note[channel] == -1)
+                    track[channel].add(createNoteOnEvent(note,tick,channel,velocity));	// turn on the current note			
+                else if(note != previous_note[channel] || velocity != previous_vol[channel]){
+                    track[channel].add(createNoteOffEvent(previous_note[channel],tick,channel)); // turn off the previous note
+                    track[channel].add(createNoteOnEvent(note,tick,channel,velocity));	// turn on the current note			
+                }
+
+                previous_note[channel] = note;
+                previous_vol[channel] = velocity;
                 //				track[channel].add(createNoteOffEvent(note,tick+5,channel));
             }catch(NumberFormatException e){																						//current CSV position not an integer
                 if(csvFile.data.elementAt(currentCSVPos).toString().compareTo("\n")==0){  //if it's a new line
