@@ -1,0 +1,3 @@
+15a16,17
+> 	ID: head h : t :: [a] -> a
+> 	ID: tail h : t :: [a] -> [a]
