@@ -107,19 +107,34 @@ let replace_vardef program var oldvar = match var with
 
 (* Update type and scope of function declaration in our symbol table and our list of declarations *)
 let replace_funcdec program func oldfunc = match func with
-    | _ -> program
-(*
     | SFuncdec(info) -> 
         let newdecls = List.filter (fun dec -> dec <> oldfunc) program.decls in
-        let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
-        let newentry = {name = ids.name; v_type = ids.v_type; v_expr = ids.v_expr} in
+        let newsym = List.filter (fun v -> v.name <> info.s_fname || v.pats <> info.s_args) 
+                     program.symtab.identifiers in
+        let newentry = {name = info.s_fname; v_type = info.type_sig; 
+                        pats = info.s_args; v_expr = Some(info.s_value)} in
         program.symtab.identifiers <- newentry :: newsym;
         program.decls <- (func :: newdecls); program
-*)
+    | _ -> program
+
 (* Start with an empty symbol table *)
-let print_var = { name="print"; pats = [Patvar("x")]; v_type = [Poly("a"); Poly("a")]; v_expr = None}
-let random_var = { name = "random"; pats = [];  v_type = [Int]; v_expr = None }
-let global_env = { identifiers = [print_var; random_var]; parent = None } 
+let print_var = { name="print"; 
+                  pats = [Patvar("x")]; 
+                  v_type = [Poly("a"); Poly("a")]; 
+                  v_expr = Some(SPrint(SVariable("x")))}
+let random_var = { name = "random"; 
+                   pats = [];  
+                   v_type = [Int]; 
+                   v_expr = Some(SRandom) }
+let head_var = { name = "head"; 
+                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
+                 v_type = [Sast.List(Poly("a"));Poly("a")]; 
+                 v_expr = Some(SVariable("h"))}
+let tail_var = { name = "tail"; 
+                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
+                 v_type = [Sast.List(Poly("a"));Sast.List(Poly("a"))]; 
+                 v_expr = Some(SVariable("t"))}
+let global_env = { identifiers = [print_var; random_var; head_var; tail_var]; parent = None } 
 
 (* Check if a type is just a bunch of nested empty lists *)
 let rec only_empties = function
@@ -463,12 +478,21 @@ let rec check_pat_types symtab types info =
          else let pat_pairs = List.combine info.s_args exp_pattypes in
               let rec gen_scope = function
                   [] -> []
-                 | (p, ty) :: rest when get_pat_type p = Sast.Unknown ->
-                          {name = string_of_patterns p; pats = []; v_type = [ty];
-                           v_expr = None} :: gen_scope rest
-                 | (p, ty) :: rest when not (not_list_of_unknowns (get_pat_type p)) ->
-                                (*TODO: NEED TO ASSING TYPES TO EACH ELEMENT OF LIST *) gen_scope rest
-                 | _ :: rest -> gen_scope rest in
+                 | (p, ty) :: rest ->
+                    (match p, ty with
+                     Patvar(s), _ -> {name = s; pats = []; v_type = [ty];
+                                     v_expr = None} :: gen_scope rest
+                    | Patcomma(l), Sast.List(lty) -> 
+                        let tups = List.map (fun v -> (v, lty)) l in
+                        (gen_scope tups) @ gen_scope rest
+                    | Patcons(l1,l2), Sast.List(lty) ->
+                        (gen_scope [(l1, lty)]) @ (match l2 with
+                                                    | Patvar(s) -> [{name = s; pats = [];
+                                                                    v_type = [ty];
+                                                                    v_expr = None}]
+                                                    | _ -> (gen_scope [(l2, ty)])) 
+                        @ gen_scope rest
+                    | _ -> gen_scope rest) in
          info.scope.identifiers <- gen_scope pat_pairs; info.scope
 
 (* First pass walk_decl -> Try to construct a symbol table *)
@@ -480,7 +504,8 @@ let rec walk_decl prog = function
                     then raise (Multiple_type_sigs id)
                 else prog.symtab.identifiers <- mod_var entry prog.symtab; prog
     | Ast.Vardef(id, expr) -> 
-                let var = {name=id; pats = []; v_type = [Unknown]; v_expr = Some(to_sexpr prog.symtab expr)} in
+                let var = {name=id; pats = []; v_type = [Unknown]; 
+                          v_expr = Some(to_sexpr prog.symtab expr)} in
                 if(exists_dec id "var" prog.decls) 
                     then raise (Multiple_declarations id)
                 else prog.symtab.identifiers <- mod_var var prog.symtab;

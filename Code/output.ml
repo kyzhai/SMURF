@@ -41,12 +41,17 @@ let write_head oc value =
 (* get the number of ticks of a beat *)
 (* VBeat -> Int *)
 let ticks_of_beat = function
-      VBeat(VInt(i1),i2) -> printf ("tob: %d %d\n") i1 i2; (int_of_float 
+      VBeat(VInt(i1),i2) -> 
+      (int_of_float 
           ((16.0/.(float_of_int i1)) *.
               (1.0 +. ((match i2 with 
-                 1 -> 8.0  | 2 -> 12.0 
-               | 3 -> 16.0 | 4 -> 18.0 
-               | 5 -> 19.0 | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))/.16.0))))
+                 0 -> 0.0
+               | 1 -> 8.0  
+               | 2 -> 12.0 
+               | 3 -> 14.0 
+               | 4 -> 15.0 
+               | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
+                       /.16.0))))
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
@@ -68,14 +73,14 @@ let rec write_to_array value arr ix iy tic =
     | VNote(VInt(p),VInt(r),bt) -> let nt = ticks_of_beat bt in 
         let note = (match p with 
               -1 -> -1
-            | _ -> p+12*(r+3)) in printf ("nt: %d, note: %d\n") nt note; (
+            | _ -> p+12*(r+3)) in (
         for i=0 to (nt-1) do
             arr.(ix+i).(iy) <- tic+i;                   (* tick *)
             arr.(ix+i).(iy+1) <- note;                  (* note *)
             arr.(ix+i).(iy+2) <- default_velocity;      (* velocity *)
             done; ix+nt,iy,tic+nt)
     (* All notes in a chord should fills same set of ticks *)
-    | VChord((VNote(_,_,bt)::xs) as nlst) -> printf ("vchord: \n"); 
+    | VChord((VNote(_,_,bt)::xs) as nlst) -> 
         (let ntks = ticks_of_beat bt in
          let resx, resy, restic = 
          (List.fold_left (fun (x,y,ntic) note -> 
@@ -104,6 +109,7 @@ let write_to_file filename value =
           0 -> close_out oc; output_error ("Empty list")
         | _ -> (
     let dimx = ticks_of_output value in
+    print_string ("Total number of beat: " ^ (string_of_int dimx) ^ "\n");
     let dimy = number_of_track * 3 in
     let resArr = (Array.make_matrix (dimx) (dimy) (-1)) in 
     let _ = (write_to_array value resArr 0 0 0) in 
@@ -113,11 +119,12 @@ let write_to_file filename value =
             if resArr.(i).(3*j+1) <> (-1) then
                 ignore(fprintf oc "%d,%d,%d," resArr.(i).(3*j) resArr.(i).(3*j+1) resArr.(i).(3*j+2))
             else
-                ()
+                ignore(fprintf oc ",,,")
         done;
         ignore(fprintf oc "\n")
     done) in ()
     ; close_out oc
     )
+
 
 

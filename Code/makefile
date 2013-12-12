@@ -18,9 +18,6 @@ OCAMLBUILD = ocamlbuild
 all: 
 	$(OCAMLBUILD) test.byte smurf.byte toplevel.byte
 
-debug:
-	$(OCAMLBUILD) -cflag -g test.byte smurf.byte toplevel.byte
-
 midi:
 	java -jar CSV2MIDI.jar testout.csv testout.midi
 
