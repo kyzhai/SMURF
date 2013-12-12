@@ -29,7 +29,7 @@ let write_head oc value =
     let () = fprintf oc "Time Resolution (pulses per quarter note),%d,\n" resolution in 
     let () = Random.init 0 in
     let () = for i=1 to number_of_track 
-        do fprintf oc "track %d,%d," i (Random.int 128) 
+        do fprintf oc "track %d,%d," i 48 
         done in
     let () = fprintf oc "\n" in
     let () = for i=1 to number_of_track 
@@ -42,6 +42,7 @@ let write_head oc value =
 (* VBeat -> Int *)
 let ticks_of_beat = function
       VBeat(VInt(i1),i2) -> 
+(      print_string("Beat has components " ^ (string_of_int i1) ^ " and " ^ (string_of_int i2) ^ "\n"));
       (int_of_float 
           ((16.0/.(float_of_int i1)) +.
               ((match i2 with 
@@ -51,14 +52,15 @@ let ticks_of_beat = function
                | 3 -> (2.0/.(float_of_int i1))
                | 4 -> (float_of_int i1) 
                | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
-                       /.16.0)))
+                       )))
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
 (* value -> Int *)
 let rec ticks_of_output value = 
     match value with
-      VNote(pc,reg,bt) -> ticks_of_beat bt
+      VNote(pc,reg,bt) -> (print_string ("Calculating ticks gives us a total of " ^ (string_of_int (ticks_of_beat bt)) ^ "\n")); 
+                          ticks_of_beat bt
     | VChord(nlst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 nlst
     | VSystem(slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst 
     | VList(lst) -> List.fold_left (fun m sys -> let tick = ticks_of_output sys in 
