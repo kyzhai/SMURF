@@ -42,7 +42,6 @@ let write_head oc value =
 (* VBeat -> Int *)
 let ticks_of_beat = function
       VBeat(VInt(i1),i2) -> 
-(      print_string("Beat has components " ^ (string_of_int i1) ^ " and " ^ (string_of_int i2) ^ "\n"));
       (int_of_float 
           ((16.0/.(float_of_int i1)) +.
               ((match i2 with 
@@ -59,8 +58,7 @@ let ticks_of_beat = function
 (* value -> Int *)
 let rec ticks_of_output value = 
     match value with
-      VNote(pc,reg,bt) -> (print_string ("Calculating ticks gives us a total of " ^ (string_of_int (ticks_of_beat bt)) ^ "\n")); 
-                          ticks_of_beat bt
+      VNote(pc,reg,bt) -> ticks_of_beat bt
     | VChord(nlst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 nlst
     | VSystem(slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst 
     | VList(lst) -> List.fold_left (fun m sys -> let tick = ticks_of_output sys in 
@@ -113,7 +111,6 @@ let write_to_file filename value =
           0 -> close_out oc; output_error ("Empty list")
         | _ -> (
     let dimx = ticks_of_output value in
-    print_string ("Total number of beat: " ^ (string_of_int dimx) ^ "\n");
     let dimy = number_of_track * 3 in
     let resArr = (Array.make_matrix (dimx) (dimy) (-1)) in 
     let _ = (write_to_array value resArr 0 0 0) in 
