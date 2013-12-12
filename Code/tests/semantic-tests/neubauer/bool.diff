@@ -1,3 +1,0 @@
-36a37,38
-> 	ID: head h : t :: [a] -> a
-> 	ID: tail h : t :: [a] -> [a]

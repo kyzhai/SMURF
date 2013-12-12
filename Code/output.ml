@@ -29,7 +29,7 @@ let write_head oc value =
     let () = fprintf oc "Time Resolution (pulses per quarter note),%d,\n" resolution in 
     let () = Random.init 0 in
     let () = for i=1 to number_of_track 
-        do fprintf oc "track %d,%d," i (Random.int 128) 
+        do fprintf oc "track %d,%d," i 48 
         done in
     let () = fprintf oc "\n" in
     let () = for i=1 to number_of_track 
@@ -51,7 +51,7 @@ let ticks_of_beat = function
                | 3 -> (2.0/.(float_of_int i1))
                | 4 -> (float_of_int i1) 
                | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
-                       /.16.0)))
+                       )))
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
@@ -111,7 +111,6 @@ let write_to_file filename value =
           0 -> close_out oc; output_error ("Empty list")
         | _ -> (
     let dimx = ticks_of_output value in
-    print_string ("Total number of beat: " ^ (string_of_int dimx) ^ "\n");
     let dimy = number_of_track * 3 in
     let resArr = (Array.make_matrix (dimx) (dimy) (-1)) in 
     let _ = (write_to_array value resArr 0 0 0) in 

@@ -11,13 +11,13 @@ open Values
 let lexer_from_channel fn ch =
    let lex = Lexing.from_channel ch in
    let pos = lex.lex_curr_p in
-     lex.lex_curr_p <- { pos with pos_fname = fn; pos_lnum = 1; } ;
+     lex.lex_curr_p <- { pos with pos_fname = fn; pos_lnum = 1; };
      lex
 
 let lexer_from_string str =
   let lex = Lexing.from_string str in
   let pos = lex.lex_curr_p in
-    lex.lex_curr_p <- { pos with pos_fname = ""; pos_lnum = 1; } ;
+    lex.lex_curr_p <- { pos with pos_fname = ""; pos_lnum = 1; };
     lex
 
 exception Fatal_error of string
