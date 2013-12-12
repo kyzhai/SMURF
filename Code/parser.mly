@@ -133,7 +133,9 @@ expr:
 |   LPAREN
     expr COMMA expr
     RPAREN
-    DOLLAR expr             { Note($2, $4, $7) }
+    DOLLAR expr             { match $7 with 
+                                Literal(_) as e -> Note($2, $4, Beat(e,0))
+                              | _ -> Note($2, $4, $7) }
 
 /*|   PRINT expr              { Print($2) }
 |   RANDOM                  { Random } */

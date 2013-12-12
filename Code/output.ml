@@ -52,7 +52,6 @@ let ticks_of_beat = function
                | 4 -> 15.0 
                | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
                        /.16.0))))
-    | VInt(i) -> int_of_float (16.0/.(float_of_int i))
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
