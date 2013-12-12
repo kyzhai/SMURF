@@ -1,20 +1,22 @@
 Program: 
 	SFuncdec: 
-		f 0 :: Unknown = 5
-	New Scope: 
-		
-	
-	SFuncdec: 
-		f m :: Unknown = 3
+		f (m) :: Int -> Int = 3
 	New Scope: 
 		ID: m  :: Int
 
 	
+	SFuncdec: 
+		f (0) :: Int -> Int = 5
+	New Scope: 
+		
+	
 	SMain: []
 Global Scope: 
-	ID: main  :: Unknown
-	ID: f 0 :: Int -> Int
 	ID: f m :: Int -> Int
+	ID: f 0 :: Int -> Int
+	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
 

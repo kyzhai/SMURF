@@ -8,7 +8,7 @@ Program:
 
 	x + 2
 	SFuncdec: 
-		f x m :: Unknown = 3 + x / m
+		f (x) (m) :: Int -> Int -> Int = 3 + x / m
 	New Scope: 
 		ID: x  :: Int
 		ID: m  :: Int
@@ -18,8 +18,10 @@ Program:
 Global Scope: 
 	ID: x  :: Int
 	ID: m  :: Int
-	ID: main  :: Unknown
 	ID: f x m :: Int -> Int -> Int
+	ID: main  :: Unknown
 	ID: print x :: a -> a
 	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
 
