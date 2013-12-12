@@ -43,15 +43,15 @@ let write_head oc value =
 let ticks_of_beat = function
       VBeat(VInt(i1),i2) -> 
       (int_of_float 
-          ((16.0/.(float_of_int i1)) *.
-              (1.0 +. ((match i2 with 
+          ((16.0/.(float_of_int i1)) +.
+              ((match i2 with 
                  0 -> 0.0
-               | 1 -> 8.0  
-               | 2 -> 12.0 
-               | 3 -> 14.0 
-               | 4 -> 15.0 
+               | 1 -> (8.0/.(float_of_int i1))
+               | 2 -> (4.0/.(float_of_int i1))
+               | 3 -> (2.0/.(float_of_int i1))
+               | 4 -> (float_of_int i1) 
                | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
-                       /.16.0))))
+                       /.16.0)))
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
@@ -74,11 +74,13 @@ let rec write_to_array value arr ix iy tic =
         let note = (match p with 
               -1 -> -1
             | _ -> p+12*(r+3)) in (
-        for i=0 to (nt-1) do
-            arr.(ix+i).(iy) <- tic+i;                   (* tick *)
-            arr.(ix+i).(iy+1) <- note;                  (* note *)
-            arr.(ix+i).(iy+2) <- default_velocity;      (* velocity *)
-            done; ix+nt,iy,tic+nt)
+            arr.(ix).(iy) <- tic;                   (* tick *)
+            arr.(ix).(iy+1) <- note;                  (* note *)
+            arr.(ix).(iy+2) <- default_velocity;      (* velocity *)
+            arr.(ix+1).(iy) <- tic+nt;
+            arr.(ix+1).(iy+1) <- note;
+            arr.(ix+1).(iy+2) <- 0;
+            ix+nt,iy,tic+nt)
     (* All notes in a chord should fills same set of ticks *)
     | VChord((VNote(_,_,bt)::xs) as nlst) -> 
         (let ntks = ticks_of_beat bt in
