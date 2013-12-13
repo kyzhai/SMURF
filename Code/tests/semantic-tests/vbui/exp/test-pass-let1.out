@@ -1,0 +1,20 @@
+Program: 
+	SVardef: 
+		ID: x  :: Int
+
+	let SVardef: 
+		ID: a  :: Int
+
+	1 SVardef: 
+		ID: b  :: Int
+
+	2 in 3
+	SMain: []
+Global Scope: 
+	ID: main  :: []
+	ID: x  :: Int
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+

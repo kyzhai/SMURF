@@ -99,7 +99,7 @@ let mod_var entry symtab =
 (* Update type of variable definition in our symbol table and our list of declarations *)
 let replace_vardef program var oldvar = match var with
     | SVardef(ids, s_expr) -> 
-        let newdecls = List.filter (fun dec -> dec <> oldvar) program.decls in
+        let newdecls = List.filter (fun dec -> dec != oldvar) program.decls in
         let newsym = List.filter (fun v -> v.name <> ids.name) program.symtab.identifiers in
         let newentry = {name = ids.name; pats = []; v_type = ids.v_type; v_expr = ids.v_expr} in
         program.symtab.identifiers <- newentry :: newsym;
@@ -490,6 +490,7 @@ let rec get_type  program = function
                     ^ string_of_s_type Sast.Chord ^ " but the element of " 
                     ^ string_of_sexpr y ^ " has type of " ^ string_of_s_type ty)
                 else () in List.iter (match_type_or_fail hd) el; Sast.System
+    | SLet(decs, exp) -> get_type program exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type program e
 		| SCall(f, args) -> 
@@ -503,6 +504,7 @@ let rec get_type  program = function
 			(* check all args against f type sig *)
 			(* check expr matches last type *)
 		| _ -> Sast.Still_unknown
+
 
 and arg_has_type prog (a,t) = match a with 
 		SArgconst(i) -> t = Sast.Int
@@ -629,9 +631,10 @@ and to_sexpr symbol = function
     | Ast.Chord(elist) -> SChord(List.map (fun s -> to_sexpr symbol s) elist)
     | Ast.System(elist) -> SSystem(List.map (fun s -> to_sexpr symbol s) elist)
     | Ast.Call(e1, e2) -> SCall(e1, (List.map (fun s -> to_sarg symbol s)  e2))
-    | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in
-                           let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs
-                           in SLet(nested_prog, to_sexpr symbol e)
+    | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in                                
+                             let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs      
+                             in let nested_prog2 = List.fold_left walk_decl_second nested_prog nested_prog.decls
+                             in SLet(nested_prog2, to_sexpr sym e)
 
 and to_sarg symbol = function
     | Ast.Argconst(i)  -> SArgconst(i)
@@ -640,7 +643,7 @@ and to_sarg symbol = function
     | Ast.Argparens(p) -> SArgparens(to_sexpr symbol p)
 
 (* Second pass -> use symbol table to resolve all semantic checks *)
-let rec walk_decl_second program = function
+and walk_decl_second program = function
     | SVardef(s_id, s_expr) as oldvar -> (*(print_string (string_of_s_program program));*)
         let texpr = [get_type program s_expr] in
         if (s_id.v_type = [Unknown]) then
