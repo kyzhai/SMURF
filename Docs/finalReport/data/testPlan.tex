@@ -1,9 +1,9 @@
 \section{Test Plan}
 
 During the development process of SMURF, to let everyone envolve in the development as much as possible, we adopt the slicing model, 
-i.e., in each developing stage, everyone has a slice of work to work on.
+i.e., in each developing stage, everyone has a slice of assignment to work on.
 One problem with this model is that different people need to work on a same job, 
-one's change to the program can easily crash other people's work. 
+so one's change to the program can easily crash other people's work. 
 As a result, extensive tests to ensure the quality of the software is crucial. 
 
 \subsection{Testing Levels}
@@ -38,8 +38,10 @@ For the occasions that one's work need to change the output of other people's ca
 he/she need to check the changes are as expected, 
 and then generate new expected results for the cases before committing changes to repository.
 
-Note that we test the cases that should run successfully and should fail with the same strategy. 
-As long as the program is not broken, the output of failed cases should give the same exception message as that stored in {\bf exp} direcotry.
+There are two types of test cases, to pass and to fail. We don't treat them differently during the test.
+As long as the program is not broken, on one hand, the pass cases should give the same output, 
+On the other hand, the fail cases should give the same exception message as that stored in {\bf exp} direcotry.
+We use the convention to name the fail cases starting with {\it test-fail-} and name the pass cases starting with {\it test-}.
 
 \begin{figure} [H]
 \centering
@@ -92,13 +94,20 @@ Below we give several sample test cases and their expected output for SMURF.
 
 \subsubsection{parser-tests}
 Note that the programs that pass parser testing may not be semantically correct.
-\lstset{ language=[Objective]Caml }
-\lstinputlisting{../../Code/tests/parser-tests/kyzhai/test1.sm}
+\lstinputlisting[title=test-if.sm]{../../Code/tests/parser-tests/kyzhai/test-if.sm}
 
 \subsubsection{semantic-tests}
-\lstset{ language=[Objective]Caml }
-\lstinputlisting{../../Code/tests/parser-tests/kyzhai/test1.sm}
+For cases successfully passed semantic checking, semantic checking spits out the semantic abstract syntax tree.
+\lstinputlisting[title=test-emptyList.sm]{../../Code/tests/semantic-tests/kyzhai/test-emptyList.sm}
+\lstinputlisting[title=test-emptyList.out]{../../Code/tests/semantic-tests/kyzhai/exp/test-emptyList.out}
+
+For cases that failed to passed the semantic checking, 
+semantic checking captures the exception and spits out the message regarding the exception 
+to help the programmer to easily locate the problem in program.
+\lstinputlisting[title=test-fail-chord.sm]{../../Code/tests/semantic-tests/kyzhai/test-fail-chord.sm}
+\lstinputlisting[title=test-fail-chord.out]{../../Code/tests/semantic-tests/kyzhai/exp/test-fail-chord.out}
 
 \subsubsection{codegen-tests}
-\lstset{ language=[Objective]Caml }
-\lstinputlisting{../../Code/tests/parser-tests/kyzhai/test1.sm}
+%\lstinputlisting{../../Code/tests/interp-tests/kyzhai/test-if.sm}
+
+
