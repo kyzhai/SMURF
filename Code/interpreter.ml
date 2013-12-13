@@ -10,8 +10,6 @@ open Output
     
 let r_max = 1000000
 
-let bytecode_name = "testout.csv"
-
 (* convernt the symbol table defined in Sast to environment defined in Values 
  * and set the parent of the new environment to the one passed to it 
  *)
@@ -149,25 +147,32 @@ and exec_decl env = function
     | Sast.SVardef(sid,se) -> 
         let v,env' = eval env se in
             update_env env' sid.name v
-    *)
     | Sast.SMain(e) -> 
         (let v, env' = eval env e in 
             write_to_file bytecode_name v; update_env env' "main" v)
+    *)
     | _ -> trace ("Unsupported!") env
 
 
 (* The entry of evaluation of the program *)
-(* environment -> unit *)
-let exec_main symtab = 
+(* environment -> configuration -> unit *)
+let exec_main symtab config = 
     let globalE=(st_to_env None symtab) in 
     let main_entry = NameMap.find "main" globalE.ids in
     let main_expr = (match main_entry.nm_expr with 
               None -> interp_error "main has no definition!"
             | Some expr -> expr) in
-    let _ = exec_decl globalE (Sast.SMain(main_expr)) in 
-    print_string ("===== Program Successfully Finished =====\n");
-    print_string ("===== Result Writen to " ^ bytecode_name ^ " =====\n")
-
+    let v, env' = eval globalE main_expr in 
+    let _ = write_to_file config.bytecode_name v; update_env env' "main" v in
+    let cmd = ("java -jar " ^ config.lib_path ^ " " ^ config.bytecode_name ^ " " ^ config.midi_name) in
+    print_string (cmd ^ "\n"); 
+    let result_code = Sys.command cmd
+    in (match result_code with 
+          0 -> 
+            print_string ("===== Program Successfully Finished =====\n");
+            print_string ("===== Result Writen to " ^ config.midi_name ^ " =====\n")
+        | _ as error_code -> print_string ("Error: *** Program Terminates With Code " ^ string_of_int error_code ^ "\n")
+        )
 
 
 (* run : program -> () *)
