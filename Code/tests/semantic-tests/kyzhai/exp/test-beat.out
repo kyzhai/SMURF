@@ -2,11 +2,16 @@ Program:
 	SVardef: 
 		ID: a  :: Beat
 
-	4...
+	4..
+	SVardef: 
+		ID: b  :: Beat
+
+	1...
 	SMain: []
 Global Scope: 
 	ID: main  :: []
 	ID: a  :: Beat
+	ID: b  :: Beat
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

@@ -1,62 +1,12 @@
 Program: 
 	SVardef: 
-		ID: a  :: []
+		ID: a  :: [Bool]
 
-	[]
-	SVardef: 
-		ID: b  :: [[]]
-
-	[[]]
-	SVardef: 
-		ID: c  :: []
-
-	[] ++ []
-	SVardef: 
-		ID: f  :: [[]]
-
-	[[]] ++ []
-	SVardef: 
-		ID: d  :: [Int]
-
-	[1] ++ [2]
-	SVardef: 
-		ID: g  :: [Int]
-
-	[] ++ [1, 2, 3, 4]
-	SVardef: 
-		ID: h  :: [[]]
-
-	[] : []
-	SVardef: 
-		ID: i  :: [Int]
-
-	1 : []
-	SVardef: 
-		ID: j  :: [[Int]]
-
-	[1, 2] : [[1], [2, 3]]
-	SVardef: 
-		ID: aa  :: Chord
-
-	[ (1, 2)$2..] ++ []
-	SVardef: 
-		ID: bb  :: System
-
-	[ (1, 2)$2..] : []
+	[true, false, true, false]
 	SMain: []
 Global Scope: 
 	ID: main  :: []
-	ID: a  :: []
-	ID: b  :: [[]]
-	ID: c  :: []
-	ID: f  :: [[]]
-	ID: d  :: [Int]
-	ID: g  :: [Int]
-	ID: h  :: [[]]
-	ID: i  :: [Int]
-	ID: j  :: [[Int]]
-	ID: aa  :: Chord
-	ID: bb  :: System
+	ID: a  :: [Bool]
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a
