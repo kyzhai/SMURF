@@ -242,6 +242,17 @@ let rec find_var_entry symtab v =
 			Some(p) -> find_var_entry p v 
 			| None -> raise (Missing_variable_definition v))
 			
+let change_type symtab old_var n_type = 
+	let new_var = {name = old_var.name; 
+								pats = old_var.pats;
+								v_type = [n_type];
+								v_expr = old_var.v_expr} in
+	let other_vars = List.filter 
+		(fun vs -> vs.name <> old_var.name)
+		symtab.identifiers in 
+	{ parent = symtab.parent; identifiers = new_var :: other_vars}
+	
+
 
 (* Returns a type from an expression*)
 let rec get_type symtab = function
@@ -253,16 +264,11 @@ let rec get_type symtab = function
 				if(List.length ts <> 1) then raise (Function_used_as_variable s)
 				else let t = List.hd ts in 
 					if(t <> Unknown) then t
-					else if(t <> Still_unknown) then 
+					else  
 						(match var.v_expr with 
 						Some(expr) -> 
-							(* put the found type into the symbol table to help *) 
-							(*let newv = SVardef({name = var.name; pats = []; v_type = [Still_unknown]; v_expr = var.v_expr}, expr) in 
-							let oldv = SVardef(var, expr) in 
-							get_type (replace_vardef program newv oldv) expr*)
-							get_type symtab expr
+							get_type (change_type symtab var Still_unknown) expr
 						| None -> raise (Missing_variable_definition s))
-					else Unknown
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
         let te1 = get_type symtab e1
         and te2 = get_type symtab e2 in
