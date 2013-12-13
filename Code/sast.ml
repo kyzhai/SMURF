@@ -17,6 +17,8 @@ exception Main_missing
 exception Function_used_as_variable of string
 exception Missing_variable_definition of string
 exception Function_not_defined of string
+exception Wrong_number_of_arguments of string
+exception Function_arguments_type_mismatch of string
 
 exception Type_error of string
 let type_error msg = raise (Type_error msg)
@@ -52,8 +54,7 @@ and s_arg =
     | SArgparens of s_expr                     (* parenthesized expressions *)
 
 and s_dec = 
-      STypesig of s_ids 
-    | SFuncdec of s_func_decl
+     SFuncdec of s_func_decl
     | SVardef of s_ids * s_expr
     | SMain of s_expr 
 
@@ -123,7 +124,6 @@ and string_of_sfargs = function
   | SArgparens(p) -> "(" ^ (string_of_sexpr p)  ^ ")"
 
 and string_of_s_dec = function
-      STypesig(i) -> "STypesig: \n\t\t" ^ string_of_s_ids i
     | SFuncdec(f) -> "SFuncdec: \n\t\t" ^ string_of_s_func_decl f
     | SVardef(i, e) -> "SVardef: \n\t\t" ^ string_of_s_ids i ^ "\n\t" ^ string_of_sexpr e
     | SMain(e) -> "SMain: " ^ string_of_sexpr e

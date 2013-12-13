@@ -6,14 +6,14 @@ Program:
 
 	
 	SVardef: 
-		ID: y  :: Still Unknown
+		ID: y  :: Int
 
 	f 1
 	SMain: []
 Global Scope: 
 	ID: main  :: []
 	ID: f x :: Int -> Int
-	ID: y  :: Still Unknown
+	ID: y  :: Int
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

@@ -10,7 +10,7 @@ Program:
 
 	
 	SVardef: 
-		ID: z  :: Still Unknown
+		ID: z  :: Int
 
 	f 0
 	SMain: []
@@ -18,7 +18,7 @@ Global Scope:
 	ID: main  :: []
 	ID: y  :: Int
 	ID: f x :: Int -> Int
-	ID: z  :: Still Unknown
+	ID: z  :: Int
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a
