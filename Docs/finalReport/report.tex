@@ -26,10 +26,16 @@
 \usepackage{amssymb}
 \usepackage{verbatimbox}
 
-\usepackage{pgf}
 \usepackage{tikz}
-\usepackage{qtree}
-\usepackage{tikz-qtree}
+\usetikzlibrary{trees}
+%\usepackage{pgf}
+%\usepackage{qtree}
+%\usepackage{tikz-qtree}
+
+\tikzstyle{every node}=[draw=black,thick,anchor=west]
+\tikzstyle{selected}=[draw=red,fill=red!30]
+\tikzstyle{optional}=[dashed,fill=gray!50]
+
 \tikzstyle{vertex}=[draw,fill=black!15,circle,minimum size=20pt,inner sep=0pt]
 \usetikzlibrary{arrows, automata, backgrounds, decorations, fit}
 \usepackage[latin1]{inputenc}

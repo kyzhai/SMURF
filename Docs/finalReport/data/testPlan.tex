@@ -1,3 +1,83 @@
 \section{Test Plan}
 
+During the development process of SMURF, to let everyone envolve in the development as much as possible, we adopt the slicing model, 
+i.e., in each developing stage, everyone has a slice of work to work on.
+One problem with this model is that different people need to work on a same job, 
+one's change to the program can easily crash other people's work. 
+As a result, extensive tests to ensure the quality of the software is crucial. 
 
+
+The hierachy for SMURF test cases is shown in (figure~\ref{fig:testDir}). 
+In each developing stage, everyone is in charge of a directory holding test cases constructed for the functionality he/she is working on. 
+Every person needs to give the expect output for his/her test cases in the {\bf exp} directory.
+We have a script for testing all the test cases in the toplevel of the direcotry running all the test cases and comparing the results with the expect results given by every owner of the cases. 
+The script gives the result about how many test cases passed and which test cases failed, if any. 
+Before committing his/her result to the repository, everyone need to make sure the new change passed all the other people's cases. 
+For the occasions that one's work need to change the output of other people's cases, 
+he/she need to check the changes are as expected, 
+and then generate new expected results for the cases before committing changes to repository.
+
+
+\begin{figure} [H]
+\centering
+\begin{tikzpicture}[%
+grow via three points={one child at (0.5,-0.7) and
+    two children at (0.5,-0.7) and (0.5,-1.4)},
+    edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
+
+    \node {TEST_ROOT}
+    child { node {parser-tests}}     
+    child { node {semantic-tests}}
+    child { node [selected] {codegen-tests}
+        child { node [selected] {person1}
+            child{ node {exp}
+                child{ node {case1.out} }
+                child{ node {case2.out} }
+                child{ node {case3.out} }
+                child{ node [optional] {...} }
+            }
+            child [missing] {}              
+            child [missing] {}              
+            child [missing] {}              
+            child [missing] {}              
+            child{ node {case1.sm} }
+            child{ node {case2.sm} }
+            child{ node {case3.sm} }
+            child{ node [optional] {...} }
+        }
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child [missing] {}              
+        child { node {person2}}
+        child { node {person3}}
+        child { node {person4}}
+        child { node {person5}}
+    };
+\end{tikzpicture}
+\caption{The direcotry of SMURF test cases}
+\label{fig:testDir}
+\end{figure}
+
+\subsection{Testing Levels}
+
+\subsection{Test Automation}
+
+\subsection{Example Test Cases}
+Below we give several sample test cases and their expected output for SMURF.
+\subsubsection{parser-tests}
+\lstset{ language=[Objective]Caml }
+\lstinputlisting{../../Code/tests/parser-tests/kyzhai/test1.sm}
+
+\subsubsection{semantic-tests}
+\lstset{ language=[Objective]Caml }
+\lstinputlisting{../../Code/tests/parser-tests/kyzhai/test1.sm}
+
+\subsubsection{codegen-tests}
+\lstset{ language=[Objective]Caml }
+\lstinputlisting{../../Code/tests/parser-tests/kyzhai/test1.sm}
