@@ -2,7 +2,7 @@
 # Remove the dependancy checking. So that projects can include <pdf> as graphics
 # Use pdflatex
 
-LATEX	= pdflatex
+LATEX	= pdflatex -shell-escape
 BIBTEX	= bibtex
 MAKEINDEX = makeindex
 XDVI	= xdvi -gamma 4
