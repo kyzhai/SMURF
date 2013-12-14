@@ -507,10 +507,15 @@ let rec get_type  program = function
 
 
 and arg_has_type prog (a,t) = match a with 
-		SArgconst(i) -> t = Sast.Int
-	| SArgbool(b) -> t = Sast.Bool
-	| SArgvar(v) -> (get_type prog (SVariable(v))) = t
-	| SArgparens(e) -> (get_type prog e) = t
+	  SArglit(i)          -> t = Sast.Int
+	| SArgbool(b)         -> t = Sast.Bool
+	| SArgvar(v)          -> (get_type prog (SVariable(v))) = t
+        | SArgbeat(e,i)       -> (get_type prog (SBeat(e,i))) = t
+        | SArgnote(e1,e2,e3)  -> (get_type prog (SNote(e1,e2,e3))) = t
+        | SArgchord(elist)    -> (get_type prog (SChord(elist))) = t
+        | SArgsystem(elist)   -> (get_type prog (SSystem(elist))) = t
+        | SArglist(elist)     -> (get_type prog (SList(elist))) = t
+	| SArgparens(e)       -> (get_type prog e) = t
 
 and check_arg_types name prog a_list t_list = 
 	let ret_t = List.hd (List.rev t_list) in 
@@ -637,10 +642,15 @@ and to_sexpr symbol = function
                              in SLet(nested_prog2, to_sexpr sym e)
 
 and to_sarg symbol = function
-    | Ast.Argconst(i)  -> SArgconst(i)
-    | Ast.Argbool(b)   -> SArgbool(b)
-    | Ast.Argvar(s)    -> SArgvar(s)
-    | Ast.Argparens(p) -> SArgparens(to_sexpr symbol p)
+    | Ast.Arglit(i)           -> SArglit(i)
+    | Ast.Argbool(b)          -> SArgbool(b)
+    | Ast.Argvar(s)           -> SArgvar(s)
+    | Ast.Argbeat(e, i)       -> SArgbeat(to_sexpr symbol e, i)
+    | Ast.Argnote(e1, e2, e3) -> SArgnote(to_sexpr symbol e1, to_sexpr symbol e2, to_sexpr symbol e3)
+    | Ast.Argchord(elist)     -> SArgchord(List.map (fun s -> to_sexpr symbol s) elist)
+    | Ast.Argsystem(elist)    -> SArgsystem(List.map (fun s -> to_sexpr symbol s) elist)
+    | Ast.Arglist(elist)      -> SArglist(List.map (fun s -> to_sexpr symbol s) elist)
+    | Ast.Argparens(p)        -> SArgparens(to_sexpr symbol p)
 
 (* Second pass -> use symbol table to resolve all semantic checks *)
 and walk_decl_second program = function

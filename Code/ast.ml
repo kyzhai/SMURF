@@ -47,11 +47,15 @@ and pattern =                          (* Patterns *)
     | Patcons of pattern * pattern          (* pattern : pattern *)
 
 and fargs =                                 (* Function Arguments *)
-    Argconst of int                         (* integer *)
-    | Argbool of bool                       (* boolean *)
-    | Argvar of string                      (* identifiers *)
+      Arglit of int                         (* 42 *)
+    | Argbool of bool                       (* True *)
+    | Argvar of string                      (* bar *)
+    | Argbeat of expr * int                 (* 2. *)
+    | Argnote of  expr * expr * expr        (* (11, 2)^4. *)
+    | Argchord of expr list                 (* [(11,3)$4., (5,2)$4.] *)
+    | Argsystem of expr list                (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ] *)
+    | Arglist of expr list                  (* [farg, farg, farg, ... ] or [] *)
     | Argparens of expr                     (* parenthesized expressions *)
-
 
 type program = dec list                     (* A program is a list of declarations *)
 
@@ -113,10 +117,19 @@ and string_of_types  = function
   | TList(t) -> "[" ^ string_of_types t ^ "]" | TPoly(v) -> "Poly " ^ v
 
 and string_of_args  = function
-    Argconst(l) -> string_of_int l
+    Arglit(l) -> string_of_int l
   | Argbool(b) -> string_of_bool b
   | Argvar(s) -> s
+  | Arglist(el) ->  "[" ^ (String.concat " " (List.map string_of_expr el)) ^ "]"
   | Argparens(p) -> "(" ^ (string_of_expr p)  ^ ")"
+  | Argbeat(i1,i2) -> string_of_expr i1 ^
+        let rec repeat n s =
+            if n>0 then
+                repeat (n-1) ("." ^ s)
+            else s in repeat i2 ""
+  | Argnote(pc, reg, bt) -> " (" ^ string_of_expr pc ^ ", " ^ string_of_expr reg ^ ")$" ^ (string_of_expr bt)
+  | Argchord(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
+  | Argsystem(el) -> "[" ^ (String.concat ", " (List.map string_of_expr el)) ^ "]"
 
 let string_of_program decs =
   String.concat "" (List.map string_of_dec decs)
