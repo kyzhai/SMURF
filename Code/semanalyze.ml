@@ -58,6 +58,7 @@ let rec powers_of_two = function
                                             (let rec delist = function
                                              [] -> []
                                              |SList(sexpr)::r -> sexpr @ delist r
+                                             |SVariable(s)::r -> delist r (* Ignoring vars...resolve this in interp! *)
                                              |_ -> type_error ("Found a list of nested elements
                                                                 with non-equal number of nestings")
                                              in delist rest)))
@@ -398,7 +399,8 @@ let rec get_type  program = function
                               (try
                                 let x = get_type program (SList([e1;e2])) in
                                 (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
-                              with (Type_error _) ->
+                              with (Type_error x) ->
+                                  print_string x;
                                   type_error ("Operands of a concat operator have different types"))
                               else te1
                         | Sast.Empty -> te1
