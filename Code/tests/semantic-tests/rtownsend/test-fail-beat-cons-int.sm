@@ -1,0 +1,4 @@
+/* Consing a beat onto a list of ints should fail if any of the ints are not powers of 2 */
+
+x = 4. : [2, 4, 5, 8]
+main = []
