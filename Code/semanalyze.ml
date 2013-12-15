@@ -20,17 +20,25 @@ let equiv_type v1 = match v1 with
     | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
     | x -> [x]
 
-(* Check if an int is a valid beat *)
-let beat_as_int value = if List.mem value [1,2,4,8,16] then true else false
 
 (* Return true if v1 and v2 are different types *)
 let rec diff_types v1 v2 = match v1, v2 with
+    | Sast.List(x)::t1, Sast.List(y)::t2 -> diff_types (x::t1) (y::t2)
     | x::t1, y::t2 -> if ((List.mem x (equiv_type y)) || (List.mem y (equiv_type x)))
                       then diff_types t1 t2 else true
     | [], [] -> false
     | [], _::_ -> true
     | _::_, [] -> true
 
+
+(* Check if an int is a valid beat *)
+let beat_as_int value = if List.mem value [1,2,4,8,16] then true else false
+
+let rec eventual_system = function 
+    Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) -> true
+   | Sast.List(x) -> if List.mem x (equiv_type Sast.System) then true else
+                        eventual_system x
+   | _ -> false
 
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
@@ -700,9 +708,8 @@ and walk_decl_second program = function
       | Sast.Note -> program
       | Sast.Chord | Sast.List(Sast.Note) -> program
       | Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) -> program
-      | Sast.List(sys) -> (match sys with 
-          Sast.System -> program
-        | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
+      | Sast.List(sys) -> if eventual_system sys then program else 
+                          raise (Main_type_mismatch (string_of_sexpr expr))
       | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
     (*| _ -> program*)
 
