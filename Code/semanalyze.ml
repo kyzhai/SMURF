@@ -400,7 +400,6 @@ let rec get_type  program = function
                                 let x = get_type program (SList([e1;e2])) in
                                 (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
                               with (Type_error x) ->
-                                  print_string x;
                                   type_error ("Operands of a concat operator have different types"))
                               else te1
                         | Sast.Empty -> te1
