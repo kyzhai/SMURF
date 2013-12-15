@@ -378,7 +378,7 @@ let rec get_type  program = function
                      | Sast.Chord -> (if te1 <> Sast.Note then 
                          type_error ("The types of the lhs and rhs of a cons operator don't match")
                          else te2)
-                     | Sast.System -> (if te1 <> Sast.Chord then 
+                     | Sast.System -> (if te1 <> Sast.Chord && te1 <> Sast.List(Sast.Note)  then 
                          type_error ("The types of the lhs and rhs of a cons operator don't match")
                          else te2)
                      | Sast.Empty -> (match te1 with
@@ -458,7 +458,7 @@ let rec get_type  program = function
              let match_type_or_fail x y = 
                 let tx = (get_type program x) in
                 let ty = (get_type program y) in
-                if tx <> ty 
+                if diff_types [tx] [ty]  
                     then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
@@ -698,8 +698,8 @@ and walk_decl_second program = function
 				(match e_type with
        Sast.Empty -> program
       | Sast.Note -> program
-      | Sast.Chord -> program
-      | Sast.System -> program
+      | Sast.Chord | Sast.List(Sast.Note) -> program
+      | Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) -> program
       | Sast.List(sys) -> (match sys with 
           Sast.System -> program
         | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
