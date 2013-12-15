@@ -32,8 +32,43 @@ let rec diff_types v1 v2 = match v1, v2 with
 
 
 (* Check if an int is a valid beat *)
-let beat_as_int value = if List.mem value [1,2,4,8,16] then true else false
+let beat_as_int value = if List.mem value [1;2;4;8;16] then true else false
 
+(* Returns true if two types are just ints, beats, or nested ints or beats wher the number of nestings for
+  both types is equivalent *)
+let rec beats_and_ints ty1 ty2 = match ty2, ty2 with
+    Sast.List(t1), Sast.List(t2) -> beats_and_ints t1 t2
+   | Sast.Beat, Sast.Int -> true
+   | Sast.Int, Sast.Beat -> true
+   | Sast.Int, Sast.Int -> true
+   | Sast.Beat, Sast.Beat -> true
+   | _, _ -> false
+
+(* Check if we have a Beat expression in a list of s_exprs *)
+let rec contains_beat = function
+    [] -> false
+    | SList(sexpr)::rest -> if contains_beat sexpr then true else contains_beat rest
+    | SBeat(_,_)::rest -> true
+    | _::rest -> contains_beat rest
+
+(* If an Int is in the given list of s_exprs, make sure it's a power of two and return Beat type if so *)
+let rec powers_of_two = function
+    | [] -> Sast.Beat
+    | SList(sexpr) :: rest -> Sast.List(powers_of_two (sexpr @ 
+                                            (let rec delist = function
+                                             [] -> []
+                                             |SList(sexpr)::r -> sexpr @ delist r
+                                             |_ -> type_error ("Found a list of nested elements
+                                                                with non-equal number of nestings")
+                                             in delist rest)))
+    | SLiteral(i) :: rest -> if beat_as_int i then powers_of_two rest else
+                                type_error ("Non-power of 2 entity " ^ (string_of_int i) ^
+                                            " in list of beat elements")
+    | _ :: rest -> powers_of_two rest
+
+
+
+(* Return true if argument is a system type or a nested system *)
 let rec eventual_system = function 
     Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) -> true
    | Sast.List(x) -> if List.mem x (equiv_type Sast.System) then true else
@@ -466,13 +501,15 @@ let rec get_type  program = function
              let match_type_or_fail x y = 
                 let tx = (get_type program x) in
                 let ty = (get_type program y) in
-                if diff_types [tx] [ty]  
+                if diff_types [tx] [ty] && not (beats_and_ints tx ty) 
                     then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
                 else () 
-            in List.iter (match_type_or_fail hd) el; Sast.List(get_type program (hd)))
+            in List.iter (match_type_or_fail hd) el; 
+            if contains_beat el then powers_of_two el
+            else Sast.List(get_type program (hd)))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
