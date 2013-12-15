@@ -394,8 +394,13 @@ let rec get_type  program = function
                     (* Not sure this checks the correct thing *)
                     (match te1 with 
                       Sast.List(t1) -> (match te2 with
-                          Sast.List(t2) -> (if t1 <> t2 then 
-                              type_error ("Operands of a concat operator have different types") else te1)
+                          Sast.List(t2) -> if t1 <> t2 then 
+                              (try
+                                let x = get_type program (SList([e1;e2])) in
+                                (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
+                              with (Type_error _) ->
+                                  type_error ("Operands of a concat operator have different types"))
+                              else te1
                         | Sast.Empty -> te1
                         | _ -> type_error "Concat operator can only used between lists")
                     | Sast.Chord -> (match te2 with
@@ -428,7 +433,8 @@ let rec get_type  program = function
                            Sast.Note -> Sast.Chord
                          | Sast.Chord -> Sast.System 
                          | _ -> Sast.List(te1))
-                     | _ -> type_error ("The second operand of a cons operator was: " ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
+                     | _ -> type_error ("The second operand of a cons operator was: " 
+                         ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
                 | Ast.Trans -> (* Trans: Int ^^ List *)
                     if te1 <> Sast.Int
                     then type_error ("First element in a Trans expression " ^
@@ -508,7 +514,7 @@ let rec get_type  program = function
                         ^ Sast.string_of_s_type ty ^ " in a same list")
                 else () 
             in List.iter (match_type_or_fail hd) el; 
-            if contains_beat el then powers_of_two el
+            if contains_beat el then Sast.List(powers_of_two el)
             else Sast.List(get_type program (hd)))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
