@@ -20,6 +20,9 @@ let equiv_type v1 = match v1 with
     | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
     | x -> [x]
 
+(* Check if an int is a valid beat *)
+let beat_as_int value = if List.mem value [1,2,4,8,16] then true else false
+
 (* Return true if v1 and v2 are different types *)
 let rec diff_types v1 v2 = match v1, v2 with
     | x::t1, y::t2 -> if ((List.mem x (equiv_type y)) || (List.mem y (equiv_type x)))
@@ -353,10 +356,11 @@ let rec get_type  program = function
                         | Sast.Empty -> te1
                         | _ -> type_error "Concat operator can only used between lists")
                     | Sast.Chord -> (match te2 with
-                          Sast.Chord | Sast.Empty -> Sast.Chord
+                          Sast.Chord | Sast.Empty | Sast.List(Sast.Note) -> Sast.Chord
                         | _ -> type_error ("Operands of a concat operator have different types"))
                     | Sast.System -> (match te2 with
-                          Sast.System | Sast.Empty -> Sast.System
+                          Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) 
+                          | Sast.Empty -> Sast.System
                         | _ -> type_error ("Operands of a concat operator have different types"))
                     | Sast.Empty -> (match te2 with
                           Sast.List(t2) -> te2
