@@ -81,7 +81,16 @@ and eval env = function
                     | Mul -> VInt(x*y),env2
                     | Div -> VInt(x/y),env2
                     | Mod -> VInt(x mod y),env2
+                    | BeatAdd -> if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16] then
+                                    VBeat(VInt((ticks_of_beat (VBeat(v1,0))) + (ticks_of_beat (VBeat(v2,0)))), -1), env2
+                                else interp_error ("Ints used in beat operation aren't powers of 2")
                     | _ -> interp_error ("Not expected op for Ints"))
+            | VBeat(VInt(e), i) as bt, VInt(y) -> if List.mem y [1;2;4;8;16] then
+                (match op with
+                 BeatAdd -> VBeat(VInt((ticks_of_beat bt) + (ticks_of_beat (VBeat(VInt(y), 0)) )),-1), env2
+                 |_ -> interp_error ("Haven't done this op yet")
+                )
+                else interp_error ("Int used in beat operation doesn't have a power of 2 value")
             | VList(lx), VList(ly) -> 
                 (match op with
                       Concat -> VList(lx @ ly),env2
