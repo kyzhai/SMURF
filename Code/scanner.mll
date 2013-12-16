@@ -94,6 +94,7 @@ and continue = parse
 and nc1 = parse
 '/'             { nc2 lexbuf }
 | '*'           { nc3 lexbuf }
+| '\n'          { Lexing.new_line lexbuf; nc1 lexbuf }
 | _             { nc1 lexbuf }
 
 and nc2 = parse
