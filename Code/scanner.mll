@@ -74,19 +74,18 @@ whitespace                      { token lexbuf } (* White space *)
 | "System"                      { SYSTEM }
 | "main"                        { MAIN }
 | identifier as id              { VARIABLE(id) }
-| '-'['1'-'9'](digit)* as num   { LITERAL(int_of_string num) }
 | (digit)+ as num               { LITERAL(int_of_string num) }
 | eof                           { EOF }
 | _ as char { raise (Failure("Illegal character: " ^ Char.escaped char)) }
 
 
 and nlcomment = parse
-'\n'            { token lexbuf }
+'\n'            { lexbuf.lex_curr_pos <- lexbuf.lex_curr_pos - 1; token lexbuf }
 | _             { nlcomment lexbuf }
 
 
 and continue = parse
-'\n'            { token lexbuf }
+'\n'            { Lexing.new_line lexbuf; token lexbuf }
 | whitespace    { continue lexbuf }
 
 and nc1 = parse

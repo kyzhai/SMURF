@@ -99,6 +99,7 @@ expr:
 |   BOOLEAN                 { Boolean($1) }
 |   LPAREN expr RPAREN      { $2 }
 |   expr PLUS expr          { Binop($1, Add, $3) }
+|   MINUS LITERAL           { Literal(-$2) }
 |   expr MINUS expr         { Binop($1, Sub, $3) }
 |   expr TIMES expr         { Binop($1, Mul, $3) }
 |   expr DIV expr           { Binop($1, Div, $3) }
