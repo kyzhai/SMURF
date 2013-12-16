@@ -124,7 +124,7 @@ and eval env = function
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
-    | Sast.SRandom -> (VInt(Random.int r_max), env)
+    | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
     | Sast.SPrint(e1) -> (*print ;*) eval env e1 
         
 
