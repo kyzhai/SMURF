@@ -95,10 +95,10 @@ let rec write_to_array value arr ix iy tic =
             let (nx,ny,ntic) = write_to_array chord arr x y ntic
             in (nx,ny,ntic)) (ix,iy,tic) clst in (0,resy+3,0))
     | VList((x::xs) as slst) -> (match x with
-          VSystem(_) -> List.fold_left (fun (x,y,ntic) sys ->
+          VSystem(_) | VChord(_) | VNote(_,_,_) -> List.fold_left (fun (x,y,ntic) sys ->
                   let (nx,ny,ntic) = write_to_array sys arr x y ntic
                   in (nx,ny,ntic)) (ix,iy,tic) slst
-        | _ -> output_error ("Error in write_to_array: Must be a list of systems"))
+        | _ -> output_error ((string_of_value x) ^ "Error in write_to_array: Must be a list of systems, chords, or notes"))
     | _ -> output_error ("Error in write_to_array: Input is not a valid value")
     )
 
