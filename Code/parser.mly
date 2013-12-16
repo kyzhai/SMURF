@@ -137,10 +137,6 @@ expr:
     DOLLAR expr             { match $7 with 
                                 Literal(_) as e -> Note($2, $4, Beat(e,0))
                               | _ -> Note($2, $4, $7) }
-
-/*|   PRINT expr              { Print($2) }
-|   RANDOM                  { Random } */
-
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
 |   LLIST expr_list RLIST   { match $2 with 
