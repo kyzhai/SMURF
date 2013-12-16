@@ -44,15 +44,15 @@ let write_head oc value =
 let ticks_of_beat = function
       VBeat(VInt(i1),i2) -> 
       (int_of_float 
-          ((16.0/.(float_of_int i1)) +.
+          ((2.0 *. (16.0/.(float_of_int i1))) -. ((16.0/.float_of_int i1) /.
               ((match i2 with 
-                 0 -> 0.0
-               | 1 -> (8.0/.(float_of_int i1))
-               | 2 -> (4.0/.(float_of_int i1))
-               | 3 -> (2.0/.(float_of_int i1))
-               | 4 -> (float_of_int i1) 
+                 0 -> 1.0
+               | 1 -> 2.0
+               | 2 -> 4.0
+               | 3 -> 8.0
+               | 4 -> 16.0
                | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
-                       )))
+                       ))))
     | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
