@@ -1,0 +1,106 @@
+
+Timing Resolution set to 4 PPQ
+
+Instrument set to 48 on channel 0
+Instrument set to 48 on channel 1
+Instrument set to 48 on channel 2
+Instrument set to 48 on channel 3
+
+Track 0:
+ tick 0, channel 1: program change 48
+ tick 0, channel 1: note C4 on velocity: 90
+ tick 2, channel 1: note C4 on velocity: 0
+ tick 2, channel 1: note D4 on velocity: 90
+ tick 4, channel 1: note D4 on velocity: 0
+ tick 4, channel 1: note E4 on velocity: 90
+ tick 6, channel 1: note E4 on velocity: 0
+ tick 6, channel 1: note F4 on velocity: 90
+ tick 8, channel 1: note F4 on velocity: 0
+ tick 8, channel 1: note G4 on velocity: 90
+ tick 10, channel 1: note G4 on velocity: 0
+ tick 10, channel 1: note A4 on velocity: 90
+ tick 12, channel 1: note A4 on velocity: 0
+ tick 12, channel 1: note B4 on velocity: 90
+ tick 14, channel 1: note B4 on velocity: 0
+ tick 14, channel 1: note C5 on velocity: 90
+ tick 32, channel 1: note C5 on velocity: 0
+ tick 36, channel 1: note C5 on velocity: 90
+ tick 40, channel 1: note C5 on velocity: 0
+ tick 44, channel 1: note B4 on velocity: 90
+ tick 48, channel 1: note B4 on velocity: 0
+ tick 52, channel 1: note B4 on velocity: 90
+ tick 60, channel 1: note B4 on velocity: 0
+ tick 60, end of track
+Track 1:
+ tick 0, channel 2: program change 48
+ tick 16, channel 2: note B4 on velocity: 90
+ tick 18, channel 2: note B4 on velocity: 0
+ tick 18, channel 2: note A4 on velocity: 90
+ tick 30, channel 2: note A4 on velocity: 0
+ tick 30, channel 2: note A4 on velocity: 90
+ tick 32, channel 2: note A4 on velocity: 0
+ tick 36, channel 2: note G#4 on velocity: 90
+ tick 40, channel 2: note G#4 on velocity: 0
+ tick 44, channel 2: note G#4 on velocity: 90
+ tick 48, channel 2: note G#4 on velocity: 0
+ tick 52, channel 2: note G4 on velocity: 90
+ tick 60, channel 2: note G4 on velocity: 0
+ tick 60, end of track
+Track 2:
+ tick 0, channel 3: program change 48
+ tick 20, channel 3: note G4 on velocity: 90
+ tick 22, channel 3: note G4 on velocity: 0
+ tick 22, channel 3: note F4 on velocity: 90
+ tick 32, channel 3: note F4 on velocity: 0
+ tick 36, channel 3: note F4 on velocity: 90
+ tick 40, channel 3: note F4 on velocity: 0
+ tick 44, channel 3: note F4 on velocity: 90
+ tick 48, channel 3: note F4 on velocity: 0
+ tick 52, channel 3: note E4 on velocity: 90
+ tick 60, channel 3: note E4 on velocity: 0
+ tick 60, end of track
+Track 3:
+ tick 0, channel 4: program change 48
+ tick 24, channel 4: note E4 on velocity: 90
+ tick 26, channel 4: note E4 on velocity: 0
+ tick 26, channel 4: note D4 on velocity: 90
+ tick 32, channel 4: note D4 on velocity: 0
+ tick 36, channel 4: note D4 on velocity: 90
+ tick 40, channel 4: note D4 on velocity: 0
+ tick 44, channel 4: note D4 on velocity: 90
+ tick 48, channel 4: note D4 on velocity: 0
+ tick 52, channel 4: note C4 on velocity: 90
+ tick 60, channel 4: note C4 on velocity: 0
+ tick 60, end of track
+Program: 
+	SVardef: 
+		ID: track1  :: System
+
+	[[ (0, 2)$8], [ (2, 2)$8], [ (4, 2)$8], [ (5, 2)$8], [ (7, 2)$8], [ (9, 2)$8], [ (11, 2)$8], [ (0, 3)$1...], [ (-1, 0)$4], [ (0, 3)$4], [ (-1, 0)$4], [ (11, 2)$4], [ (-1, 0)$4], [ (11, 2)$2]]
+	SVardef: 
+		ID: track2  :: System
+
+	[[ (-1, 0)$1], [ (11, 2)$8], [ (9, 2)$2.], [ (9, 2)$8], [ (-1, 0)$4], [ (8, 2)$4], [ (-1, 0)$4], [ (8, 2)$4], [ (-1, 0)$4], [ (7, 2)$2]]
+	SVardef: 
+		ID: track3  :: System
+
+	[[ (-1, 0)$1], [ (-1, 0)$4], [ (7, 2)$8], [ (5, 2)$2..], [ (-1, 0)$4], [ (5, 2)$4], [ (-1, 0)$4], [ (5, 2)$4], [ (-1, 0)$4], [ (4, 2)$2]]
+	SVardef: 
+		ID: track4  :: System
+
+	[[ (-1, 0)$1], [ (-1, 0)$2], [ (4, 2)$8], [ (2, 2)$4.], [ (-1, 0)$4], [ (2, 2)$4], [ (-1, 0)$4], [ (2, 2)$4], [ (-1, 0)$4], [ (0, 2)$2]]
+	SMain: [track1, track2, track3, track4]
+Global Scope: 
+	ID: main  :: [System]
+	ID: track1  :: System
+	ID: track2  :: System
+	ID: track3  :: System
+	ID: track4  :: System
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+
+java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
+===== Program Successfully Finished =====
+===== Result Writen to a.midi =====
