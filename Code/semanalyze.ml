@@ -2,7 +2,7 @@ open Sast
 open Ast
 open Util
 
-module StringMap =Map.Make(String)
+module StringMap = Map.Make(String)
 
 let rec types_to_s_type = function
       TInt -> Sast.Int
@@ -238,7 +238,7 @@ let rec gen_new_scope = function
                      else {name = pat; pats = []; v_type = [Unknown];
                            v_expr = None} :: gen_new_scope rest
 
-let rec find_var_entry symtab v =
+let rec find_var_entry symtab v = 
 	try ( List.find (fun t -> t.name = v) symtab.identifiers)
 		with Not_found -> (match symtab.parent with 
 			Some(p) -> find_var_entry p v 
@@ -255,6 +255,41 @@ let change_type symtab old_var n_type =
 	{ parent = symtab.parent; identifiers = new_var :: other_vars}
 	
 
+let rec check_type_equality t1 t2 = 
+(print_string ((string_of_s_type t1) ^" and "^(string_of_s_type t2) ^"\n"));
+match t1 with 
+	  Sast.Chord -> (match t2 with 
+		  Sast.List(b) ->  b = Sast.Note 
+		| Sast.Chord -> true
+		| _ -> false )
+	| Sast.System -> (match t2 with 
+			Sast.List(b) -> check_type_equality b Sast.Chord
+		| Sast.System -> true
+		| _ -> false )	
+	| Sast.List(a) -> (match t2 with 
+			Sast.List(b) -> check_type_equality a b 
+		| Sast.Empty -> true
+		| _ -> false )
+	| Sast.Empty -> (match t2 with 
+			Sast.List(b) -> true
+		| Sast.Empty -> true
+		| _ -> false )
+	| Sast.Poly(a) ->  false (* shouldn't be used with poly types *)
+	| Sast.Unknown -> false (* should only be used with known types *)
+	| Sast.Still_unknown -> raise (Type_error "having trouble resolving types")
+	| _ -> (match t2 with 
+			Sast.Poly(b) -> false (* shouldn't be used with poly types *)
+		| Sast.Unknown -> false (* should only be used with known types *)
+		| Sast.Still_unknown -> raise (Type_error "having trouble resolving types")
+		| _ -> t1 = t2 )
+
+let rec try_get_type pm ts tr = match ts with 
+		Sast.Poly(a) -> if StringMap.mem a pm then StringMap.find a pm 
+						else tr 
+	| Sast.List(a) -> (match tr with 
+			Sast.List(b) -> Sast.List(try_get_type pm a b)
+		| _ ->tr)
+	| _ -> ts
 
 (* Returns a type from an expression*)
 let rec get_type  program = function
@@ -494,31 +529,65 @@ let rec get_type  program = function
 		| SPrint(e) -> get_type program e
 		| SCall(f, args) -> 
 			let poly_map = StringMap.empty in  
-			let func_defs = find_f_def program f
-				in (*print_string (string_of_s_func_decl func_def); *)
-				let func_def = (match (List.hd func_defs) with 
+			let func_defs = find_f_def program f in 				
+				let func_def = (match (try (List.hd func_defs) 
+						with _ raise (Function_not_defined f) )with 
 						SFuncdec(x) -> x  | _ -> raise (Function_not_defined f)) in
 				let f_var = find_var_entry program.symtab f in
-				check_arg_types f program args f_var.v_type
+				let pm = StringMap.add "print" Unknown poly_map in 
+				let tsig = (List.hd (List.rev f_var.v_type)) in 
+				let prog = {decls = []; symtab = func_def.scope} in
+				let return_type = try (get_type prog func_def.s_value) with _ -> Unknown (* check here if can match with arguments *) in 
+				let polymap = map_return pm 
+											tsig
+											 return_type in
+				let full_map = check_arg_types f program polymap args f_var.v_type in 
+				try_get_type full_map tsig return_type
 			(* check all args against f type sig *)
 			(* check expr matches last type *)
 		| _ -> Sast.Still_unknown
 
-and arg_has_type prog (a,t) = match a with 
-		SArgconst(i) -> t = Sast.Int
-	| SArgbool(b) -> t = Sast.Bool
-	| SArgvar(v) -> (get_type prog (SVariable(v))) = t
-	| SArgparens(e) -> (get_type prog e) = t
+and map_return pm ts ret = match ts with 
+		Sast.Poly(a) -> (match ret with 
+					Unknown -> pm  (* is argument to function? *)
+				| Still_unknown -> pm
+				| Sast.Poly(b) -> 
+				| _ -> StringMap.add a ret pm)
+	| Sast.List(a) -> (match ret with 
+					Sast.List(b) -> map_return pm a b
+				| Empty -> pm
+				| _ ->type_error "Mismatch return type"
+	)
+	| _ -> pm
 
-and check_arg_types name prog a_list t_list = 
-	let ret_t = List.hd (List.rev t_list) in 
+and get_arg_type prog a = match a with 
+		SArgconst(i) -> Sast.Int
+	| SArgbool(b) -> Sast.Bool
+	| SArgvar(v) -> (get_type prog (SVariable(v)))
+	| SArgparens(e) -> (get_type prog e)
+
+
+and map_args name prog poly_map (a,t) = 
+	 match t with 
+		Poly(t_n) -> if StringMap.mem t_n poly_map then 
+				let typ = StringMap.find t_n poly_map in 
+					if(check_type_equality typ (get_arg_type prog a)) 
+					then poly_map
+					else raise (Function_arguments_type_mismatch name)
+					(* check types *)
+				else StringMap.add t_n (get_arg_type prog a) poly_map
+	| _ -> 
+			if check_type_equality t  (get_arg_type prog a) then poly_map 
+			else raise (Function_arguments_type_mismatch name)
+
+and check_arg_types name prog poly_map a_list t_list = 
+	(*let ret_t = List.hd (List.rev t_list) in *)
 	if((List.length a_list) +1) <> (List.length t_list) then 
 		raise (Wrong_number_of_arguments name)
 	else let t_list = List.rev (List.tl (List.rev t_list)) in
 		let tup = List.combine a_list t_list in 
-			if not (List.fold_left (&&) true (List.map (arg_has_type prog) tup))
-				then raise (Function_arguments_type_mismatch name)
-			else ret_t
+			let poly_map = (List.fold_left (map_args name prog) poly_map tup) in poly_map
+				(*raise (Function_arguments_type_mismatch name) *)
 
 
 let rec not_list_of_unknowns = function
@@ -531,9 +600,13 @@ let rec type_is_equal t1 t2 =
 	else match t1 with 
 		  Sast.List(a) -> (match t2 with
 				  Sast.List(b) -> type_is_equal a b
-				| Sast.Poly(b) -> true 
+				| Sast.Poly(b) -> true
+				| Empty -> true 
 				| _ -> false )
 		| Sast.Poly(a) -> true
+		| Sast.Empty -> (match t2 with 
+				 	Sast.List(b) -> true 
+				| _ -> false)
 		| _ -> (match t2 with 
 					Sast.Poly(b) -> true
 				| _ -> false )
@@ -608,11 +681,15 @@ let rec walk_decl prog = function
                     { decls = funcdef :: prog.decls; symtab = prog.symtab }
     | Main(expr) -> 
         if(prog.symtab.parent = None) then 
-            if( is_declared "main" prog.symtab) then raise (Multiple_declarations "main")
-        else let mainvar = {name = "main"; pats = []; v_type = [Unknown]; v_expr = Some(to_sexpr prog.symtab expr)}
-            in prog.symtab.identifiers <- (mod_var mainvar prog.symtab);
+            if( is_declared "main" prog.symtab) 
+							then raise (Multiple_declarations "main")
+        		else let mainvar = {name = "main"; 
+																pats = []; 
+																v_type = [Unknown]; 
+																v_expr = Some(to_sexpr prog.symtab expr)}
+            	in prog.symtab.identifiers <- (mod_var mainvar prog.symtab);
                { decls = (prog.decls @ [SMain(to_sexpr prog.symtab expr)]); symtab = prog.symtab }
-         else raise Main_wrong_scope
+        else raise Main_wrong_scope
 
 
 (* Convert Ast expression nodes to Sast s_expr nodes (so we can have nested scopes) *)
@@ -639,9 +716,17 @@ and to_sarg symbol = function
     | Ast.Argvar(s)    -> SArgvar(s)
     | Ast.Argparens(p) -> SArgparens(to_sexpr symbol p)
 
+let rec main_type_check = function
+	 Sast.Empty -> true
+ | Sast.Note -> true
+ | Sast.Chord -> true
+ | Sast.System -> true
+ | Sast.List(sys) -> main_type_check sys
+ | _ -> false
+
 (* Second pass -> use symbol table to resolve all semantic checks *)
 let rec walk_decl_second program = function
-    | SVardef(s_id, s_expr) as oldvar -> (*(print_string (string_of_s_program program));*)
+    | SVardef(s_id, s_expr) as oldvar -> 
         let texpr = [get_type program s_expr] in
         if (s_id.v_type = [Unknown]) then
             let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
@@ -678,15 +763,8 @@ let rec walk_decl_second program = function
       let e_type = get_type program expr in 
 				let new_main = {name = "main"; pats = []; v_type = [e_type]; v_expr = Some(expr)} in
 				let program = replace_main program new_main in 
-				(match e_type with
-       Sast.Empty -> program
-      | Sast.Note -> program
-      | Sast.Chord -> program
-      | Sast.System -> program
-      | Sast.List(sys) -> (match sys with 
-          Sast.System -> program
-        | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
-      | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
+				if main_type_check e_type then program else 
+						raise (Main_type_mismatch (string_of_sexpr expr))
     (*| _ -> program*)
 
 let has_main program = 
@@ -696,7 +774,7 @@ let has_main program =
 (* Right now gets called by smurf *)
 let first_pass list_decs = 
     let program = List.fold_left walk_decl {decls=[]; symtab = global_env} list_decs
-    in (*(print_string (string_of_s_program program));*) program
+    in  program
 
 let second_pass list_decs = 
     let program = first_pass list_decs in 

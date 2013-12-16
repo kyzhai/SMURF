@@ -1,25 +1,19 @@
-Int and Int
 Program: 
-	SVardef: 
-		ID: y  :: Int
-
-	1
 	SFuncdec: 
-		f (x) :: Int -> Int = y
+		f (x) :: a -> b = []
 	New Scope: 
-		ID: x  :: Int
+		ID: x  :: a
 
 	
 	SVardef: 
-		ID: z  :: Int
+		ID: y  :: []
 
-	f 0
+	f 1
 	SMain: []
 Global Scope: 
 	ID: main  :: []
-	ID: y  :: Int
-	ID: f x :: Int -> Int
-	ID: z  :: Int
+	ID: f x :: a -> b
+	ID: y  :: []
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a

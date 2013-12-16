@@ -1,3 +1,4 @@
+Int and Int
 Program: 
 	SFuncdec: 
 		f (x) :: Int -> Int = x
