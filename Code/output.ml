@@ -109,7 +109,7 @@ let write_to_file filename value =
     let oc = open_out filename in 
     let number_of_track = write_head oc value in 
     match number_of_track with
-          0 -> close_out oc; output_error ("Empty list")
+          0 -> close_out oc; print_string ("===== main = [] Program Exits Normally =====\n"); exit 0
         | _ -> (
     let dimx = ticks_of_output value in
     let dimy = number_of_track * 3 in
