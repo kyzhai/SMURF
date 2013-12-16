@@ -6,6 +6,7 @@ open Util
 open Interpreter
 open Output
 open Values
+open Lexing
 
 
 exception Fatal_error of string
@@ -16,11 +17,16 @@ let shell_error msg = raise (Shell_error msg)
 
 let exec_file config = 
     let fh = open_in config.smurf_name in 
-    let lexbuf = lexer_from_channel config.smurf_name fh in
+    let lexbuf = Lexing.from_channel fh in
+    let pos = lexbuf.lex_curr_p in
+    lexbuf.lex_curr_p <- {pos with pos_fname = config.smurf_name};
+    try
     let program = Parser.program Scanner.token lexbuf in
     close_in fh;
     let symtab = Semanalyze.second_pass program in
         (exec_main symtab config)
+    with 
+        Parsing.Parse_error -> fatal_error ("Syntax Error: " ^ string_of_position lexbuf.lex_curr_p)
 
 let _ =
     let interactive = ref false in

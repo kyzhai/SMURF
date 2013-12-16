@@ -11,6 +11,12 @@ let trace s = function
             ignore(printf "*** %s\n" s)
          else (); (a)
 
+
+(* Errors can be handled and will cause the program to terminate *)
+exception Fatal_error of string
+let fatal_error msg = raise (Fatal_error msg)
+
+
 type configruation = {
     mutable smurf_name : string;
     mutable bytecode_name : string;
@@ -18,15 +24,12 @@ type configruation = {
     mutable lib_path : string;
 }
 
-let lexer_from_channel fn ch =
-   let lex = Lexing.from_channel ch in
-   let pos = lex.lex_curr_p in
-     lex.lex_curr_p <- { pos with pos_fname = fn; pos_lnum = 1; };
-     lex
+let string_of_position {pos_fname=fn; pos_lnum=ln; pos_bol=bol; pos_cnum=cn} =
+  let c = cn - bol in
+    if fn = "" then
+      "Character " ^ string_of_int c
+    else
+      "File \"" ^ fn ^ "\", line " ^ string_of_int ln ^ ", character " ^ string_of_int c
 
-let lexer_from_string str =
-  let lex = Lexing.from_string str in
-  let pos = lex.lex_curr_p in
-    lex.lex_curr_p <- { pos with pos_fname = ""; pos_lnum = 1; };
-    lex
+
 

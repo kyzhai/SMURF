@@ -16,7 +16,7 @@ whitespace                  { token lexbuf } (* White space *)
 | "//"                      { nlcomment lexbuf }
 | "/*"                      { cc.(0)<-cc.(0)+1; nc1 lexbuf }
 | '\\'                      { continue lexbuf } 
-| '\n'                      { NL }
+| '\n'                      { Lexing.new_line lexbuf; NL }
 | '&'                       { NL }
 | '['                       { LLIST }
 | ']'                       { RLIST }
