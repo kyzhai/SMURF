@@ -42,7 +42,8 @@ let write_head oc value =
 (* get the number of ticks of a beat *)
 (* VBeat -> Int *)
 let ticks_of_beat = function
-      VBeat(VInt(i1),i2) -> 
+      VBeat(VInt(i1), -1) -> i1
+     | VBeat(VInt(i1),i2) -> 
       (int_of_float 
           ((2.0 *. (16.0/.(float_of_int i1))) -. ((16.0/.float_of_int i1) /.
               ((match i2 with 
