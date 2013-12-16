@@ -1,0 +1,19 @@
+Program: 
+	SVardef: 
+		ID: x  :: [System]
+
+	[[[ (2, 0)$4.]]]
+	SVardef: 
+		ID: y  :: [[[Note]]]
+
+	[[[ (2, 0)$4]]]
+	SMain: [y, x]
+Global Scope: 
+	ID: main  :: [[[[Note]]]]
+	ID: x  :: [System]
+	ID: y  :: [[[Note]]]
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+

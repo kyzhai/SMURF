@@ -20,14 +20,61 @@ let equiv_type v1 = match v1 with
     | Sast.System -> [Sast.List(Sast.List(Sast.Note)); Sast.List(Sast.Chord); Sast.System]
     | x -> [x]
 
+
 (* Return true if v1 and v2 are different types *)
 let rec diff_types v1 v2 = match v1, v2 with
+    | Sast.List(x)::t1, Sast.List(y)::t2 -> diff_types (x::t1) (y::t2)
     | x::t1, y::t2 -> if ((List.mem x (equiv_type y)) || (List.mem y (equiv_type x)))
                       then diff_types t1 t2 else true
     | [], [] -> false
     | [], _::_ -> true
     | _::_, [] -> true
 
+
+(* Check if an int is a valid beat *)
+let beat_as_int value = if List.mem value [1;2;4;8;16] then true else false
+
+(* Returns true if two types are just ints, beats, or nested ints or beats wher the number of nestings for
+  both types is equivalent *)
+let rec beats_and_ints ty1 ty2 = match ty2, ty2 with
+    Sast.List(t1), Sast.List(t2) -> beats_and_ints t1 t2
+   | Sast.Beat, Sast.Int -> true
+   | Sast.Int, Sast.Beat -> true
+   | Sast.Int, Sast.Int -> true
+   | Sast.Beat, Sast.Beat -> true
+   | _, _ -> false
+
+(* Check if we have a Beat expression in a list of s_exprs *)
+let rec contains_beat = function
+    [] -> false
+    | SList(sexpr)::rest -> if contains_beat sexpr then true else contains_beat rest
+    | SBeat(_,_)::rest -> true
+    | _::rest -> contains_beat rest
+
+(* If an Int is in the given list of s_exprs, make sure it's a power of two and return Beat type if so *)
+let rec powers_of_two = function
+    | [] -> Sast.Beat
+    | SList(sexpr) :: rest -> Sast.List(powers_of_two (sexpr @ 
+                                            (let rec delist = function
+                                             [] -> []
+                                             |SList(sexpr)::r -> sexpr @ delist r
+                                             |SVariable(s)::r -> delist r (* Ignoring vars...resolve this in interp! *)
+                                             |_ -> type_error ("Found a list of nested elements
+                                                                with non-equal number of nestings")
+                                             in delist rest)))
+    | SLiteral(i) :: rest -> if beat_as_int i then powers_of_two rest else
+                                type_error ("Non-power of 2 entity " ^ (string_of_int i) ^
+                                            " in list of beat elements")
+    | _ :: rest -> powers_of_two rest
+
+
+
+(* Return true if argument is a system type or a nested system *)
+let rec eventual_system = function 
+    Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) -> true
+   | Sast.List(x) -> if List.mem x (equiv_type Sast.System) then true else
+                        eventual_system x
+   | _ -> false
 
 (* Check if a type signatures exists for an id in the current scope *)
 let rec exists_typesig id = function
@@ -348,15 +395,21 @@ let rec get_type  program = function
                     (* Not sure this checks the correct thing *)
                     (match te1 with 
                       Sast.List(t1) -> (match te2 with
-                          Sast.List(t2) -> (if t1 <> t2 then 
-                              type_error ("Operands of a concat operator have different types") else te1)
+                          Sast.List(t2) -> if t1 <> t2 then 
+                              (try
+                                let x = get_type program (SList([e1;e2])) in
+                                (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
+                              with (Type_error x) ->
+                                  type_error ("Operands of a concat operator have different types"))
+                              else te1
                         | Sast.Empty -> te1
                         | _ -> type_error "Concat operator can only used between lists")
                     | Sast.Chord -> (match te2 with
-                          Sast.Chord | Sast.Empty -> Sast.Chord
+                          Sast.Chord | Sast.Empty | Sast.List(Sast.Note) -> Sast.Chord
                         | _ -> type_error ("Operands of a concat operator have different types"))
                     | Sast.System -> (match te2 with
-                          Sast.System | Sast.Empty -> Sast.System
+                          Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) 
+                          | Sast.Empty -> Sast.System
                         | _ -> type_error ("Operands of a concat operator have different types"))
                     | Sast.Empty -> (match te2 with
                           Sast.List(t2) -> te2
@@ -369,19 +422,24 @@ let rec get_type  program = function
                 | Ast.Cons -> (* Cons: Element : List *)
                     (match te2 with 
                        Sast.List(t2) -> (if te1 <> t2 then 
-                            type_error ("The types of the lhs and rhs of a cons operator don't match")
+                              (try
+                                let x = get_type program (SList([e1;e2])) in
+                                (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
+                              with (Type_error _) ->
+                                  type_error ("The types of the lhs and rhs of a cons operator don't match"))
                             else te2)
                      | Sast.Chord -> (if te1 <> Sast.Note then 
                          type_error ("The types of the lhs and rhs of a cons operator don't match")
                          else te2)
-                     | Sast.System -> (if te1 <> Sast.Chord then 
+                     | Sast.System -> (if te1 <> Sast.Chord && te1 <> Sast.List(Sast.Note)  then 
                          type_error ("The types of the lhs and rhs of a cons operator don't match")
                          else te2)
                      | Sast.Empty -> (match te1 with
                            Sast.Note -> Sast.Chord
                          | Sast.Chord -> Sast.System 
                          | _ -> Sast.List(te1))
-                     | _ -> type_error ("The second operand of a cons operator was: " ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
+                     | _ -> type_error ("The second operand of a cons operator was: " 
+                         ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
                 | Ast.Trans -> (* Trans: Int ^^ List *)
                     if te1 <> Sast.Int
                     then type_error ("First element in a Trans expression " ^
@@ -454,13 +512,15 @@ let rec get_type  program = function
              let match_type_or_fail x y = 
                 let tx = (get_type program x) in
                 let ty = (get_type program y) in
-                if tx <> ty 
+                if diff_types [tx] [ty] && not (beats_and_ints tx ty) 
                     then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
                         ^ Sast.string_of_s_type ty ^ " in a same list")
                 else () 
-            in List.iter (match_type_or_fail hd) el; Sast.List(get_type program (hd)))
+            in List.iter (match_type_or_fail hd) el; 
+            if contains_beat el then Sast.List(powers_of_two el)
+            else Sast.List(get_type program (hd)))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
@@ -694,11 +754,10 @@ and walk_decl_second program = function
 				(match e_type with
        Sast.Empty -> program
       | Sast.Note -> program
-      | Sast.Chord -> program
-      | Sast.System -> program
-      | Sast.List(sys) -> (match sys with 
-          Sast.System -> program
-        | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
+      | Sast.Chord | Sast.List(Sast.Note) -> program
+      | Sast.System | Sast.List(Sast.Chord) | Sast.List(Sast.List(Sast.Note)) -> program
+      | Sast.List(sys) -> if eventual_system sys then program else 
+                          raise (Main_type_mismatch (string_of_sexpr expr))
       | _ -> raise (Main_type_mismatch (string_of_sexpr expr)))
     (*| _ -> program*)
 
