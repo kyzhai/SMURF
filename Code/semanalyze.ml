@@ -157,7 +157,7 @@ let rec find_f_def program f_name =
 (* Update type and scope of function declaration in our symbol table and our list of declarations *)
 let replace_funcdec program func oldfunc = match func with
     | SFuncdec(info) -> 
-        let newdecls = List.filter (fun dec -> dec <> oldfunc) program.decls in
+        let newdecls = List.filter (fun dec -> dec != oldfunc) program.decls in
         let newsym = List.filter (fun v -> v.name <> info.s_fname || v.pats <> info.s_args) 
                      program.symtab.identifiers in
         let newentry = {name = info.s_fname; v_type = info.type_sig; 
@@ -268,7 +268,8 @@ let rec gen_new_scope = function
 
 let rec find_var_entry symtab v =
 	try ( List.find (fun t -> t.name = v) symtab.identifiers)
-		with Not_found -> (match symtab.parent with 
+		with Not_found -> 
+        (match symtab.parent with 
 			Some(p) -> find_var_entry p v 
 			| None -> raise (Missing_variable_definition v))
 			
@@ -300,7 +301,7 @@ let rec get_type  program = function
 							let n_prog = {decls = program.decls; 
 														symtab = (change_type program.symtab var Still_unknown)} in 
 							get_type  n_prog expr
-						| None -> raise (Missing_variable_definition s))
+						| None ->  raise (Missing_variable_definition s))
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
         let te1 = get_type program e1
         and te2 = get_type program e2 in
@@ -669,7 +670,7 @@ let rec walk_decl prog = function
                 let funcdef = SFuncdec({s_fname = fdec.fname; 
                                                 type_sig = [Unknown];
                                                 s_args = fdec.args;
-                                                s_value = to_sexpr prog.symtab fdec.value;
+                                                s_value = to_sexpr new_scope fdec.value;
                                                 scope = new_scope;}) in 
                 let var = {name = fdec.fname; pats = fdec.args;  v_type = [Unknown]; 
                            v_expr = Some(to_sexpr prog.symtab fdec.value)} in
@@ -700,8 +701,7 @@ and to_sexpr symbol = function
     | Ast.Call(e1, e2) -> SCall(e1, (List.map (fun s -> to_sarg symbol s)  e2))
     | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in                                
                              let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs      
-                             in let nested_prog2 = List.fold_left walk_decl_second nested_prog nested_prog.decls
-                             in SLet(nested_prog2, to_sexpr sym e)
+                             in SLet(nested_prog, to_sexpr sym e)
 
 and to_sarg symbol = function
     | Ast.Arglit(i)           -> SArglit(i)
@@ -717,7 +717,10 @@ and to_sarg symbol = function
 (* Second pass -> use symbol table to resolve all semantic checks *)
 and walk_decl_second program = function
     | SVardef(s_id, s_expr) as oldvar -> (*(print_string (string_of_s_program program));*)
-        let texpr = [get_type program s_expr] in
+        let new_sexpr = (match s_expr with
+          SLet(prog, exp) -> SLet(List.fold_left walk_decl_second prog prog.decls, exp)
+          | x -> x) in 
+        let texpr = [get_type program new_sexpr] in
         if (s_id.v_type = [Unknown]) then
             let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
                                let set_type = get_typesig s_id.name program.symtab.identifiers in
@@ -726,7 +729,7 @@ and walk_decl_second program = function
                                else set_type
                            else texpr in 
             let newvar = SVardef({name = s_id.name; pats = []; v_type = new_type; 
-                                  v_expr = s_id.v_expr}, s_expr) in
+                                  v_expr = s_id.v_expr}, new_sexpr) in
             replace_vardef program newvar oldvar
         else if diff_types s_id.v_type texpr then
             raise (Type_mismatch s_id.name)
@@ -735,17 +738,20 @@ and walk_decl_second program = function
         let types = get_types_p info.s_fname program.symtab in
         let argl = List.length info.s_args in
         let tyl = List.length types in
+        let info = {s_fname = info.s_fname; type_sig = info.type_sig; s_args = info.s_args;
+                    scope = info.scope; s_value = (match info.s_value with
+                        SLet(prog, exp) -> SLet(List.fold_left walk_decl_second prog prog.decls, exp)
+                        | x -> x)} in
         if (argl <> tyl - 1) then raise (Pattern_num_mismatch( argl, tyl - 1))
-        else let search_decls = List.filter (fun v -> v <> oldfunc) program.decls in
+        else let search_decls = List.filter (fun v -> v != oldfunc) program.decls in
             if (List.length search_decls < (List.length program.decls) - 1) 
                 || (same_pats info search_decls)
             then raise (Multiple_identical_pattern_lists 
                         (String.concat " " (List.map string_of_patterns info.s_args)))
             else 
-							let n_prog = {decls = program.decls; symtab = (check_pat_types types info) } in 
-							let newscope = check_ret_type n_prog types info in
-
-                 let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
+                let n_prog = {decls = program.decls; symtab = (check_pat_types types info) } in 
+                let newscope = check_ret_type n_prog types info in 
+                let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
                                      s_args = info.s_args; s_value = info.s_value;
                                      scope = newscope;}) in
              replace_funcdec program newfunc oldfunc
