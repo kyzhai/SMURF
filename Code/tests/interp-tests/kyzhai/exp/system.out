@@ -7,13 +7,13 @@ Track 0:
  tick 0, channel 1: program change 48
  tick 0, channel 1: note C#4 on velocity: 90
  tick 0, channel 1: note D5 on velocity: 90
- tick 20, channel 1: note C#4 on velocity: 0
- tick 20, channel 1: note D5 on velocity: 0
- tick 20, channel 1: note D#5 on velocity: 90
- tick 20, channel 1: note A#5 on velocity: 90
- tick 40, channel 1: note D#5 on velocity: 0
- tick 40, channel 1: note A#5 on velocity: 0
- tick 40, end of track
+ tick 28, channel 1: note C#4 on velocity: 0
+ tick 28, channel 1: note D5 on velocity: 0
+ tick 28, channel 1: note D#5 on velocity: 90
+ tick 28, channel 1: note A#5 on velocity: 90
+ tick 56, channel 1: note D#5 on velocity: 0
+ tick 56, channel 1: note A#5 on velocity: 0
+ tick 56, end of track
 Program: 
 	SVardef: 
 		ID: a  :: System
