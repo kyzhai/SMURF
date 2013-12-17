@@ -37,32 +37,19 @@ let write_head oc value =
         done;
     fprintf oc "\n"; 
     number_of_track
-    
-
-(* get the number of ticks of a beat *)
-(* VBeat -> Int *)
-let ticks_of_beat = function
-      VBeat(VInt(i1),i2) -> 
-      (int_of_float 
-          ((16.0/.(float_of_int i1)) +.
-              ((match i2 with 
-                 0 -> 0.0
-               | 1 -> (8.0/.(float_of_int i1))
-               | 2 -> (4.0/.(float_of_int i1))
-               | 3 -> (2.0/.(float_of_int i1))
-               | 4 -> (float_of_int i1) 
-               | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
-                       )))
-    | _ -> output_error ("Error in ticks_of_beat: Not a beat")
 
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
 (* value -> Int *)
-let rec ticks_of_output value = 
+let rec ticks_of_output value =
     match value with
-      VNote(pc,reg,bt) -> ticks_of_beat bt
+      VNote(pc,reg,beat) -> 
+      (match beat with
+          | VBeat(beat) -> beat
+          | _ -> interp_error ("Invalid Beat value")
+      )
     | VChord(nlst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 nlst
-    | VSystem(slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst 
-    | VList(lst) -> List.fold_left (fun m sys -> let tick = ticks_of_output sys in 
+    | VSystem(slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst
+    | VList(lst) -> List.fold_left (fun m sys -> let tick = ticks_of_output sys in
             if m < tick then tick else m) 0 lst
     | _ -> output_error ("Error in ticks_of_output")
 
@@ -71,25 +58,24 @@ let rec ticks_of_output value =
 (* Value -> Array -> Int -> Int -> Int -> (Int, Int, Int) *)
 let rec write_to_array value arr ix iy tic = 
     (match value with
-    | VNote(VInt(p),VInt(r),bt) -> let nt = ticks_of_beat bt in 
-        let note = (match p with 
+    | VNote(VInt(pc),VInt(reg),VBeat(beat)) ->
+        let note = (match pc with
               -1 -> -1
-            | _ -> p+12*(r+3)) in (
-            arr.(ix).(iy) <- tic;                   (* tick *)
+            | _ -> pc+12*(reg+3)) in (
+            arr.(ix).(iy) <- tic;                     (* tick *)
             arr.(ix).(iy+1) <- note;                  (* note *)
             arr.(ix).(iy+2) <- default_velocity;      (* velocity *)
-            arr.(ix+1).(iy) <- tic+nt;
+            arr.(ix+1).(iy) <- tic+beat;
             arr.(ix+1).(iy+1) <- note;
             arr.(ix+1).(iy+2) <- 0;
-            ix+nt,iy,tic+nt)
+            ix+beat,iy,tic+beat)
     (* All notes in a chord should fills same set of ticks *)
-    | VChord((VNote(_,_,bt)::xs) as nlst) -> 
-        (let ntks = ticks_of_beat bt in
-         let resx, resy, restic = 
-         (List.fold_left (fun (x,y,ntic) note -> 
-            let (nx,ny,ntic) = write_to_array note arr x y ntic 
-            in (nx,ny,tic)) (ix,iy,tic) nlst) in resx, resy, restic+ntks)
-    | VSystem(clst) -> 
+    | VChord((VNote(_,_,_)::xs) as nlst) ->
+        (let resx, resy, restic =
+         (List.fold_left (fun (x,y,ntic) note ->
+            let (nx,ny,ntic) = write_to_array note arr x y ntic
+            in (nx,ny,tic)) (ix,iy,tic) nlst) in resx, resy, restic)
+    | VSystem(clst) ->
         (let resx, resy, resz = 
         List.fold_left (fun (x,y,ntic) chord -> 
             let (nx,ny,ntic) = write_to_array chord arr x y ntic

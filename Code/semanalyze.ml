@@ -485,7 +485,7 @@ let rec get_type  program = function
             "and a power of 2 between 1 and 16. The given element was of type " ^
             Sast.string_of_s_type ti1)
         else
-          (* Need to check more thoroughly*)
+          (* Checked more thoroughly in interpreter *)
           if i2 < 0 || i2 > 4
             then type_error ("Dots may not increase Beat value past 16th")
             else Sast.Beat

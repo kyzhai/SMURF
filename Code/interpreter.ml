@@ -7,7 +7,12 @@ open Util
 open Printf
 open Values
 open Output
-    
+
+let ticks_16 = [| 1 |]
+let ticks_8 = [| 2; 3 |]
+let ticks_4 = [| 4; 6; 7 |]
+let ticks_2 = [| 8; 12; 14; 15 |]
+let ticks_1 = [| 16; 24; 28; 30; 31 |]
 let r_max = 1000000
 
 (* convernt the symbol table defined in Sast to environment defined in Values 
@@ -64,33 +69,105 @@ and eval env = function
     | Sast.SBoolean(x) -> (VBool(x), env)
     | Sast.SVariable(str) -> 
         let v,env' = resolve_name env str in v,env'
-    | Sast.SBeat(e, n) -> 
-        (let (v,env') = eval env e in VBeat(v,n), env')
-    | Sast.SNote(e1, e2, e3) -> 
-        (let (v1,env1) = eval env e1 in 
-         let (v2,env2) = eval env1 e2 in 
-         let (v3,env3) = eval env2 e3 in VNote(v1,v2,v3),env3)
+    | Sast.SBeat(e, n) ->
+        (let (ve,env1) = eval env e in
+         (match ve with
+            | VInt(x) ->
+                (* Check valid Beat length *)
+                if x <> 1 && x <> 2 && x <> 4 && x <> 8 && x <> 16
+                then interp_error ("Beat must be a power of 2 between 1 & 16")
+                else
+                    (* Check valid dots additions *)
+                    if x = 16 && n <> 0
+                    then interp_error ("A 16th Beat maybe not have dots")
+                    else
+                        if x = 8 && (n <> 0 || n <> 1)
+                        then interp_error ("An 8th Beat may only have up to 1 dot")
+                        else
+                            if x = 4 && (n < 0 || n > 2)
+                            then interp_error ("A quarter Beat may only have up to 2 dots")
+                            else
+                                if x = 2 && (n < 0 || n > 3)
+                                then interp_error ("A half Beat may only have up to 3 dots")
+                                else
+                                    if x = 1 && (n < 0 || n > 4)
+                                    then interp_error ("A whole Beat may only have up to 4 "
+                                        ^ "dots")
+                                    else
+                                        (* Get MIDI tick value for Beat *)
+                                        if x = 16
+                                        then (VBeat(ticks_16.(n)),env1)
+                                        else
+                                            if x = 8
+                                            then (VBeat(ticks_8.(n)),env1)
+                                            else
+                                                if x = 4
+                                                then (VBeat(ticks_4.(n)),env1)
+                                                else
+                                                    if x = 2
+                                                    then (VBeat(ticks_2.(n)),env1)
+                                                    else
+                                                        if x = 1
+                                                        then (VBeat(ticks_1.(n)),env1)
+                                                        else interp_error ("Invalid "
+                                                              ^ "Beat value given")
+            | _ -> interp_error ("Not expected Beat values")
+         )
+        )
+    | Sast.SNote(pc, reg, beat) ->
+        (let (vpc,env1) = eval env pc in
+         let (vreg,env2) = eval env1 reg in
+         let (vbeat,env3) = eval env2 beat in VNote(vpc,vreg,vbeat),env3)
     | Sast.SBinop(e1, op, e2) -> (*Incomplete*)
-        (let (v1,env1) = eval env e1 in 
-         let (v2,env2) = eval env1 e2 in 
-         (match v1, v2 with 
-            | VInt(x), VInt(y) -> 
-                (match op with 
+        (let (v1,env1) = eval env e1 in
+         let (v2,env2) = eval env1 e2 in
+         (match v1, v2 with
+            | VInt(x), VInt(y) ->
+                (match op with
                       Add -> VInt(x+y),env2
                     | Sub -> VInt(x-y),env2
                     | Mul -> VInt(x*y),env2
                     | Div -> VInt(x/y),env2
                     | Mod -> VInt(x mod y),env2
+                    | PCAdd -> VInt((x+y) mod 12),env2
+                    | PCSub -> VInt((x-y) mod 12),env2
+                    | Less -> VBool(x<y),env2
+                    | Leq -> VBool(x<=y),env2
+                    | Greater -> VBool(x>y),env2
+                    | Geq -> VBool(x>=y),env2
+                    | BoolEq -> VBool(x=y),env2
                     | _ -> interp_error ("Not expected op for Ints"))
+            | VBeat(x), VBeat(y) ->
+                (* Operations act the same as normal because Beat has been converted to Ticks*)
+                (match op with
+                      BeatAdd -> VBeat(x+y),env2
+                    | BeatSub -> VBeat(x-y),env2
+                    | BeatMul -> VBeat(x*y),env2
+                    | BeatDiv -> VBeat(x/y),env2
+                    | BeatLess -> VBool(x<y),env2
+                    | BeatLeq -> VBool(x<=y),env2
+                    | BeatGreater -> VBool(x>y),env2
+                    | BeatGeq -> VBool(x>=y),env2
+                    | BoolEq -> VBool(x=y),env2
+                    | _ -> interp_error ("Not expected op for Beats"))
+            | VBool(x), VBool(y) ->
+                (match op with
+                      And -> VBool(x && y),env2
+                    | Or -> VBool(x || y),env2
+                    | BoolEq -> VBool(x=y),env2
+                    | _ -> interp_error ("Not expected op for Bools"))
             | VList(lx), VList(ly) -> 
                 (match op with
                       Concat -> VList(lx @ ly),env2
                     | _ -> interp_error ("Not expected op for Lists"))
-            | _ -> interp_error ("Not expected operands")
-         ))
+            | _ -> interp_error ("Not expected operands"))
+         )
     | Sast.SPrefix(op, e) -> (*Incomplete*)
         (let (v1,env1) = eval env e in
-         match v1 with 
+         match v1 with
+            | VBool(x) -> (match op with
+                | Not -> VBool(not x),env1
+                | _ -> interp_error ("Unexpected op for Bool"))
             | VList(lst) -> (match op with
                 | Retro -> VList(List.rev lst),env1
                 | _ -> interp_error ("Unexpected op for list"))

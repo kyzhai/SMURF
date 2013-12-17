@@ -19,7 +19,7 @@ end)
 type value = 
     | VInt of int
     | VBool of bool
-    | VBeat of value * int
+    | VBeat of int
     | VNote of value * value * value
     | VList of value list
     | VChord of value list
@@ -40,14 +40,17 @@ type enviroment = {
 let rec string_of_value = function
     | VInt(x) -> string_of_int x
     | VBool(x) -> string_of_bool x
-    | VBeat(i1, i2) -> string_of_value i1 ^ 
+    | VBeat(x) -> string_of_int x ^ "ticks"
+        (*
+        string_of_value i1 ^ 
         let rec repeat n s = 
             if n>0 then 
                 repeat (n-1) ("." ^ s)
             else s in repeat i2 ""
-    | VNote(pc, reg, bt) -> "(" ^ string_of_value pc 
+        *)
+    | VNote(pc, reg, beat) -> "(" ^ string_of_value pc 
         ^ ", " ^ string_of_value reg ^ ")$" 
-        ^ (string_of_value bt)
+        ^ (string_of_value beat)
     | VList(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
     | VChord(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
     | VSystem(vl) -> "[" ^ (String.concat "," (List.map string_of_value vl)) ^ "]"
