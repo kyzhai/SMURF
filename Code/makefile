@@ -5,8 +5,8 @@ SOURCES = scanner.mll \
           semanalyze.ml \
           parser.ml \
           scanner.ml \
-          test.ml \
-          smurf.ml \
+          parser-test.ml \
+          semantic-test.ml \
           interpreter.ml \
           util.ml \
           toplevel.ml \
@@ -16,10 +16,9 @@ SOURCES = scanner.mll \
 OCAMLBUILD = ocamlbuild
 
 all: 
-	$(OCAMLBUILD) test.byte smurf.byte toplevel.byte
+	$(OCAMLBUILD) parser-test.byte semantic-test.byte toplevel.byte
 
 clean:
 	$(OCAMLBUILD) -clean
-	rm -f testout.*
-    
+	rm -f parser-testout.*
 

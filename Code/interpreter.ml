@@ -109,7 +109,6 @@ and eval env = function
                     | Greater -> VBool(x>y),env2
                     | Geq -> VBool(x>=y),env2
                     | BoolEq -> VBool(x=y),env2
-
                     | BeatAdd ->
                         if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
                         then (* This is a hacky way of doing this *)
