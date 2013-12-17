@@ -162,7 +162,17 @@ and eval env = function
                 (match op with
                       Concat -> VList(lx @ ly),env2
                     | _ -> interp_error ("Not expected op for Lists"))
-            | _ -> interp_error ("Not expected operands"))
+            | VList([]), x | x, VList([]) -> 
+                (match x with
+                     VChord(m) -> (match op with
+                                    Concat -> VChord(m),env2
+                                    | _ -> interp_error ("Not expected op between empty list and Chord"))
+                     | VSystem(n) -> (match op with
+                                     Concat -> (VSystem(n),env2)
+                                   | Cons -> (VSystem(VChord([])::n),env2)
+                                   | _ -> interp_error ("Not expected op between empty list and System"))
+                     |_ -> interp_error("Empty list being applied to nonlist operand in binary operation"))
+            | x, y -> interp_error ((string_of_value y) ^ "Not expected operands"))
          )
     | Sast.SPrefix(op, e) -> (*Incomplete*)
         (let (v1,env1) = eval env e in
@@ -186,7 +196,7 @@ and eval env = function
             | VBool(true), env -> eval env e2 
             | VBool(false), env -> eval env e3
             | _ -> interp_error ("error in If expr"))
-    | Sast.SList(el) -> (*updating evironment after eval every expression*)
+    | Sast.SList(el) -> if el = [] then  (VList([]), env) else  (*updating evironment after eval every expression*)
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
                     let v, env' = eval env e in (env',v::lst)) 
                 (env,[]) el) in VList(List.rev lst), env')
@@ -204,7 +214,7 @@ and eval env = function
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
-    | Sast.SPrint(e1) -> (*print ;*) eval env e1 
+    | Sast.SPrint(e1) -> print_string (string_of_value (fst (eval env e1))) ; eval env e1 
         
 
 (* exec_decl : env -> decl -> env' *)
