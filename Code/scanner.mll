@@ -1,4 +1,5 @@
 { open Parser
+  open Lexing
     let cc = [|0|]
 }                          (* Get the Token types *)
 (* Optional Definitions *)
