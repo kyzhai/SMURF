@@ -63,6 +63,7 @@ let rec ticks_of_output value =
     match value with
       VNote(pc,reg,beat) -> 
       (match beat with
+          | VBeat(-1) -> 0
           | VBeat(beat) -> beat
           | _ -> interp_error ("Invalid Beat value")
       )
@@ -77,7 +78,7 @@ let rec ticks_of_output value =
 (* Value -> Array -> Int -> Int -> Int -> (Int, Int, Int) *)
 let rec write_to_array value arr ix iy tic = 
     (match value with
-    | VNote(VInt(pc),VInt(reg),VBeat(beat)) ->
+    | VNote(VInt(pc),VInt(reg),VBeat(beat)) -> if (pc = -1 && reg = -1 && beat = -1) then ix,iy,tic else
         let note = (match pc with
               -1 -> -1
             | _ -> pc+12*(reg+3)) in (
@@ -89,11 +90,12 @@ let rec write_to_array value arr ix iy tic =
             arr.(ix+1).(iy+2) <- 0;
             ix+beat,iy,tic+beat)
     (* All notes in a chord should fills same set of ticks *)
-    | VChord((VNote(_,_,VBeat(ticks))::xs) as nlst) ->
+    | VChord((VNote(_,_,VBeat(ticks))::xs) as nlst) -> 
+        let actlst = if ticks = -1 then List.tl nlst else nlst in
         (let resx, resy, restic =
          (List.fold_left (fun (x,y,ntic) note ->
             let (nx,ny,ntic) = write_to_array note arr x y ntic
-            in (nx,ny,tic)) (ix,iy,tic) nlst) in resx, resy, restic+ticks)
+            in (nx,ny,tic)) (ix,iy,tic) actlst) in resx, resy, (if ticks = -1 then restic else restic+ticks))
     | VSystem(clst) ->
         (let resx, resy, resz = 
         List.fold_left (fun (x,y,ntic) chord -> 
@@ -105,7 +107,7 @@ let rec write_to_array value arr ix iy tic =
                   in (nx,ny,ntic)) (ix,iy,tic) slst
         | _ -> output_error ("Error in write_to_array: Expression bound to MAIN must "
                             ^ "be the empty list, a note, or a list of systems, chords, or notes"))
-    | _ -> output_error ("Error in write_to_array: Input is not a valid value")
+    | x -> output_error ("Error in write_to_array: Input is not a valid value")
     )
 
 
