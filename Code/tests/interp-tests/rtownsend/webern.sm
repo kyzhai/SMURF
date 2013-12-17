@@ -1,20 +1,3 @@
-
-reverse :: [a] -> [a]
-reverse [] = []
-reverse a:rest = (reverse rest) ++ [a]
-
-//Remove first n elements from given list
-drop :: Int -> [a] -> [a]
-drop 0 x = x
-drop _ [] = []
-drop x l:rest = drop (x - 1) rest
-
-//Get first n elements from given list
-take :: Int -> [a] -> [a]
-take 0 _ = []
-take _ [] = []
-take x l:rest = l : (take (x - 1) rest)
-						
 getTransRow :: [Int] -> Int -> [Int]
 getTransRow [] _ = []
 getTransRow l 1 = ~l
@@ -46,12 +29,6 @@ subChord 0 y l  = let take :: Int -> [[a]] -> [a]
 											b = drop y l
 									in r : b
 subChord x y c:rest = c : (subChord (x - 1) (y - 1) rest)
-
-makeNotes :: [Int] -> [Int] -> [Beat] -> [Note]
-makeNotes [] _ _ = []
-makeNotes _ [] _ = []
-makeNotes _ _ [] = []
-makeNotes pc:pcs reg:regs b:bs = (pc, reg)$b : (makeNotes pcs regs bs)
 
 interweaveRest :: [Chord] -> [Chord]
 interweaveRest [] = []
