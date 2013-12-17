@@ -103,7 +103,8 @@ let rec write_to_array value arr ix iy tic =
           VSystem(_) | VChord(_) | VNote(_,_,_) -> List.fold_left (fun (x,y,ntic) sys ->
                   let (nx,ny,ntic) = write_to_array sys arr x y ntic
                   in (nx,ny,ntic)) (ix,iy,tic) slst
-        | _ -> output_error ((string_of_value x) ^ "Error in write_to_array: Must be a list of systems, chords, or notes"))
+        | _ -> output_error ("Error in write_to_array: Expression bound to MAIN must "
+                            ^ "be the empty list, a note, or a list of systems, chords, or notes"))
     | _ -> output_error ("Error in write_to_array: Input is not a valid value")
     )
 
