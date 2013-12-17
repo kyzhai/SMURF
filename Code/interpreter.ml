@@ -176,6 +176,11 @@ and eval env = function
                            | Cons -> (VSystem(VChord([VNote(VInt(-1),VInt(-1),VBeat(-1))])::n),env2)
                            | _ -> interp_error ("Not expected op between empty list and System"))
                      |_ -> interp_error("Empty list being applied to nonlist operand in binary operation"))
+            | x, VList([]) ->
+                (match op with
+                    Concat -> x, env2
+                  | Cons -> VList([x]), env2
+                  | _ -> interp_error ("Not expected op given two lists with second being the empty list"))
             | VList(lx), VList(ly) -> 
                 (match op with
                       Concat -> VList(lx @ ly),env2
