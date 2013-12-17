@@ -91,6 +91,7 @@ pattern:
 |   WILD                            { Patwild }
 |   LLIST comma_patterns RLIST      { Patcomma(List.rev $2) }
 |   pattern CONS pattern            { Patcons($1, $3) }
+|   LPAREN pattern RPAREN           { $2 }
 
 comma_patterns:
     /* empty */                     { [] }

@@ -70,51 +70,23 @@ and eval env = function
     | Sast.SBoolean(x) -> (VBool(x), env)
     | Sast.SVariable(str) -> 
         let v,env' = resolve_name env str in v,env'
-    | Sast.SBeat(e, n) ->
-        (let (ve,env1) = eval env e in
-         (match ve with
-            | VInt(x) ->
-                (* Check valid Beat length *)
-                if x <> 1 && x <> 2 && x <> 4 && x <> 8 && x <> 16
-                then interp_error ("Beat must be a power of 2 between 1 & 16")
-                else
-                    (* Check valid dots additions *)
-                    if x = 16 && n <> 0
-                    then interp_error ("A 16th Beat maybe not have dots")
-                    else
-                        if x = 8 && (n <> 0 || n <> 1)
-                        then interp_error ("An 8th Beat may only have up to 1 dot")
-                        else
-                            if x = 4 && (n < 0 || n > 2)
-                            then interp_error ("A quarter Beat may only have up to 2 dots")
-                            else
-                                if x = 2 && (n < 0 || n > 3)
-                                then interp_error ("A half Beat may only have up to 3 dots")
-                                else
-                                    if x = 1 && (n < 0 || n > 4)
-                                    then interp_error ("A whole Beat may only have up to 4 "
-                                        ^ "dots")
-                                    else
-                                        (* Get MIDI tick value for Beat *)
-                                        if x = 16
-                                        then (VBeat(ticks_16.(n)),env1)
-                                        else
-                                            if x = 8
-                                            then (VBeat(ticks_8.(n)),env1)
-                                            else
-                                                if x = 4
-                                                then (VBeat(ticks_4.(n)),env1)
-                                                else
-                                                    if x = 2
-                                                    then (VBeat(ticks_2.(n)),env1)
-                                                    else
-                                                        if x = 1
-                                                        then (VBeat(ticks_1.(n)),env1)
-                                                        else interp_error ("Invalid "
-                                                              ^ "Beat value given")
-            | _ -> interp_error ("Not expected Beat values")
-         )
-        )
+    | Sast.SBeat(e, n) -> if n < 0 then interp_error ("Somehow we have a negative number of dots on a beat!")
+        else let (ve,env1) = eval env e in
+        (match ve with
+            | VInt(x) -> (match x with
+                1 -> if n > 4 then interp_error ("A whole Beat may only have up to 4 dots")
+                     else (VBeat(ticks_1.(n)),env1)
+              | 2 -> if n > 3 then interp_error ("A half Beat may only have up to 3 dots")
+                     else (VBeat(ticks_2.(n)),env1)
+              | 4 -> if n > 2 then interp_error ("A quarter Beat may only have up to 2 dots")
+                     else (VBeat(ticks_4.(n)),env1)
+              | 8 -> if n > 1 then interp_error ("An 8th Beat may only have up to 1 dot")
+                     else (VBeat(ticks_8.(n)),env1)
+              | 16 -> if n > 0 then interp_error ("A 16th Beat may not have dots")
+                      else (VBeat(ticks_16.(n)),env1)
+              | _ -> interp_error ("Beat must be a power of 2 between 1 & 16"))
+
+            | _ -> interp_error ("Not expected Beat values"))
     | Sast.SNote(pc, reg, beat) ->
         (let (vpc,env1) = eval env pc in
          let (vreg,env2) = eval env1 reg in

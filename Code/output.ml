@@ -89,11 +89,11 @@ let rec write_to_array value arr ix iy tic =
             arr.(ix+1).(iy+2) <- 0;
             ix+beat,iy,tic+beat)
     (* All notes in a chord should fills same set of ticks *)
-    | VChord((VNote(_,_,_)::xs) as nlst) ->
+    | VChord((VNote(_,_,VBeat(ticks))::xs) as nlst) ->
         (let resx, resy, restic =
          (List.fold_left (fun (x,y,ntic) note ->
             let (nx,ny,ntic) = write_to_array note arr x y ntic
-            in (nx,ny,tic)) (ix,iy,tic) nlst) in resx, resy, restic)
+            in (nx,ny,tic)) (ix,iy,tic) nlst) in resx, resy, restic+ticks)
     | VSystem(clst) ->
         (let resx, resy, resz = 
         List.fold_left (fun (x,y,ntic) chord -> 
@@ -103,7 +103,8 @@ let rec write_to_array value arr ix iy tic =
           VSystem(_) | VChord(_) | VNote(_,_,_) -> List.fold_left (fun (x,y,ntic) sys ->
                   let (nx,ny,ntic) = write_to_array sys arr x y ntic
                   in (nx,ny,ntic)) (ix,iy,tic) slst
-        | _ -> output_error ((string_of_value x) ^ "Error in write_to_array: Must be a list of systems, chords, or notes"))
+        | _ -> output_error ("Error in write_to_array: Expression bound to MAIN must "
+                            ^ "be the empty list, a note, or a list of systems, chords, or notes"))
     | _ -> output_error ("Error in write_to_array: Input is not a valid value")
     )
 
