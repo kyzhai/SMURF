@@ -13,6 +13,7 @@ let ticks_8 = [| 2; 3 |]
 let ticks_4 = [| 4; 6; 7 |]
 let ticks_2 = [| 8; 12; 14; 15 |]
 let ticks_1 = [| 16; 24; 28; 30; 31 |]
+
 let r_max = 1000000
 
 (* convernt the symbol table defined in Sast to environment defined in Values 
@@ -136,6 +137,35 @@ and eval env = function
                     | Greater -> VBool(x>y),env2
                     | Geq -> VBool(x>=y),env2
                     | BoolEq -> VBool(x=y),env2
+
+                    | BeatAdd ->
+                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
+                        then (* This is a hacky way of doing this *)
+                            let ticks = [| 0; 16; 8; 0; 4; 1; 0; 0; 2; 0; 0; 0; 0; 0; 0; 0; 1|]
+                            in VBeat(ticks.(x) + ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 "
+                            ^ "between 1 & 16")
+                    | BeatSub ->
+                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
+                        then (* This is a hacky way of doing this *)
+                            let ticks = [| 0; 16; 8; 0; 4; 1; 0; 0; 2; 0; 0; 0; 0; 0; 0; 0; 1|]
+                            in VBeat(ticks.(x) - ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 "
+                            ^ "between 1 & 16")
+                    | BeatMul ->
+                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
+                        then (* This is a hacky way of doing this *)
+                            let ticks = [| 0; 16; 8; 0; 4; 1; 0; 0; 2; 0; 0; 0; 0; 0; 0; 0; 1|]
+                            in VBeat(ticks.(x) * ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 "
+                            ^ "between 1 & 16")
+                    | BeatDiv ->
+                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
+                        then (* This is a hacky way of doing this *)
+                            let ticks = [| 0; 16; 8; 0; 4; 1; 0; 0; 2; 0; 0; 0; 0; 0; 0; 0; 1|]
+                            in VBeat(ticks.(x) * ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 "
+                            ^ "between 1 & 16")
                     | _ -> interp_error ("Not expected op for Ints"))
             | VBeat(x), VBeat(y) ->
                 (* Operations act the same as normal because Beat has been converted to Ticks*)
@@ -156,18 +186,6 @@ and eval env = function
                     | Or -> VBool(x || y),env2
                     | BoolEq -> VBool(x=y),env2
                     | _ -> interp_error ("Not expected op for Bools"))
-(*
-                    | BeatAdd -> if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16] then
-                                    VBeat(VInt((ticks_of_beat (VBeat(v1,0))) + (ticks_of_beat (VBeat(v2,0)))), -1), env2
-                                else interp_error ("Ints used in beat operation aren't powers of 2")
-                    | _ -> interp_error ("Not expected op for Ints"))
-            | VBeat(VInt(e), i) as bt, VInt(y) -> if List.mem y [1;2;4;8;16] then
-                (match op with
-                 BeatAdd -> VBeat(VInt((ticks_of_beat bt) + (ticks_of_beat (VBeat(VInt(y), 0)) )),-1), env2
-                 |_ -> interp_error ("Haven't done this op yet")
-                )
-                else interp_error ("Int used in beat operation doesn't have a power of 2 value")
-*)
             | VList(lx), VList(ly) -> 
                 (match op with
                       Concat -> VList(lx @ ly),env2
