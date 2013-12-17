@@ -19,14 +19,19 @@
 %nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT LET IN
 %nonassoc LLIST RLIST COMMA
 %nonassoc TYPE FUNC
+%right BIND
+%nonassoc INV RET
+%left TRANS
 %left OR 
 %left AND
 %nonassoc NOT
-%left EQ LT LE GT GE BLT BGT BLE BGE
-%right CONS CONCAT BIND
+%left EQ
+%left LT LE GT GE BLT BGT BLE BGE
 %left PLUS MINUS BPLUS BMINUS PCPLUS PCMINUS
 %left TIMES DIV BTIMES BDIV MOD
-%nonassoc INV RET TRANS DOLLAR
+%right CONCAT
+%right CONS
+%nonassoc DOLLAR
 %right PERIOD
 %nonassoc LPAREN RPAREN
 
@@ -98,6 +103,7 @@ expr:
 |   BOOLEAN                 { Boolean($1) }
 |   LPAREN expr RPAREN      { $2 }
 |   expr PLUS expr          { Binop($1, Add, $3) }
+|   MINUS LITERAL           { Literal(-$2) }
 |   expr MINUS expr         { Binop($1, Sub, $3) }
 |   expr TIMES expr         { Binop($1, Mul, $3) }
 |   expr DIV expr           { Binop($1, Div, $3) }
@@ -136,10 +142,6 @@ expr:
     DOLLAR expr             { match $7 with 
                                 Literal(_) as e -> Note($2, $4, Beat(e,0))
                               | _ -> Note($2, $4, $7) }
-
-/*|   PRINT expr              { Print($2) }
-|   RANDOM                  { Random } */
-
 |   IF expr
     THEN expr ELSE expr     { If($2, $4, $6) }
 |   LLIST expr_list RLIST   { match $2 with 

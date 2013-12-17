@@ -156,6 +156,18 @@ and eval env = function
                     | Or -> VBool(x || y),env2
                     | BoolEq -> VBool(x=y),env2
                     | _ -> interp_error ("Not expected op for Bools"))
+(*
+                    | BeatAdd -> if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16] then
+                                    VBeat(VInt((ticks_of_beat (VBeat(v1,0))) + (ticks_of_beat (VBeat(v2,0)))), -1), env2
+                                else interp_error ("Ints used in beat operation aren't powers of 2")
+                    | _ -> interp_error ("Not expected op for Ints"))
+            | VBeat(VInt(e), i) as bt, VInt(y) -> if List.mem y [1;2;4;8;16] then
+                (match op with
+                 BeatAdd -> VBeat(VInt((ticks_of_beat bt) + (ticks_of_beat (VBeat(VInt(y), 0)) )),-1), env2
+                 |_ -> interp_error ("Haven't done this op yet")
+                )
+                else interp_error ("Int used in beat operation doesn't have a power of 2 value")
+*)
             | VList(lx), VList(ly) -> 
                 (match op with
                       Concat -> VList(lx @ ly),env2
@@ -201,7 +213,7 @@ and eval env = function
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
-    | Sast.SRandom -> (VInt(Random.int r_max), env)
+    | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
     | Sast.SPrint(e1) -> (*print ;*) eval env e1 
         
 

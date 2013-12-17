@@ -38,6 +38,25 @@ let write_head oc value =
     fprintf oc "\n"; 
     number_of_track
 
+(*
+(* get the number of ticks of a beat *)
+(* VBeat -> Int *)
+let ticks_of_beat = function
+      VBeat(VInt(i1), -1) -> i1
+     | VBeat(VInt(i1),i2) -> 
+      (int_of_float 
+          ((2.0 *. (16.0/.(float_of_int i1))) -. ((16.0/.float_of_int i1) /.
+              ((match i2 with 
+                 0 -> 1.0
+               | 1 -> 2.0
+               | 2 -> 4.0
+               | 3 -> 8.0
+               | 4 -> 16.0
+               | _ -> output_error ("Error in ticks_of_beat: Not valid numbers"))
+                       ))))
+    | _ -> output_error ("Error in ticks_of_beat: Not a beat")
+*)
+
 (* figure how many ticks are there in the output, so that an array with suitable size can be generated *)
 (* value -> Int *)
 let rec ticks_of_output value =
@@ -81,10 +100,10 @@ let rec write_to_array value arr ix iy tic =
             let (nx,ny,ntic) = write_to_array chord arr x y ntic
             in (nx,ny,ntic)) (ix,iy,tic) clst in (0,resy+3,0))
     | VList((x::xs) as slst) -> (match x with
-          VSystem(_) -> List.fold_left (fun (x,y,ntic) sys ->
+          VSystem(_) | VChord(_) | VNote(_,_,_) -> List.fold_left (fun (x,y,ntic) sys ->
                   let (nx,ny,ntic) = write_to_array sys arr x y ntic
                   in (nx,ny,ntic)) (ix,iy,tic) slst
-        | _ -> output_error ("Error in write_to_array: Must be a list of systems"))
+        | _ -> output_error ((string_of_value x) ^ "Error in write_to_array: Must be a list of systems, chords, or notes"))
     | _ -> output_error ("Error in write_to_array: Input is not a valid value")
     )
 
