@@ -171,7 +171,7 @@ let replace_main program new_main =
 	program.symtab.identifiers <- new_main :: newsym;
 	program
 
-(* Start with an empty symbol table *)
+(* Start with an empty symbol table, except for library functions *)
 let print_var = { name="print"; 
                   pats = [Patvar("x")]; 
                   v_type = [Poly("a"); Poly("a")]; 
@@ -493,8 +493,8 @@ let rec get_type  program = function
         | _ -> let hd = List.hd el in 
              let match_type_or_fail x y = 
                 let tx = (get_type program x) in
-                let ty = (get_type program y) in
-                if diff_types [tx] [ty] && not (beats_and_ints tx ty) 
+                let ty = (get_type program y) in 
+                if diff_types [tx] [ty] && (not (beats_and_ints tx ty) || not (contains_beat program el))
                     then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
                         ^ string_of_sexpr y ^ " has type " 
