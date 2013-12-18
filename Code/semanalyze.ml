@@ -330,7 +330,7 @@ let rec get_type  program = function
                         then type_error ("Second element of a comparison binary operation " ^
                             "must be of type Int but element was of type " ^
                             Sast.string_of_s_type te2)
-                        else Sast.Int
+                        else Sast.Bool
                 | Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul ->
                   (* Beat Arithmetic Operators *)
                     if te1 <> Sast.Int && te1 <> Sast.Beat
@@ -354,7 +354,7 @@ let rec get_type  program = function
                         then type_error ("Second element of a Beat comaprison binary " ^
                             "operation must be of types Int or Beat but element was of type " ^
                             Sast.string_of_s_type te2)
-                        else Sast.Beat
+                        else Sast.Bool
                 | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
                     if te1 <> Sast.Bool
                     then type_error ("First element of a boolean binary operation " ^
@@ -372,7 +372,7 @@ let rec get_type  program = function
                         "structural comparison. First element has type " ^
                         Sast.string_of_s_type te1 ^ " and second element has type " ^
                         Sast.string_of_s_type te2)
-                    else te1
+                    else Sast.Bool
                 | Ast.Concat -> (* Concat: List ++ List *)
                     (* Not sure this checks the correct thing *)
                     (match te1 with 
