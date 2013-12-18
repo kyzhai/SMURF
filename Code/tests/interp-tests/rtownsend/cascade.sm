@@ -2,7 +2,6 @@
 
 //[Register] -> [Pitch classses] -> [Durations] -> [Chords]
 makeChords :: [Int] -> [Int] -> [Beat] -> [Chord]
-makeChords [] [] [] = []
 makeChords [] _ _ = []
 makeChords _ [] _ = []
 makeChords _ _ [] = []
