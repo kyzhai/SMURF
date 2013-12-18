@@ -1,0 +1,15 @@
+Program: 
+	SVardef: 
+		ID: a  :: Beat
+
+	4 $/ 4
+	SMain: [[ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a]]
+Global Scope: 
+	ID: main  :: System
+	ID: a  :: Beat
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+
+Fatal error: exception Values.Interp_error("First operand must be greater than second in Beat division")

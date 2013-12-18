@@ -1,15 +1,21 @@
 Program: 
-	SVardef: 
-		ID: a  :: Beat
+	SFuncdec: 
+		ident (x) :: a -> a = x
+	New Scope: 
+		ID: x  :: a
 
-	4.
+	
+	SVardef: 
+		ID: y  :: Int
+
+	ident 1
 	SMain: []
 Global Scope: 
 	ID: main  :: []
-	ID: a  :: Beat
+	ID: ident x :: a -> a
+	ID: y  :: Int
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a
 	ID: tail h : t :: [a] -> [a]
 
-===== main = [] Program Exits Normally =====

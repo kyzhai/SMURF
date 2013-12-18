@@ -1,0 +1,14 @@
+Program: 
+	SVardef: 
+		ID: x  :: Chord
+
+	[ (1, 2)$4]
+	SMain: x
+Global Scope: 
+	ID: main  :: Chord
+	ID: x  :: Chord
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+
