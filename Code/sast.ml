@@ -176,6 +176,17 @@ and string_of_symbol_table symtab =
         String.concat "\t\t" (List.map string_of_s_ids symtab.identifiers) ^"\n\t"
 
 
+let string_of_s_arg = function 
+	SArglit(i) -> string_of_int i
+	| SArgbool(b) -> string_of_bool b
+	| SArgvar(s) -> s
+	| SArgbeat(e,i) -> (string_of_sexpr e) ^"^"^string_of_int i
+	| SArgnote(e1,e2,e3) -> "("^(string_of_sexpr e1)^","^(string_of_sexpr e2)^")$"^(string_of_sexpr e3)
+	| SArgchord(el) -> (string_of_sexpr (SChord(el)))
+	| SArgsystem(el) -> (string_of_sexpr (SSystem(el)))
+	| SArglist(el) -> (string_of_sexpr (SList(el)))
+	| SArgparens(e) -> (string_of_sexpr e)
+
 let string_of_s_program p = 
     "Program: \n\t" ^ String.concat "\n\t" 
     (List.map string_of_s_dec p.decls) ^ "\n" ^
