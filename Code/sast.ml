@@ -48,9 +48,14 @@ and s_expr =
     | SPrint of s_expr
 
 and s_arg =
-    SArgconst of int                           (* integer *)
+    SArglit of int                             (* integer *)
     | SArgbool of bool                         (* boolean *)
     | SArgvar of string                        (* identifiers *)
+    | SArgbeat of s_expr * int                 (* 2. *)
+    | SArgnote of  s_expr * s_expr * s_expr    (* (11, 2)^4. *)
+    | SArgchord of s_expr list                 (* [(11,3)$4., (5,2)$4.] *)
+    | SArgsystem of s_expr list                (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ] *)
+    | SArglist of s_expr list                  (* expression *)
     | SArgparens of s_expr                     (* parenthesized expressions *)
 
 and s_dec = 
@@ -118,9 +123,19 @@ let rec string_of_sexpr = function
   | SPrint(e) -> "print" ^ string_of_sexpr e
 
 and string_of_sfargs = function
-    SArgconst(l) -> string_of_int l
+    SArglit(l) -> string_of_int l
   | SArgbool(b) -> string_of_bool b
   | SArgvar(s) -> s
+  | SArgbeat(i1, i2) -> string_of_sexpr i1 ^
+        let rec repeat n s =
+            if n>0 then
+                repeat (n-1) ("." ^ s)
+            else s in repeat i2 ""
+  | SArgnote(pc, reg, bt) -> " (" ^ string_of_sexpr pc ^ ", " ^ string_of_sexpr reg ^ ")$" ^ (string_of_sexpr bt)
+  | SArgchord(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
+  | SArgsystem(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
+
+  | SArglist(el) -> "[" ^ (String.concat ", " (List.map string_of_sexpr el)) ^ "]"
   | SArgparens(p) -> "(" ^ (string_of_sexpr p)  ^ ")"
 
 and string_of_s_dec = function

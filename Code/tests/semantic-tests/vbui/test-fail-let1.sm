@@ -1,0 +1,6 @@
+/* Can not define the same variable twice */
+
+x = let a = 3 & a = 4 in a + a
+
+main = []
+

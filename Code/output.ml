@@ -24,18 +24,19 @@ let write_head oc value =
               )
         | _ -> 1) in 
     let resolution = 4 in
-    let () = fprintf oc "%s\n" header in 
-    let () = fprintf oc "number of trace: %d\n" number_of_track in 
-    let () = fprintf oc "Time Resolution (pulses per quarter note),%d,\n" resolution in 
-    let () = Random.init 0 in
-    let () = for i=1 to number_of_track 
+    fprintf oc "%s\n" header; 
+    fprintf oc "number of trace: %d\n" number_of_track;
+    fprintf oc "Time Resolution (pulses per quarter note),%d,\n" resolution;
+    Random.init 0;
+    for i=1 to number_of_track 
         do fprintf oc "track %d,%d," i 48 
-        done in
-    let () = fprintf oc "\n" in
-    let () = for i=1 to number_of_track 
+        done;
+    fprintf oc "\n";
+    for i=1 to number_of_track 
         do fprintf oc "Tick, Note (0-127), Velocity (0-127), " 
-        done in 
-    let () = fprintf oc "\n" in number_of_track
+        done;
+    fprintf oc "\n"; 
+    number_of_track
     
 
 (* get the number of ticks of a beat *)
@@ -108,14 +109,13 @@ let write_to_file filename value =
     let oc = open_out filename in 
     let number_of_track = write_head oc value in 
     match number_of_track with
-          0 -> close_out oc; output_error ("Empty list")
+          0 -> close_out oc; print_string ("===== main = [] Program Exits Normally =====\n"); exit 0
         | _ -> (
     let dimx = ticks_of_output value in
     let dimy = number_of_track * 3 in
     let resArr = (Array.make_matrix (dimx) (dimy) (-1)) in 
     let _ = (write_to_array value resArr 0 0 0) in 
-    let () = 
-    (for i=0 to dimx-1 do
+    for i=0 to dimx-1 do
         for j=0 to (number_of_track -1) do
             if resArr.(i).(3*j+1) <> (-1) then
                 ignore(fprintf oc "%d,%d,%d," resArr.(i).(3*j) resArr.(i).(3*j+1) resArr.(i).(3*j+2))
@@ -123,8 +123,8 @@ let write_to_file filename value =
                 ignore(fprintf oc ",,,")
         done;
         ignore(fprintf oc "\n")
-    done) in ()
-    ; close_out oc
+    done;
+    close_out oc
     )
 
 

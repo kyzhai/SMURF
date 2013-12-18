@@ -1,0 +1,3 @@
+double :: Int-> Int-> Int
+double x z = x * z
+y = double 12 10

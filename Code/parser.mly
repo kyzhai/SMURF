@@ -157,9 +157,17 @@ args:
 |   args arg                { $2 :: $1 }
 
 arg:
-    LITERAL                 { Argconst($1) }
+    LITERAL                 { Arglit($1) }
 |   BOOLEAN                 { Argbool($1) }
 |   VARIABLE                { Argvar($1) }
+|   LLIST expr_list RLIST   { match $2 with
+                                [] -> Arglist($2)
+                              | _ -> (match (List.hd $2) with
+                                    Note(_,_,_) -> Argchord($2)
+                                  | Chord(_) -> Argsystem($2)
+                                  | _ -> Arglist($2)) }
+
+/*|   LLIST expr_list RLIST   { Arglist($2) } */
 |   LPAREN expr RPAREN      { Argparens($2) }
 
 dots:

@@ -1,0 +1,4 @@
+/* Lists of beats and ints are allowed if the ints are all powers of 2 */
+
+x = [2,4,8.]
+main = []
