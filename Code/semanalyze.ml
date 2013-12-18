@@ -731,6 +731,7 @@ and check_arg_types name prog poly_map a_list t_list =
 	if((List.length a_list) +1) <> (List.length t_list) then 
 		raise (Wrong_number_of_arguments name)
 	else let t_list = List.rev (List.tl (List.rev t_list)) in
+        let a_list = List.rev a_list in 
 		let tup = List.combine a_list t_list in 
 			let poly_map = (List.fold_left (map_args name prog) poly_map tup) in poly_map
 
