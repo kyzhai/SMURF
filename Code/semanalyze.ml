@@ -592,11 +592,11 @@ let rec get_type  symtab = function
     | SLet(decs, exp) -> get_type decs.symtab exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type symtab e
-		| SCall(f, args) -> 
+		| SCall(f, args) -> print_string ("===========making an SCall===============\n");
 			let poly_map = StringMap.empty in  
 				let f_vars = find_func_entry symtab f in
-				let f_entrys = (*print_string ((string_of_symbol_table symtab)^"\n");*)match_args symtab [] f_vars args in
-				let f_entry = 
+				let f_entrys = (*print_string ((string_of_symbol_table symtab)^"\n");*) match_args symtab [] f_vars args in
+				let f_entry = print_string ((string_of_int (List.length f_entrys)) ^ "\n");
 					if List.length f_entrys = 1 then List.hd f_entrys
 					else (let st = try
 					List.find (fun t -> (List.length t.v_type)>0) f_entrys with 
@@ -638,6 +638,22 @@ and get_arg_type prog a = match a with
 	| SArglist(elist) -> get_type prog (SList(elist))
 	| SArgparens(e) -> (get_type prog e)
 
+and map_args_with_t name poly_map (a_t, t) = 
+    match t with 
+       Poly(t_n) -> if StringMap.mem t_n poly_map then 
+            let typ = StringMap.find t_n poly_map in 
+                if(check_type_equality typ a_t) 
+                then poly_map
+                else raise (Function_arguments_type_mismatch name) 
+            else StringMap.add t_n a_t poly_map
+    | Sast.List(l) -> (match a_t with 
+        Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
+      | Sast.Chord -> map_args_with_t name poly_map (Sast.Note, l)
+      | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
+      | Sast.Empty -> poly_map
+      | _ -> raise (Function_arguments_type_mismatch name))
+    | _ -> if check_type_equality t a_t then poly_map 
+        else raise (Function_arguments_type_mismatch name)
 
 and map_args name prog poly_map (a,t) = 
 	 match t with 
@@ -648,6 +664,36 @@ and map_args name prog poly_map (a,t) =
 					else raise (Function_arguments_type_mismatch name)
 					(* check types *)
 				else StringMap.add t_n (get_arg_type prog a) poly_map
+    | Sast.List(l) -> (match a with 
+          SArglit(i) -> raise (Function_arguments_type_mismatch name)
+        | SArgbool(b) -> raise (Function_arguments_type_mismatch name)
+        | SArglist(e) ->let typ = get_arg_type prog a in 
+            if(typ = Unknown) then poly_map
+            else( match typ with
+                Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
+              | Sast.Chord -> map_args_with_t name poly_map (Sast.Note, l)
+              | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
+              | Sast.Empty -> poly_map
+              | _ -> poly_map)
+        | SArgparens(e) ->let typ = get_arg_type prog a in 
+            if(typ = Unknown) then poly_map
+            else( match typ with
+                Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
+              | Sast.Chord -> map_args_with_t name poly_map (Sast.Note, l)
+              | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
+              | Sast.Empty -> poly_map
+              | _ -> poly_map)
+        | SArgvar(e) -> let typ = get_arg_type prog a in 
+            if(typ = Unknown) then poly_map
+            else( match typ with
+                Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
+              | Sast.Chord -> map_args_with_t name poly_map (Sast.Note, l)
+              | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
+              | Sast.Empty -> poly_map
+              | _ -> poly_map)
+        | SArgchord(elist) -> map_args_with_t name poly_map(Sast.Note, l)
+        | SArgsystem(elist) -> map_args_with_t name poly_map(Sast.Chord, l)
+        | _ -> raise (Function_arguments_type_mismatch name))
 	| _ -> 
 			if check_type_equality t  (get_arg_type prog a) then poly_map 
 			else raise (Function_arguments_type_mismatch name)
@@ -680,16 +726,6 @@ and contains_beat program = function
     | SBeat(_,_)::rest -> true
     | x :: rest -> if eventual "beat" (get_type program x) then true else contains_beat program rest
 
-and arg_has_type prog (a,t) = match a with 
-	  SArglit(i)          -> t = Sast.Int
-	| SArgbool(b)         -> t = Sast.Bool
-	| SArgvar(v)          -> (get_type prog (SVariable(v))) = t
-        | SArgbeat(e,i)       -> (get_type prog (SBeat(e,i))) = t
-        | SArgnote(e1,e2,e3)  -> (get_type prog (SNote(e1,e2,e3))) = t
-        | SArgchord(elist)    -> (get_type prog (SChord(elist))) = t
-        | SArgsystem(elist)   -> (get_type prog (SSystem(elist))) = t
-        | SArglist(elist)     -> (get_type prog (SList(elist))) = t
-	| SArgparens(e)       -> (get_type prog e) = t
 
 and check_arg_types name prog poly_map a_list t_list = 
 	if((List.length a_list) +1) <> (List.length t_list) then 
@@ -699,39 +735,50 @@ and check_arg_types name prog poly_map a_list t_list =
 			let poly_map = (List.fold_left (map_args name prog) poly_map tup) in poly_map
 
 and match_pat_expr pat e_t = 
-(*(print_string ((string_of_patterns pat) ^ " " ^
-(string_of_s_type e_t)^ "\n"));*)
+(print_string ("\texpr check" ^(string_of_patterns pat) ^ " " ^
+(string_of_s_type e_t)^ "\n"));
 match pat with 
 	Patconst(i1) -> (match e_t with 
 			Sast.Int -> true
+        | Unknown -> true
+        | Sast.Still_unknown -> true
+        | Sast.Poly(a) -> true
 		| _ -> false)
 	|Patbool(b1) -> (match e_t with 
 			Sast.Bool -> true
+        | Unknown -> true
+        | Sast.Still_unknown -> true
+        | Sast.Poly(a) -> true
 		| _ -> false)
 	|Patvar(s) -> true
 	|Patwild -> true
 	|Patcomma(pl) -> (match e_t with 
 			Sast.List(lt) -> if List.length pl > 0 
 									then match_pat_expr (List.hd pl) lt
-									else true
+									else false
 		| Sast.Chord -> if List.length pl > 0 
 									then match_pat_expr (List.hd pl) Sast.Note
-									else true
+									else false
 		| Sast.System -> if List.length pl > 0 
 									then match_pat_expr (List.hd pl) Sast.Chord
-									else true
-		| Sast.Empty -> true
+									else false
+		| Sast.Empty -> if List.length pl = 0 then true else false
+        | Sast.Unknown -> true
+        | Sast.Still_unknown -> true
+        | Sast.Poly(a) -> true
 		| _ -> false)
 	|Patcons(p1,p2) -> (match e_t with 
 			Sast.List(lt)->(match_pat_expr p1 lt)&&(match_pat_expr p2 e_t)
 		| Sast.Chord->(match_pat_expr p1 Sast.Note)&&(match_pat_expr p2 Sast.Chord)
 		| Sast.System->(match_pat_expr p1 Sast.Chord)&&(match_pat_expr p2 Sast.System)
-		| Sast.Empty -> true
+        | Sast.Unknown -> true
+        | Sast.Still_unknown -> true
+        | Sast.Poly(a) -> true
 		| _ -> false)
 
 and match_arg prog (pat, arg) = 
-(*(print_string ((string_of_patterns pat) ^" "^
-(string_of_s_arg arg)^"\n"));*)
+(print_string ((string_of_patterns pat) ^" "^
+(string_of_s_arg arg)^"\n"));
 match pat with 
 		Patconst(i1) -> (match arg with 
 				SArglit(i2) -> i1 = i2
@@ -762,14 +809,14 @@ match pat with
 		| _ -> false ) 
 		
 
-and match_args prog l id_list args = match id_list with 
+and match_args prog l id_list args = let args = List.rev args in match id_list with 
 	[] -> l
 	|(a::b) -> 
 		let comb = (try List.combine a.pats args with _ -> []) in 
 		let is_match = List.fold_left (&&) true 
-			(List.map (match_arg prog) comb) in (*(print_string ("="^(string_of_bool is_match)^"\n"));*)
-			if(is_match) then a :: (match_args prog l b args)
-			else match_args prog l b args
+			(List.map (match_arg prog) comb) in (print_string ("="^(string_of_bool is_match)^"\n"));
+			if(is_match) then a :: (match_args prog l b (List.rev args))
+			else match_args prog l b (List.rev args)
 	
 
 let rec type_is_equal t1 t2 = 
