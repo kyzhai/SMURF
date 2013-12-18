@@ -679,7 +679,6 @@ and contains_beat program = function
     | SList(sexpr)::rest -> if contains_beat program sexpr then true else contains_beat program rest
     | SBeat(_,_)::rest -> true
     | x :: rest -> if eventual "beat" (get_type program x) then true else contains_beat program rest
-    | _::rest -> contains_beat program rest
 
 and arg_has_type prog (a,t) = match a with 
 	  SArglit(i)          -> t = Sast.Int
