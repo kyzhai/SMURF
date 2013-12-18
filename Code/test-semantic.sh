@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SMURF="./test.byte"
-TESTDIR="./tests/parser-tests"
+SMURF="./semantic-test.byte"
+TESTDIR="./tests/semantic-tests"
 
 # Set time limit for all operations
 ulimit -t 30
@@ -16,7 +16,7 @@ keep=0
 delete=0
 
 Usage() {
-    echo "Usage: testall.sh [options] [.sm files]"
+    echo "Usage: test-semantic.sh [options] [.sm files]"
     exit 1
 }
 
@@ -81,12 +81,12 @@ Check() {
     fi
 #    echo "OK"
     numpass=$((numpass+1))
-    echo "$basename: PASS" 1>&2
+    echo "\033[34m${basename}: \033[32;1mPASS\033[0m" 1>&2
     else
     if [ $delete -eq 1 ] ; then
         rm -f $generatedfiles
     fi
-    echo -e '\E[37;44m'"$basename: \033[1mFAIL\033[0m" 1>&2
+    echo "\033[34m${basename}: \033[31;1mFAIL\033[0m" 1>&2
     globalerror=$error
     fi
 }
@@ -122,6 +122,7 @@ do
         ;;
     esac
 done
-    echo "Number of tests ran: $numtests" 1>&2
-    echo "NUmber of tests pass: $numpass" 1>&2
+    echo "$*\n"
+    echo "\033[1mNumber of semantic tests ran: \033[0m $numtests" 1>&2
+    echo "\033[1mNumber of semantic tests pass: \033[0m $numpass" 1>&2
 exit $globalerror
