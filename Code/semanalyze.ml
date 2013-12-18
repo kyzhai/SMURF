@@ -795,12 +795,21 @@ let check_ret_type program types info =
                     " " ^ String.concat " " (List.map string_of_patterns info.s_args)))	
 		else program.symtab
 
+let rec matching_patterns polypats expected actual = match expected, actual with
+   |  ex::rest, act::rest2 -> if ex = act then matching_patterns polypats rest rest2 else
+                          (match ex with
+                           Poly(id) -> if List.exists (fun (poly,ty) -> poly = id && ty != act) polypats
+                                       then false else matching_patterns ((id,act) :: polypats) rest rest2
+                          | Sast.List(_) -> if (eventual "empty" act) || (eventual "unknown" act) then matching_patterns polypats rest rest2
+                                            else false
+                          | _ -> if eventual "unknown" act then matching_patterns polypats rest rest2 else false)
+   | [], [] -> true
+   | _, _ -> false
+                          
 let rec check_pat_types types info =
       let exp_pattypes = (List.rev (List.tl (List.rev types))) in
          let act_pattypes = (List.map get_pat_type info.s_args) in
-         if List.mem true (List.map2 (fun epat apat -> not (eventual "unknown" apat) && 
-                                                       not (eventual "empty" apat) && epat <> apat)
-                      exp_pattypes act_pattypes) then
+         if not (matching_patterns [] exp_pattypes act_pattypes) then
             raise (Type_mismatch ("Patterns don't match type signature for " ^ info.s_fname ^ 
                     " " ^ String.concat " " (List.map string_of_patterns info.s_args)))
          else let pat_pairs = List.combine info.s_args exp_pattypes in
