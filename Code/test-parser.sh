@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SMURF="./parser-test.byte"
+SMURF="./parser_test.byte"
 TESTDIR="./tests/parser-tests"
 
 # Set time limit for all operations
