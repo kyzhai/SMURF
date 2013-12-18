@@ -1,77 +1,77 @@
 Program: 
 	SVardef: 
-		ID: a  :: Int
+		ID: a  :: Bool
 
 	1 < 2
 	SVardef: 
-		ID: b  :: Int
+		ID: b  :: Bool
 
 	1 > 2
 	SVardef: 
-		ID: c  :: Int
+		ID: c  :: Bool
 
 	1 <= 2
 	SVardef: 
-		ID: d  :: Int
+		ID: d  :: Bool
 
 	1 >= 2
 	SVardef: 
-		ID: e  :: Beat
+		ID: e  :: Bool
 
 	1 $< 2
 	SVardef: 
-		ID: f  :: Beat
+		ID: f  :: Bool
 
 	1. $< 2
 	SVardef: 
-		ID: g  :: Beat
+		ID: g  :: Bool
 
 	1 $> 2
 	SVardef: 
-		ID: h  :: Beat
+		ID: h  :: Bool
 
 	1 $> 2.
 	SVardef: 
-		ID: i  :: Beat
+		ID: i  :: Bool
 
 	1 $<= 2
 	SVardef: 
-		ID: j  :: Beat
+		ID: j  :: Bool
 
 	1 $<= 2.
 	SVardef: 
-		ID: k  :: Beat
+		ID: k  :: Bool
 
 	1 $>= 2
 	SVardef: 
-		ID: l  :: Beat
+		ID: l  :: Bool
 
 	1. $>= 2
 	SVardef: 
-		ID: m  :: Int
+		ID: m  :: Bool
 
 	4 == 4
 	SVardef: 
-		ID: n  :: Int
+		ID: n  :: Bool
 
 	4 == 3
 	SMain: []
 Global Scope: 
 	ID: main  :: []
-	ID: a  :: Int
-	ID: b  :: Int
-	ID: c  :: Int
-	ID: d  :: Int
-	ID: e  :: Beat
-	ID: f  :: Beat
-	ID: g  :: Beat
-	ID: h  :: Beat
-	ID: i  :: Beat
-	ID: j  :: Beat
-	ID: k  :: Beat
-	ID: l  :: Beat
-	ID: m  :: Int
-	ID: n  :: Int
+	ID: a  :: Bool
+	ID: b  :: Bool
+	ID: c  :: Bool
+	ID: d  :: Bool
+	ID: e  :: Bool
+	ID: f  :: Bool
+	ID: g  :: Bool
+	ID: h  :: Bool
+	ID: i  :: Bool
+	ID: j  :: Bool
+	ID: k  :: Bool
+	ID: l  :: Bool
+	ID: m  :: Bool
+	ID: n  :: Bool
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a
