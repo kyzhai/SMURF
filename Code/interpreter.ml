@@ -219,20 +219,34 @@ and eval env = function
                     | Or -> VBool(x || y),env2
                     | BoolEq -> VBool(x=y),env2
                     | _ -> interp_error ("Not expected op for Bools"))
+            | VList([]), x -> 
+                (match x with
+                     VList(m) -> 
+                        (match op with
+                            Concat -> VList(m),env2
+                           | Cons -> (match m with 
+                                      [VSystem(sys)] -> 
+                                        VList([VSystem(VChord([VNote(VInt(-1),VInt(-1),VBeat(-1))])::sys)]),env2
+                                      | _ -> VList(VList([])::m),env2)
+                           | _ -> interp_error ("Not expected op between empty list and List"))
+                     | VChord(m) -> (match op with
+                            Concat -> VChord(m),env2
+                            | Cons -> VChord((VNote(VInt(-1),VInt(-1),VBeat(-1))) :: m),env2
+                            | _ -> interp_error ("Not expected op between empty list and Chord"))
+                     | VSystem(n) -> (match op with
+                             Concat -> (VSystem(n),env2)
+                           | Cons -> (VSystem(VChord([VNote(VInt(-1),VInt(-1),VBeat(-1))])::n),env2)
+                           | _ -> interp_error ("Not expected op between empty list and System"))
+                     |_ -> interp_error("Empty list being applied to nonlist operand in binary operation"))
+            | x, VList([]) ->
+                (match op with
+                    Concat -> x, env2
+                  | Cons -> VList([x]), env2
+                  | _ -> interp_error ("Not expected op given two lists with second being the empty list"))
             | VList(lx), VList(ly) -> 
                 (match op with
                       Concat -> VList(lx @ ly),env2
                     | _ -> interp_error ("Not expected op for Lists"))
-            | VList([]), x | x, VList([]) -> 
-                (match x with
-                     VChord(m) -> (match op with
-                                    Concat -> VChord(m),env2
-                                    | _ -> interp_error ("Not expected op between empty list and Chord"))
-                     | VSystem(n) -> (match op with
-                                     Concat -> (VSystem(n),env2)
-                                   | Cons -> (VSystem(VChord([])::n),env2)
-                                   | _ -> interp_error ("Not expected op between empty list and System"))
-                     |_ -> interp_error("Empty list being applied to nonlist operand in binary operation"))
             | x, y -> interp_error ((string_of_value y) ^ ": Not expected operands"))
          )
     | Sast.SPrefix(op, e) -> (*Incomplete*)

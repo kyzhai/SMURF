@@ -403,17 +403,17 @@ let rec get_type  program = function
 
                 | Ast.Cons -> (* Cons: Element : List *)
                     (match te2 with 
-                       Sast.List(t2) -> (if te1 <> t2 then 
+                       Sast.List(t2) -> (if te1 <> t2 && te1 <> Sast.Empty then 
                               (try
                                 let x = get_type program (SList([e1;e2])) in
                                 (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
-                              with (Type_error _) ->
-                                  type_error ("The types of the lhs and rhs of a cons operator don't match"))
+                              with (Type_error x) ->
+                                  type_error (x))
                             else te2)
-                     | Sast.Chord -> (if te1 <> Sast.Note then 
+                     | Sast.Chord -> (if te1 <> Sast.Empty && te1 <> Sast.Note && te1 <> Sast.Empty then 
                          type_error ("The types of the lhs and rhs of a cons operator don't match")
                          else te2)
-                     | Sast.System -> (if te1 <> Sast.Chord && te1 <> Sast.List(Sast.Note)  then 
+                     | Sast.System -> (if te1 <> Sast.Empty && te1 <> Sast.Chord && te1 <> Sast.List(Sast.Note)  then 
                          type_error ("The types of the lhs and rhs of a cons operator don't match")
                          else te2)
                      | Sast.Empty -> (match te1 with
