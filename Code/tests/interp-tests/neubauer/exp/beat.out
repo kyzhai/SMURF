@@ -1,15 +1,27 @@
+
+Timing Resolution set to 4 PPQ
+
+Instrument set to 48 on channel 0
+
+Track 0:
+ tick 0, channel 1: program change 48
+ tick 0, channel 1: note D5 on velocity: 90
+ tick 6, channel 1: note D5 on velocity: 0
+ tick 6, end of track
 Program: 
 	SVardef: 
 		ID: a  :: Beat
 
 	4.
-	SMain: []
+	SMain:  (2, 3)$a
 Global Scope: 
-	ID: main  :: []
+	ID: main  :: Note
 	ID: a  :: Beat
 	ID: print x :: a -> a
 	ID: random  :: Int
 	ID: head h : t :: [a] -> a
 	ID: tail h : t :: [a] -> [a]
 
-===== main = [] Program Exits Normally =====
+java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
+===== Program Successfully Finished =====
+===== Result Writen to a.midi =====

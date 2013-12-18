@@ -1,0 +1,104 @@
+
+Timing Resolution set to 4 PPQ
+
+Instrument set to 48 on channel 0
+
+Track 0:
+ tick 0, channel 1: program change 48
+ tick 0, channel 1: note C#2 on velocity: 90
+ tick 8, channel 1: note C#2 on velocity: 0
+ tick 8, channel 1: note C#3 on velocity: 90
+ tick 36, channel 1: note C#3 on velocity: 0
+ tick 36, channel 1: note C#4 on velocity: 90
+ tick 45, channel 1: note C#4 on velocity: 0
+ tick 45, channel 1: note D#2 on velocity: 90
+ tick 53, channel 1: note D#2 on velocity: 0
+ tick 53, channel 1: note D#3 on velocity: 90
+ tick 55, channel 1: note D#3 on velocity: 0
+ tick 55, channel 1: note D#4 on velocity: 90
+ tick 67, channel 1: note D#4 on velocity: 0
+ tick 67, channel 1: note F2 on velocity: 90
+ tick 99, channel 1: note F2 on velocity: 0
+ tick 99, channel 1: note F3 on velocity: 90
+ tick 147, channel 1: note F3 on velocity: 0
+ tick 147, channel 1: note F4 on velocity: 90
+ tick 219, channel 1: note F4 on velocity: 0
+ tick 219, channel 1: note G2 on velocity: 90
+ tick 221, channel 1: note G2 on velocity: 0
+ tick 221, channel 1: note G3 on velocity: 90
+ tick 224, channel 1: note G3 on velocity: 0
+ tick 224, channel 1: note G4 on velocity: 90
+ tick 226, channel 1: note G4 on velocity: 0
+ tick 226, end of track
+Program: 
+	SVardef: 
+		ID: a  :: Beat
+
+	4 $+ 4
+	SVardef: 
+		ID: b  :: Beat
+
+	1 $+ 2.
+	SVardef: 
+		ID: c  :: Beat
+
+	4. $+ 8.
+	SVardef: 
+		ID: d  :: Beat
+
+	1 $- 2
+	SVardef: 
+		ID: e  :: Beat
+
+	2 $- 4.
+	SVardef: 
+		ID: f  :: Beat
+
+	1. $- 2.
+	SVardef: 
+		ID: g  :: Beat
+
+	4 $* 2
+	SVardef: 
+		ID: h  :: Beat
+
+	4. $* 2
+	SVardef: 
+		ID: i  :: Beat
+
+	4. $* 2.
+	SVardef: 
+		ID: j  :: Beat
+
+	4 $/ 8
+	SVardef: 
+		ID: k  :: Beat
+
+	4. $/ 8
+	SVardef: 
+		ID: l  :: Beat
+
+	2. $/ 4.
+	SMain: [[ (1, 0)$a], [ (1, 1)$b], [ (1, 2)$c], [ (3, 0)$d], [ (3, 1)$e], [ (3, 2)$f], [ (5, 0)$g], [ (5, 1)$h], [ (5, 2)$i], [ (7, 0)$j], [ (7, 1)$k], [ (7, 2)$l]]
+Global Scope: 
+	ID: main  :: System
+	ID: a  :: Beat
+	ID: b  :: Beat
+	ID: c  :: Beat
+	ID: d  :: Beat
+	ID: e  :: Beat
+	ID: f  :: Beat
+	ID: g  :: Beat
+	ID: h  :: Beat
+	ID: i  :: Beat
+	ID: j  :: Beat
+	ID: k  :: Beat
+	ID: l  :: Beat
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+
+java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
+===== Program Successfully Finished =====
+===== Result Writen to a.midi =====
