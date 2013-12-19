@@ -416,7 +416,7 @@ let rec get_type  symtab = function
                             Sast.string_of_s_type te2)
                         else Sast.Bool
                 | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
-                    if te1 <> te2
+                    if te1 <> te2 && (match te1, te2 with Poly(_), _ | _, Poly(_) -> false | _ -> true)
                     then type_error ("Elements must be of same type for " ^
                         "structural comparison. First element has type " ^
                         Sast.string_of_s_type te1 ^ " and second element has type " ^
@@ -452,7 +452,7 @@ let rec get_type  symtab = function
 
                 | Ast.Cons -> (* Cons: Element : List *)
                     (match te2 with 
-                       Sast.List(t2) -> (if te1 <> t2 && te1 <> Sast.Empty then 
+                       Sast.List(t2) -> (if diff_types [te1] [t2] && te1 <> Sast.Empty then 
                               (try
                                 let x = get_type symtab (SList([e1;e2])) in
                                 (match e2 with
@@ -506,7 +506,9 @@ let rec get_type  symtab = function
             ^ " but is used as if it has type " ^ string_of_s_type Sast.Bool)
         else let te2 = get_type symtab e2 in 
              let te3 = get_type symtab e3 in 
-             if te2 <> te3 then
+             if te2 <> te3 && (match te2, te3 with Sast.Empty, Sast.List(_) |
+                                                   Sast.List(_), Sast.Empty -> false
+                                                   | _, _ -> true) then
                 type_error (string_of_sexpr e2 ^ " has type " ^ string_of_s_type te2 
                 ^ " but " ^ string_of_sexpr e3 ^ " has type " ^ string_of_s_type te3 
                 ^ " which is not allowed in conditional statement")
