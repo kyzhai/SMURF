@@ -606,6 +606,13 @@ let rec get_type short symtab = function
     | SLet(decs, exp) -> get_type short decs.symtab exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type short symtab e
+		| SHead(e) ->let t = (get_type short symtab e) in 
+						if( check_type_equality (Sast.List(Poly("a"))) t)then (match t with 
+							Sast.List(t1) -> t1 
+						 	| Sast.Chord -> Sast.Note
+							| Sast.System -> Sast.Chord 
+							| _ -> raise (Type_error "head"))  else raise (Type_error "head")
+		| STail(e) ->let t = (get_type short symtab e) in if( check_type_equality (Sast.List(Poly("a"))) t)then t else raise (Type_error "tail")
 		| SCall(f, args) -> (*print_string ("===========making an SCall " ^ 
             f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");*)
             if(short) then let f_vars = find_func_entry symtab f in 
@@ -1042,6 +1049,8 @@ and to_sexpr symbol = function
                              let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs      
                              in SLet(nested_prog, to_sexpr sym e)
 		| Ast.Print(e) 			-> SPrint(to_sexpr symbol e)
+		| Ast.Head(e) 			-> SHead(to_sexpr symbol e)
+		| Ast.Tail(e) 			-> STail(to_sexpr symbol e)
 
 and to_sarg symbol = function
     | Ast.Arglit(i)           -> SArglit(i)
@@ -1101,8 +1110,10 @@ and walk_decl_second program = function
       let e_type = get_type false program.symtab expr in 
 				let new_main = {name = "main"; pats = []; v_type = [e_type]; v_expr = Some(expr)} in
 				let program = replace_main program new_main in 
-				if main_type_check e_type then program else 
+					program
+			(*	if main_type_check e_type then program else 
 						raise (Main_type_mismatch (string_of_sexpr expr))
+			*)
 
 let has_main program = 
   if(is_declared "main" program.symtab) then program

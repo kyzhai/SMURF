@@ -75,6 +75,8 @@ whitespace                      { token lexbuf } (* White space *)
 | "System"                      { SYSTEM }
 | "main"                        { MAIN }
 | "print" 											{ PRINT }
+| "head"												{ HEAD }
+| "tail"												{ TAIL }
 | identifier as id              { VARIABLE(id) }
 | (digit)+ as num               { LITERAL(int_of_string num) }
 | eof                           { EOF }

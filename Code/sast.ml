@@ -46,6 +46,8 @@ and s_expr =
     | SLet of s_program * s_expr               (* let x = 4 in x + 2 *)
     | SRandom
     | SPrint of s_expr
+		| SHead of s_expr	
+		| STail of s_expr
 
 and s_arg =
     SArglit of int                             (* integer *)
@@ -120,7 +122,9 @@ let rec string_of_sexpr = function
   | SLet(decs, exp) -> "let " ^ (String.concat " " (List.map string_of_s_dec decs.decls)) ^ 
                       " in " ^ string_of_sexpr exp
   | SRandom -> "random"
-  | SPrint(e) -> "print" ^ string_of_sexpr e
+  | SPrint(e) -> "print " ^ string_of_sexpr e
+	| SHead(e) -> "head " ^ string_of_sexpr e
+	| STail(e) -> "tail " ^ string_of_sexpr e
 
 and string_of_sfargs = function
     SArglit(l) -> string_of_int l
