@@ -325,7 +325,7 @@ and eval env symtab = function
         let sid = 
         try 
         List.find (fun sid -> let flag,_ = bind_pat_arg env symtab sid.pats e2 in flag) sid_lst 
-        with Not_found -> interp_error ("Not found matched patern!")
+        with Not_found -> interp_error ("Matched patern not found!")
         in 
         let flag,newE = bind_pat_arg env symtab sid.pats e2 in 
         (match sid.v_expr with
@@ -383,17 +383,40 @@ and is_pat_arg_matching env symtab pat arg mp =
                         | SArgparens(expr) -> 
                             (let v,_ = eval env symtab expr in true,(NameMap.add ps (gen v) mp)))
         | Patwild -> true,(mp)
-    (*
         | Patcomma(pl) -> (match arg with 
                         | SArglist(al) -> (if List.length pl <> List.length al then 
                             false,mp 
                             else
                             let lst = List.combine pl al in 
-                            List.fold_left (fun (b,m) (p,a) -> let r1,r2 = is_pat_arg_matching env symtab p a m in (b&&r1),r2) (true,mp) lst))
+                            List.fold_left (fun (b,m) (p,a) -> let r1,r2 = match_pat_expr env symtab p a m in (b&&r1),r2) (true,mp) lst)
+                        | _ -> false,mp)
+        | Patcons(p1,p2) -> (match arg with
+                        | SArglist(al) -> (if List.length al = 0 then 
+                            false,mp 
+                            else
+                            (match al with 
+                              h::tl -> 
+                                (let r1,r2 = match_pat_expr env symtab p1 h mp in
+                                 let r3,r4 = is_pat_arg_matching env symtab p2 (SArglist(tl)) r2 in (r1&&r3),r4)
+                            | _ -> false,mp))
+                        | _ -> false,mp)
+    (*
         *)
-        | _ -> false,(mp)
 
 
+and match_pat_expr env symtab pat expr mp = 
+    let arg,env = eval env symtab expr in 
+    match pat with
+          Patconst(pi) -> (match arg with 
+                          VInt(ai) -> if pi = ai then true,(mp) else false,mp
+                        | _ -> false,(mp))
+        | Patbool(pb) -> (match arg with 
+                          VBool(ab) -> if pb = ab then true,(mp) else false,mp
+                        | _ -> false,mp)
+        | Patvar(ps) -> true,(NameMap.add ps (gen arg) mp)
+        | Patwild -> true,(mp)
+        | _ -> false,mp
+    
         
 
         

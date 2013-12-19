@@ -1,6 +1,6 @@
-main = [cc]
+main = [bb]
 
-bb = (1,2)$2..
+bb = (rr,2)$2..
 
 cc = nt bb
 
@@ -19,6 +19,10 @@ a = f 1 2
 b = g True
 
 nt :: Note -> Note
-nt x = (1,2)$2..
+nt x = x
 
+reverse1 :: [Int] -> Int
+reverse1 [] = 1
+reverse1 a:rest = reverse1 []
 
+rr = reverse1 [1,2,3,4,5,6]
