@@ -104,7 +104,7 @@ Program:
 	SVardef: 
 		ID: a  :: Beat
 
-	2 $/ 1
+	2. $/ 14
 	SMain: [[ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a]]
 Global Scope: 
 	ID: main  :: System

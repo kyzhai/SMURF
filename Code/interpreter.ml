@@ -101,8 +101,14 @@ and eval env = function
                       Add -> VInt(x+y),env2
                     | Sub -> VInt(x-y),env2
                     | Mul -> VInt(x*y),env2
-                    | Div -> VInt(x/y),env2
-                    | Mod -> VInt(x mod y),env2
+                    | Div -> 
+                        if y<>0
+                        then VInt(x/y),env2
+                        else interp_error ("Cannot divide by zero")
+                    | Mod ->
+                        if y<0
+                        then VInt(x mod (y*(-1))),env2
+                        else VInt(x mod y),env2
                     | PCAdd -> VInt((x+y) mod 12),env2
                     | PCSub -> VInt((x-y) mod 12),env2
                     | Less -> VBool(x<y),env2
@@ -124,19 +130,23 @@ and eval env = function
                         else interp_error ("Ints used in Beat operation must be power of 2 "
                             ^ "between 1 & 16")
                     | BeatMul ->
-                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
-                        then (* This is a hacky way of doing this *)
-                            VBeat(ticks.(x) * ticks.(y)),env2
-                        else interp_error ("Ints used in Beat operation must be power of 2 "
-                            ^ "between 1 & 16")
+                        if y>0 then
+                            if List.mem x [1;2;4;8;16]
+                            then (* This is a hacky way of doing this *)
+                                VBeat(ticks.(x) * y),env2
+                            else interp_error ("Ints used in Beat operation must be power of 2 "
+                                ^ "between 1 & 16")
+                        else interp_error ("Must multiple Beat by positive Int")
                     | BeatDiv ->
-                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
-                        then (* This is a hacky way of doing this *)
-                            if ticks.(x) > ticks.(y)
-                            then VBeat(ticks.(x) / ticks.(y)),env2
-                            else interp_error ("First operand must be greater than second in Beat division")
-                        else interp_error ("Ints used in Beat operation must be power of 2 "
-                            ^ "between 1 & 16")
+                        if y>0 then
+                            if List.mem x [1;2;4;8;16]
+                            then (* This is a hacky way of doing this *)
+                                if ticks.(x) > y
+                                then VBeat(ticks.(x) / y),env2
+                                else interp_error ("First operand must be greater than second in Beat division")
+                            else interp_error ("Ints used in Beat operation must be power of 2 "
+                                ^ "between 1 & 16")
+                        else interp_error ("Must divide Beat by positive Int")
                     | BeatLess ->
                         if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
                         then (* This is a hacky way of doing this *)
@@ -170,28 +180,35 @@ and eval env = function
                         if x > y
                         then VBeat(x-y),env2
                         else interp_error ("First operand must be greater than second in Beat subtraction")
-                    | BeatMul -> VBeat(x*y),env2
-                    | BeatDiv ->
-                        if x > y
-                        then VBeat(x/y),env2
-                        else interp_error ("First operand must be greater than second in Beat division")
                     | BeatLess -> VBool(x<y),env2
                     | BeatLeq -> VBool(x<=y),env2
                     | BeatGreater -> VBool(x>y),env2
                     | BeatGeq -> VBool(x>=y),env2
                     | _ -> interp_error ("Not expected op for Beats"))
-            | VBeat(x), VInt(y) ->if not (List.mem y [1;2;4;8;16]) then 
-                                  interp_error ("Ints used in Beat operation must be power of 2 " ^ "between 1 & 16")
-                                  else
+            | VBeat(x), VInt(y) -> 
                 (match op with
-                    | BeatAdd -> VBeat(x + ticks.(y)),env2
-                    | BeatSub ->if x > ticks.(y)
+                    | BeatAdd ->
+                        if List.mem y [1;2;4;8;16]
+                        then VBeat(x + ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 " ^
+                            "between 1 & 16")
+                    | BeatSub ->
+                        if List.mem y [1;2;4;8;16] then
+                            if x > ticks.(y)
                             then VBeat(x - ticks.(y)),env2
                             else interp_error ("First operand must be greater than second in Beat subtraction")
-                    | BeatMul -> VBeat(x * ticks.(y)),env2
-                    | BeatDiv ->if x > ticks.(y)
-                            then VBeat(x / ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 " ^
+                            "between 1 & 16")
+                    | BeatMul ->
+                        if y>0
+                        then VBeat(x*y),env2
+                        else interp_error ("Must multiple Beat by positive Int")
+                    | BeatDiv ->
+                        if y>0 then
+                            if x>y
+                            then VBeat(x/y),env2
                             else interp_error ("First operand must be greater than second in Beat division")
+                        else interp_error ("Must divide Beat by positive Int")
                     | BeatLess ->VBool(x < ticks.(y)),env2
                     | BeatLeq ->VBool(x <= ticks.(y)),env2
                     | BeatGreater -> VBool(x > ticks.(y)),env2
@@ -205,11 +222,6 @@ and eval env = function
                     | BeatSub -> if ticks.(x) > y
                                 then VBeat(ticks.(x) - y),env2
                                 else interp_error ("First operand must be greater than second in Beat subtraction")
-                    | BeatMul -> VBeat(ticks.(x) * y),env2
-                    | BeatDiv ->
-                            if ticks.(x) > y
-                            then VBeat(ticks.(x) / y),env2
-                            else interp_error ("First operand must be greater than second in Beat division")
                     | BeatLess -> VBool(ticks.(x) < y),env2
                     | BeatLeq -> VBool(ticks.(x) <= y),env2
                     | BeatGreater -> VBool(ticks.(x) > y),env2

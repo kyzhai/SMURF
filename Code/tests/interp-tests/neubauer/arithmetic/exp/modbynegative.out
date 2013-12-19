@@ -5,11 +5,9 @@ Instrument set to 48 on channel 0
 
 Track 0:
  tick 0, channel 1: program change 48
- tick 0, channel 1: note C#2 on velocity: 90
- tick 8, channel 1: note C#2 on velocity: 0
- tick 8, channel 1: note C#3 on velocity: 90
- tick 20, channel 1: note C#3 on velocity: 0
- tick 20, end of track
+ tick 0, channel 1: note F5 on velocity: 90
+ tick 30, channel 1: note F5 on velocity: 0
+ tick 30, end of track
 Program: 
 	SFuncdec: 
 		makeNotes ([]) (_) (_) :: [Int] -> [Int] -> [Beat] -> [Note] = []
@@ -114,16 +112,16 @@ Program:
 
 	
 	SVardef: 
-		ID: a  :: Beat
+		ID: a  :: Int
 
-	4 $* 2
+	10 % -3
 	SVardef: 
-		ID: b  :: Beat
+		ID: b  :: Note
 
-	4. $* 2
-	SMain: [[ (1, 0)$a], [ (1, 1)$b]]
+	if a < 1 then  (2, 2)$4 else  (5, 3)$1...
+	SMain: b
 Global Scope: 
-	ID: main  :: System
+	ID: main  :: Note
 	ID: makeNotes [] _ _ :: [Int] -> [Int] -> [Beat] -> [Note]
 	ID: makeNotes _ [] _ :: [Int] -> [Int] -> [Beat] -> [Note]
 	ID: makeNotes _ _ [] :: [Int] -> [Int] -> [Beat] -> [Note]
@@ -140,8 +138,8 @@ Global Scope:
 	ID: take 0 _ :: Int -> [Note] -> [Note]
 	ID: take _ [] :: Int -> [Note] -> [Note]
 	ID: take x l : rest :: Int -> [Note] -> [Note]
-	ID: a  :: Beat
-	ID: b  :: Beat
+	ID: a  :: Int
+	ID: b  :: Note
 	ID: print x :: a -> a
 	ID: random  :: Int
 
