@@ -592,7 +592,8 @@ let rec get_type  symtab = function
     | SLet(decs, exp) -> get_type decs.symtab exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type symtab e
-		| SCall(f, args) -> print_string ("===========making an SCall===============\n");
+		| SCall(f, args) -> print_string ("===========making an SCall " ^ 
+            f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");
 			let poly_map = StringMap.empty in  
 				let f_vars = find_func_entry symtab f in
 				let f_entrys = (*print_string ((string_of_symbol_table symtab)^"\n");*) match_args symtab [] f_vars args in
@@ -644,29 +645,30 @@ and map_args_with_t name poly_map (a_t, t) =
             let typ = StringMap.find t_n poly_map in 
                 if(check_type_equality typ a_t) 
                 then poly_map
-                else raise (Function_arguments_type_mismatch name) 
+                else raise (Function_arguments_type_mismatch ("1."^name^" "^(string_of_s_type t)) )
             else StringMap.add t_n a_t poly_map
     | Sast.List(l) -> (match a_t with 
         Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
       | Sast.Chord -> map_args_with_t name poly_map (Sast.Note, l)
       | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
       | Sast.Empty -> poly_map
-      | _ -> raise (Function_arguments_type_mismatch name))
+      | _ -> raise (Function_arguments_type_mismatch  ("2."^name^" "^(string_of_s_type t)^ " "^(string_of_s_type a_t))))
     | _ -> if check_type_equality t a_t then poly_map 
-        else raise (Function_arguments_type_mismatch name)
+        else raise (Function_arguments_type_mismatch  ("3."^name^" "^(string_of_s_type t)))
 
 and map_args name prog poly_map (a,t) = 
+    print_string ("Arg = "^(string_of_s_arg a)^" type sig = "^(string_of_s_type t)^"\n");
 	 match t with 
 		Poly(t_n) -> if StringMap.mem t_n poly_map then 
 				let typ = StringMap.find t_n poly_map in 
 					if(check_type_equality typ (get_arg_type prog a)) 
 					then poly_map
-					else raise (Function_arguments_type_mismatch name)
+					else raise (Function_arguments_type_mismatch (name ^ " "^(string_of_s_arg a)))
 					(* check types *)
 				else StringMap.add t_n (get_arg_type prog a) poly_map
     | Sast.List(l) -> (match a with 
-          SArglit(i) -> raise (Function_arguments_type_mismatch name)
-        | SArgbool(b) -> raise (Function_arguments_type_mismatch name)
+          SArglit(i) -> raise (Function_arguments_type_mismatch (name ^ " "^(string_of_s_arg a)))
+        | SArgbool(b) -> raise (Function_arguments_type_mismatch (name ^ " "^(string_of_s_arg a)))
         | SArglist(e) ->let typ = get_arg_type prog a in 
             if(typ = Unknown) then poly_map
             else( match typ with
