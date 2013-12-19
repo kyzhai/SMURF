@@ -455,7 +455,9 @@ let rec get_type  symtab = function
                        Sast.List(t2) -> (if te1 <> t2 && te1 <> Sast.Empty then 
                               (try
                                 let x = get_type symtab (SList([e1;e2])) in
-                                (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
+                                (match e2 with
+                                    SCall(_,_) -> x
+                                  | _ -> (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x)
                               with (Type_error x) ->
                                   type_error (x))
                             else te2)

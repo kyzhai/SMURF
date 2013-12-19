@@ -68,6 +68,19 @@ Program:
 
 	
 	SFuncdec: 
+		last (a : []) :: [a] -> a = a
+	New Scope: 
+		ID: a  :: a
+
+	
+	SFuncdec: 
+		last (a : rest) :: [a] -> a = last rest
+	New Scope: 
+		ID: a  :: a
+		ID: rest  :: [a]
+
+	
+	SFuncdec: 
 		drop (0) (x) :: Int -> [Note] -> [Note] = x
 	New Scope: 
 		ID: x  :: [Note]
@@ -131,6 +144,8 @@ Global Scope:
 	ID: head hd : tl :: [a] -> a
 	ID: reverse [] :: [a] -> [a]
 	ID: reverse a : rest :: [a] -> [a]
+	ID: last a : [] :: [a] -> a
+	ID: last a : rest :: [a] -> a
 	ID: drop 0 x :: Int -> [Note] -> [Note]
 	ID: drop _ [] :: Int -> [Note] -> [Note]
 	ID: drop x l : rest :: Int -> [Note] -> [Note]
