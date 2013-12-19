@@ -1,15 +1,3 @@
-
-Timing Resolution set to 4 PPQ
-
-Instrument set to 48 on channel 0
-
-Track 0:
- tick 0, channel 1: program change 48
- tick 0, channel 1: note C#2 on velocity: 90
- tick 8, channel 1: note C#2 on velocity: 0
- tick 8, channel 1: note C#3 on velocity: 90
- tick 20, channel 1: note C#3 on velocity: 0
- tick 20, end of track
 Program: 
 	SFuncdec: 
 		makeNotes ([]) (_) (_) :: [Int] -> [Int] -> [Beat] -> [Note] = []
@@ -116,12 +104,8 @@ Program:
 	SVardef: 
 		ID: a  :: Beat
 
-	4 $* 2
-	SVardef: 
-		ID: b  :: Beat
-
-	4. $* 2
-	SMain: [[ (1, 0)$a], [ (1, 1)$b]]
+	4. $/ 0
+	SMain: [[ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a]]
 Global Scope: 
 	ID: main  :: System
 	ID: makeNotes [] _ _ :: [Int] -> [Int] -> [Beat] -> [Note]
@@ -141,10 +125,7 @@ Global Scope:
 	ID: take _ [] :: Int -> [Note] -> [Note]
 	ID: take x l : rest :: Int -> [Note] -> [Note]
 	ID: a  :: Beat
-	ID: b  :: Beat
 	ID: print x :: a -> a
 	ID: random  :: Int
 
-java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
-===== Program Successfully Finished =====
-===== Result Writen to a.midi =====
+Fatal error: exception Values.Interp_error("Must divide Beat by positive Int")

@@ -96,13 +96,31 @@ and eval env = function
          let (v2,env2) = eval env1 e2 in
          let ticks = [| 0; 16; 8; 0; 4; 1; 0; 0; 2; 0; 0; 0; 0; 0; 0; 0; 1|] in
          (match v1, v2 with
+            | VInt(x), VList(lst) ->
+                (match op with
+                    Trans -> if not (List.for_all (fun v -> match v with VInt(x) ->
+                                            if x >= 0 || x <= 11 then true else false
+                                            | _ -> false) lst)
+                             then interp_error ("Non pitch class integer found in inversion list")
+                             else VList(List.map (fun v -> match v with VInt(y) ->
+                                            VInt((x+y) mod 12)
+                                            | _ -> interp_error ("Ran into a transposition error"))
+                                            lst), env2
+                   | _ -> interp_error ("The only op that can be used between an int
+                        and a list is the transposition operator"))
             | VInt(x), VInt(y) ->
                 (match op with
                       Add -> VInt(x+y),env2
                     | Sub -> VInt(x-y),env2
                     | Mul -> VInt(x*y),env2
-                    | Div -> VInt(x/y),env2
-                    | Mod -> VInt(x mod y),env2
+                    | Div -> 
+                        if y<>0
+                        then VInt(x/y),env2
+                        else interp_error ("Cannot divide by zero")
+                    | Mod ->
+                        if y<0
+                        then VInt(x mod (y*(-1))),env2
+                        else VInt(x mod y),env2
                     | PCAdd -> VInt((x+y) mod 12),env2
                     | PCSub -> VInt((x-y) mod 12),env2
                     | Less -> VBool(x<y),env2
@@ -124,19 +142,23 @@ and eval env = function
                         else interp_error ("Ints used in Beat operation must be power of 2 "
                             ^ "between 1 & 16")
                     | BeatMul ->
-                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
-                        then (* This is a hacky way of doing this *)
-                            VBeat(ticks.(x) * ticks.(y)),env2
-                        else interp_error ("Ints used in Beat operation must be power of 2 "
-                            ^ "between 1 & 16")
+                        if y>0 then
+                            if List.mem x [1;2;4;8;16]
+                            then (* This is a hacky way of doing this *)
+                                VBeat(ticks.(x) * y),env2
+                            else interp_error ("Ints used in Beat operation must be power of 2 "
+                                ^ "between 1 & 16")
+                        else interp_error ("Must multiple Beat by positive Int")
                     | BeatDiv ->
-                        if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
-                        then (* This is a hacky way of doing this *)
-                            if ticks.(x) > ticks.(y)
-                            then VBeat(ticks.(x) / ticks.(y)),env2
-                            else interp_error ("First operand must be greater than second in Beat division")
-                        else interp_error ("Ints used in Beat operation must be power of 2 "
-                            ^ "between 1 & 16")
+                        if y>0 then
+                            if List.mem x [1;2;4;8;16]
+                            then (* This is a hacky way of doing this *)
+                                if ticks.(x) > y
+                                then VBeat(ticks.(x) / y),env2
+                                else interp_error ("First operand must be greater than second in Beat division")
+                            else interp_error ("Ints used in Beat operation must be power of 2 "
+                                ^ "between 1 & 16")
+                        else interp_error ("Must divide Beat by positive Int")
                     | BeatLess ->
                         if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
                         then (* This is a hacky way of doing this *)
@@ -170,28 +192,35 @@ and eval env = function
                         if x > y
                         then VBeat(x-y),env2
                         else interp_error ("First operand must be greater than second in Beat subtraction")
-                    | BeatMul -> VBeat(x*y),env2
-                    | BeatDiv ->
-                        if x > y
-                        then VBeat(x/y),env2
-                        else interp_error ("First operand must be greater than second in Beat division")
                     | BeatLess -> VBool(x<y),env2
                     | BeatLeq -> VBool(x<=y),env2
                     | BeatGreater -> VBool(x>y),env2
                     | BeatGeq -> VBool(x>=y),env2
                     | _ -> interp_error ("Not expected op for Beats"))
-            | VBeat(x), VInt(y) ->if not (List.mem y [1;2;4;8;16]) then 
-                                  interp_error ("Ints used in Beat operation must be power of 2 " ^ "between 1 & 16")
-                                  else
+            | VBeat(x), VInt(y) -> 
                 (match op with
-                    | BeatAdd -> VBeat(x + ticks.(y)),env2
-                    | BeatSub ->if x > ticks.(y)
+                    | BeatAdd ->
+                        if List.mem y [1;2;4;8;16]
+                        then VBeat(x + ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 " ^
+                            "between 1 & 16")
+                    | BeatSub ->
+                        if List.mem y [1;2;4;8;16] then
+                            if x > ticks.(y)
                             then VBeat(x - ticks.(y)),env2
                             else interp_error ("First operand must be greater than second in Beat subtraction")
-                    | BeatMul -> VBeat(x * ticks.(y)),env2
-                    | BeatDiv ->if x > ticks.(y)
-                            then VBeat(x / ticks.(y)),env2
+                        else interp_error ("Ints used in Beat operation must be power of 2 " ^
+                            "between 1 & 16")
+                    | BeatMul ->
+                        if y>0
+                        then VBeat(x*y),env2
+                        else interp_error ("Must multiple Beat by positive Int")
+                    | BeatDiv ->
+                        if y>0 then
+                            if x>y
+                            then VBeat(x/y),env2
                             else interp_error ("First operand must be greater than second in Beat division")
+                        else interp_error ("Must divide Beat by positive Int")
                     | BeatLess ->VBool(x < ticks.(y)),env2
                     | BeatLeq ->VBool(x <= ticks.(y)),env2
                     | BeatGreater -> VBool(x > ticks.(y)),env2
@@ -205,11 +234,6 @@ and eval env = function
                     | BeatSub -> if ticks.(x) > y
                                 then VBeat(ticks.(x) - y),env2
                                 else interp_error ("First operand must be greater than second in Beat subtraction")
-                    | BeatMul -> VBeat(ticks.(x) * y),env2
-                    | BeatDiv ->
-                            if ticks.(x) > y
-                            then VBeat(ticks.(x) / y),env2
-                            else interp_error ("First operand must be greater than second in Beat division")
                     | BeatLess -> VBool(ticks.(x) < y),env2
                     | BeatLeq -> VBool(ticks.(x) <= y),env2
                     | BeatGreater -> VBool(ticks.(x) > y),env2
@@ -261,13 +285,21 @@ and eval env = function
                 | _ -> interp_error ("Unexpected op for Bool"))
             | VList(lst) -> (match op with
                 | Retro -> VList(List.rev lst),env1
+                | Inv -> if List.for_all (fun v -> match v with VInt(x) ->
+                                    if x >= 0 || x <= 11 then true 
+                                    else interp_error ("Non pitch class integer found in inversion list")
+                                   | _ -> false) lst then
+                         let row = List.map (fun v -> match v with 
+                                VInt(x) -> x 
+                              | _ -> interp_error("Non int found in a list of int")) lst in
+                         let base = List.hd row in
+                         let transrow = List.map (fun v -> v - base) row in
+                         let invrow = List.map (fun v -> 12 - v) transrow in
+                         let finalrow = List.map (fun v -> v + base) invrow in 
+                         VList(List.map (fun v -> VInt(v)) finalrow), env1
+                         else interp_error ("Inversion called on non-tone row")
+
                 | _ -> interp_error ("Unexpected op for list"))
-            | VChord(lst) -> (match op with
-                | Retro -> VChord(List.rev lst),env1
-                | _ -> interp_error ("Unexpected op for chord"))
-            | VSystem(lst) -> (match op with
-                | Retro -> VSystem(List.rev lst),env1
-                | _ -> interp_error ("Unexpected op for system"))
             | _ -> interp_error ("Unexpected operand for prefix op")
          )
     | Sast.SIf(e1, e2, e3) -> 

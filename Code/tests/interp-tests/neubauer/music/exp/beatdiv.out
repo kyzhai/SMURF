@@ -9,9 +9,7 @@ Track 0:
  tick 2, channel 1: note C#2 on velocity: 0
  tick 2, channel 1: note C#4 on velocity: 90
  tick 5, channel 1: note C#4 on velocity: 0
- tick 5, channel 1: note D#2 on velocity: 90
- tick 13, channel 1: note D#2 on velocity: 0
- tick 13, end of track
+ tick 5, end of track
 Program: 
 	SFuncdec: 
 		makeNotes ([]) (_) (_) :: [Int] -> [Int] -> [Beat] -> [Note] = []
@@ -118,16 +116,12 @@ Program:
 	SVardef: 
 		ID: a  :: Beat
 
-	4 $/ 8
+	4 $/ 2
 	SVardef: 
 		ID: b  :: Beat
 
-	4. $/ 8
-	SVardef: 
-		ID: c  :: Beat
-
-	1. $/ 8.
-	SMain: [[ (1, 0)$a], [ (1, 2)$b], [ (3, 0)$c]]
+	4. $/ 2
+	SMain: [[ (1, 0)$a], [ (1, 2)$b]]
 Global Scope: 
 	ID: main  :: System
 	ID: makeNotes [] _ _ :: [Int] -> [Int] -> [Beat] -> [Note]
@@ -148,7 +142,6 @@ Global Scope:
 	ID: take x l : rest :: Int -> [Note] -> [Note]
 	ID: a  :: Beat
 	ID: b  :: Beat
-	ID: c  :: Beat
 	ID: print x :: a -> a
 	ID: random  :: Int
 

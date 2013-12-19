@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SMURF="./toplevel.byte"
-TESTDIR="./tests/interp-tests/neubauer"
+TESTDIR="./tests/interp-tests/neubauer/arithmetic"
 
 # Set time limit for all operations
 ulimit -t 30

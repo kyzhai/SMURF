@@ -128,4 +128,4 @@ Global Scope:
 	ID: print x :: a -> a
 	ID: random  :: Int
 
-Fatal error: exception Values.Interp_error("First operand must be greater than second in Beat division")
+Fatal error: exception Values.Interp_error("Not expected op for Beats")
