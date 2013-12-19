@@ -42,7 +42,7 @@ swapAt x a:ra b:rb = a : (swapAt (x-1) ra rb)
 
 
 crossOver :: Int -> [Int] -> [Int] -> [[Int]]
-crossOver x a b = (swapAt x a b) ++ (swapAt x b a)
+crossOver x a b = (swapAt x a b) : (swapAt x b a) : []
 
 
 
@@ -73,11 +73,11 @@ section2 = subChord 5 7 (makeNotes t2 (<>reg) durations1)
 tempt3 = findRowStartsWith P0 (last1 t1) 2
 tempt4 = findRowStartsWith P0 (last1 t2) 3
 secrows = crossOver 5 tempt3 tempt4
-t3 = tailrows (headrows secrows) /*First note of this row is last1 note of previous row! */
-t4 = tailrows (headrows (tailrows secrows)) /* Same for this row */
+t3 = tail (headrows secrows) /*First note of this row is last1 note of previous row! */
+t4 = tail (headrows (tailrows secrows)) /* Same for this row */
 durations2	= [16,4,16,16,8,8,8,8,8,8,8]
-newsection1 = section1 ++ [subChord 4 6 (makeNotes t3 (tail reg) durations2)]
-newsection2 = section2 ++ [subChord 4 6 (makeNotes t4 (tail (<>reg)) durations2)]
+newsection1 = section1 ++ (subChord 4 6 (makeNotes t3 (tail reg) durations2))
+newsection2 = section2 ++ (subChord 4 6 (makeNotes t4 (tail (<>reg)) durations2))
 
 /* This should be everything before the first repeat */
 firstRepeat1 = newsection1 ++ newsection1
@@ -87,8 +87,8 @@ firstRepeat2 = newsection2 ++ newsection2
 tempt5 = findRowStartsWith P0 (last1 t3) 3
 tempt6 = findRowStartsWith P0 (last1 t4) 2
 thirdrows = crossOver 11 tempt5 tempt6
-t5 = tailrows (headrows thirdrows)
-t6 = tailrows (headrows (tailrows thirdrows))
+t5 = tail (headrows thirdrows)
+t6 = tail (headrows (tailrows thirdrows))
 durations3 = [8,8,8,4,8,8,8,8,8,8,16]
 section3 = subChord 4 6 (makeNotes t5 (tail reg) durations3)
 section4 = subChord 4 6 (makeNotes t6 (tail (<>reg)) durations3)
@@ -96,11 +96,11 @@ section4 = subChord 4 6 (makeNotes t6 (tail (<>reg)) durations3)
 tempt7 = findRowStartsWith P0 (last1 t5) 3
 tempt8 = findRowStartsWith P0 (last1 t6) 2
 fourthrows = crossOver 2 tempt7 tempt8
-t7 = tailrows (headrows fourthrows)
-t8 = tailrows (headrows (tailrows fourthrows))
+t7 = tail (headrows fourthrows)
+t8 = tail (headrows (tailrows fourthrows))
 durations4 = [16,16,16,8,8,8,8,8,16,16,8]
-newsection3 = section1 ++ [subChord 4 6 (makeNotes t7 (tail reg) durations4)]
-newsection4 = section2 ++ [subChord 4 6 (makeNotes t8 (tail (<>reg)) durations4)]	
+newsection3 = section1 ++ (subChord 4 6 (makeNotes t7 (tail reg) durations4))
+newsection4 = section2 ++ (subChord 4 6 (makeNotes t8 (tail (<>reg)) durations4))	
 
 /* This should be everything after the first repeat */
 secRepeat1 = newsection3 ++ newsection3
