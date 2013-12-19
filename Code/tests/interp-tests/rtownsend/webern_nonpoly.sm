@@ -119,7 +119,7 @@ section4 = subChord 4 6 (makeNotes t6 (tail (<>reg)) durations3)
 
 tempt7 = findRowStartsWith P0 (last t5) 3
 tempt8 = findRowStartsWith P0 (last t6) 2
-fourthrows = CorssOver 2 tempt7 tempt8
+fourthrows = crossOver 2 tempt7 tempt8
 t7 = tailrows (headrows fourthrows)
 t8 = tailrows (headrows (tailrows fourthrows))
 durations4 = [16,16,16,8,8,8,8,8,16,16,8]
