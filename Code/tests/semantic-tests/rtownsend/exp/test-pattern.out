@@ -51,6 +51,4 @@ Global Scope:
 	ID: i [a, [2], [3]] :: [[Int]] -> Int
 	ID: print x :: a -> a
 	ID: random  :: Int
-	ID: head h : t :: [a] -> a
-	ID: tail h : t :: [a] -> [a]
 

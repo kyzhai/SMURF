@@ -16,13 +16,24 @@ exception Shell_error of string
 let shell_error msg = raise (Shell_error msg)
 
 let exec_file config = 
-    let fh = open_in config.smurf_name in 
-    let lexbuf = Lexing.from_channel fh in
+    let read_file filename = 
+        let lines = ref [] in
+        let chan = open_in filename in
+        (try
+            while true; do
+                lines := input_char chan :: !lines
+            done; []
+        with End_of_file ->
+            close_in chan;
+            List.rev !lines) in
+    let fh = read_file config.smurf_name in
+    let stdlib = read_file config.std_lib_path in
+    let linkedprog = string_of_charlist (stdlib @ fh) in
+    let lexbuf = Lexing.from_string linkedprog in
     let pos = lexbuf.lex_curr_p in
     lexbuf.lex_curr_p <- {pos with pos_fname = config.smurf_name};
     try
     let program = Parser.program Scanner.token lexbuf in
-    close_in fh;
     let symtab = Semanalyze.second_pass program in
         (exec_main symtab config)
     with 
@@ -33,7 +44,8 @@ let _ =
     let config = { smurf_name = "smurf.sm";
                    bytecode_name = "a.csv";
                    midi_name = "a.midi";
-                   lib_path = "./Lib/CSV2MIDI.jar"
+                   lib_path = "./Lib/CSV2MIDI.jar";
+                   std_lib_path = "./Standard_Lib/List.sm"
     } in
     Arg.parse
         [("-i", Arg.Set interactive, "Interactive model");

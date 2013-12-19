@@ -180,15 +180,7 @@ let random_var = { name = "random";
                    pats = [];  
                    v_type = [Int]; 
                    v_expr = Some(SRandom) }
-let head_var = { name = "head"; 
-                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
-                 v_type = [Sast.List(Poly("a"));Poly("a")]; 
-                 v_expr = Some(SVariable("h"))}
-let tail_var = { name = "tail"; 
-                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
-                 v_type = [Sast.List(Poly("a"));Sast.List(Poly("a"))]; 
-                 v_expr = Some(SVariable("t"))}
-let global_env = { identifiers = [print_var; random_var; head_var; tail_var]; parent = None } 
+let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* So far, just used to check for pattern errors in collect_pat_vars *)
 let rec get_pat_type = function
@@ -314,37 +306,37 @@ match t1 with
 		| Sast.Empty -> true
 		| Unknown -> true
 		| _ -> false )
-	| Sast.Poly(a) ->  false (* shouldn't be used with poly types *)
+	| Sast.Poly(a) ->  true (* shouldn't be used with poly types *)
 	| Sast.Unknown -> true (* should only be used with known types *)
 	| Sast.Still_unknown -> raise (Type_error "having trouble resolving types")
 	| Sast.Int -> ( match t2 with 
 			Sast.Int -> true
 		| Sast.Unknown -> true
-		| Sast.Poly(b) -> false
+		| Sast.Poly(b) -> true
 		| Sast.Beat -> true
 	 	| _ -> false)
 	| Sast.Beat -> ( match t2 with 
 			Sast.Beat -> true
 		| Sast.Unknown -> true
-		| Sast.Poly(b) -> false
+		| Sast.Poly(b) -> true
 		| Sast.Int -> true
 	 	| _ -> false)
 	| _ -> (match t2 with 
-			Sast.Poly(b) -> false (* shouldn't be used with poly types *)
+			Sast.Poly(b) -> true (* shouldn't be used with poly types *)
 		| Sast.Unknown -> true (* should only be used with known types *)
 		| Sast.Still_unknown -> raise (Type_error "having trouble resolving types")
 		| _ -> t1 = t2 )
 
 let rec try_get_type pm ts tr = match ts with 
 		Sast.Poly(a) -> if StringMap.mem a pm then StringMap.find a pm 
-						else ts 
+						else if(tr = Unknown) then ts else tr 
 	| Sast.List(a) -> (match tr with 
 			Sast.List(b) -> Sast.List(try_get_type pm a b)
-		| _ ->ts)
+		| _ -> if (tr = Unknown ) then ts else tr)
 	| _ -> ts
 
 (* Returns a type from an expression*)
-let rec get_type  symtab = function
+let rec get_type short  symtab = function
       SLiteral(l) -> Int
     | SBoolean(b) -> Bool
     | SVariable(s) -> 
@@ -357,11 +349,11 @@ let rec get_type  symtab = function
 						(match var.v_expr with 
 						Some(expr) -> 
 							let symtab = (change_type symtab var Still_unknown) in 
-							get_type  symtab expr
+							get_type short  symtab expr
 						| None -> raise (Missing_variable_definition s))
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
-        let te1 = get_type symtab e1
-        and te2 = get_type symtab e2 in
+        let te1 = get_type short symtab e1
+        and te2 = get_type short symtab e2 in
             (match o with
                 Ast.Add | Ast.Sub | Ast.Mul | Ast.Div | Ast. Mod |
                 Ast.PCAdd | Ast.PCSub ->
@@ -424,7 +416,7 @@ let rec get_type  symtab = function
                             Sast.string_of_s_type te2)
                         else Sast.Bool
                 | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
-                    if te1 <> te2
+                    if te1 <> te2 && (match te1, te2 with Poly(_), _ | _, Poly(_) -> false | _ -> true)
                     then type_error ("Elements must be of same type for " ^
                         "structural comparison. First element has type " ^
                         Sast.string_of_s_type te1 ^ " and second element has type " ^
@@ -436,7 +428,7 @@ let rec get_type  symtab = function
                       Sast.List(t1) -> (match te2 with
                           Sast.List(t2) -> if t1 <> t2 then 
                               (try
-                                let x = get_type symtab (SList([e1;e2])) in
+                                let x = get_type short symtab (SList([e1;e2])) in
                                 (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
                               with (Type_error x) ->
                                   type_error ("Operands of a concat operator have different types"))
@@ -460,10 +452,12 @@ let rec get_type  symtab = function
 
                 | Ast.Cons -> (* Cons: Element : List *)
                     (match te2 with 
-                       Sast.List(t2) -> (if te1 <> t2 && te1 <> Sast.Empty then 
+                       Sast.List(t2) -> (if diff_types [te1] [t2] && te1 <> Sast.Empty then 
                               (try
-                                let x = get_type symtab (SList([e1;e2])) in
-                                (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x
+                                let x = get_type short symtab (SList([e1;e2])) in
+                                (match e2 with
+                                    SCall(_,_) -> x
+                                  | _ -> (fun v -> match v with Sast.List(x) -> x | _ -> type_error("PROBLEM")) x)
                               with (Type_error x) ->
                                   type_error (x))
                             else te2)
@@ -492,7 +486,7 @@ let rec get_type  symtab = function
                         else te2
             )
     | SPrefix(o, e) -> (* Prefix Operators *)
-        let te = get_type symtab e in
+        let te = get_type short symtab e in
         (match o with
             Ast.Not -> (* Not: ! Bool *)
                 if te <> Sast.Bool
@@ -506,19 +500,21 @@ let rec get_type  symtab = function
                 else te
         )
     | SIf(e1, e2, e3) -> (* Check both e2 and e3 and make sure the same *)
-        let te1 = get_type symtab e1 in 
+        let te1 = get_type short symtab e1 in 
         if te1 <> Sast.Bool then 
             type_error (string_of_sexpr e1 ^ " has type " ^ string_of_s_type te1
             ^ " but is used as if it has type " ^ string_of_s_type Sast.Bool)
-        else let te2 = get_type symtab e2 in 
-             let te3 = get_type symtab e3 in 
-             if te2 <> te3 then
+        else let te2 = get_type short symtab e2 in 
+             let te3 = get_type short symtab e3 in 
+             if te2 <> te3 && (match te2, te3 with Sast.Empty, Sast.List(_) |
+                                                   Sast.List(_), Sast.Empty -> false
+                                                   | _, _ -> true) then
                 type_error (string_of_sexpr e2 ^ " has type " ^ string_of_s_type te2 
                 ^ " but " ^ string_of_sexpr e3 ^ " has type " ^ string_of_s_type te3 
                 ^ " which is not allowed in conditional statement")
                 else te2
     | SBeat(i1, i2) -> 
-        let ti1 = get_type symtab i1 in
+        let ti1 = get_type short symtab i1 in
         if ti1 <> Sast.Int
         then type_error ("First element in a Beat must be of type Int " ^
             "and a power of 2 between 1 and 16. The given element was of type " ^
@@ -529,9 +525,9 @@ let rec get_type  symtab = function
             then type_error ("Dots may not increase Beat value past 16th")
             else Sast.Beat
     | SNote(pc, reg, b) ->
-        let tpc = get_type symtab pc
-        and treg = get_type symtab reg
-        and tb = get_type symtab b in
+        let tpc = get_type short symtab pc
+        and treg = get_type short symtab reg
+        and tb = get_type short symtab b in
         if tpc <> Sast.Int
         then type_error ("First element in Note (pitch class) must be of type Int " ^
             "between -1 and 11 but element was of type " ^ Sast.string_of_s_type tpc)
@@ -549,8 +545,8 @@ let rec get_type  symtab = function
           [] -> Sast.Empty
         | _ -> let hd = List.hd el in 
              let match_type_or_fail x y = 
-                let tx = (get_type symtab x) in
-                let ty = (get_type symtab y) in 
+                let tx = (get_type short symtab x) in
+                let ty = (get_type short symtab y) in 
                 if diff_types [tx] [ty] && (not (beats_and_ints tx ty) || not (contains_beat symtab el))
                     then type_error (string_of_sexpr x ^ " has type of "
                         ^ Sast.string_of_s_type tx ^ " but "
@@ -559,12 +555,12 @@ let rec get_type  symtab = function
                 else () 
             in List.iter (match_type_or_fail hd) el; 
             if contains_beat symtab el then Sast.List(powers_of_two symtab el)
-            else Sast.List(get_type symtab (hd)))
+            else Sast.List(get_type short symtab (hd)))
     | SChord(el) -> (* Check all elements have type of TNote *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
-                let tx = (get_type symtab x) in 
-                let ty = (get_type symtab y) in 
+                let tx = (get_type short symtab x) in 
+                let ty = (get_type short symtab y) in 
                 if tx <> ty 
                     then type_error ("Elements in Chord should all have type of " 
                     ^ Ast.string_of_types Ast.TNote ^ " but the element of " 
@@ -582,61 +578,120 @@ let rec get_type  symtab = function
     | SSystem(el) -> (* Check all elements have type of TChord *)
         let hd = List.hd el in 
             let match_type_or_fail x y = 
-                let tx = (get_type symtab x) in 
-                let ty = (get_type symtab y) in 
+                let tx = (get_type short symtab x) in 
+                let ty = (get_type short symtab y) in 
                 if tx <> ty 
                     then type_error ("Elements in Chord should all have type of " 
                     ^ string_of_s_type Sast.Chord ^ " but the element of " 
                     ^ string_of_sexpr y ^ " has type of " ^ string_of_s_type ty)
                 else () in List.iter (match_type_or_fail hd) el; Sast.System
-    | SLet(decs, exp) -> get_type decs.symtab exp
+    | SLet(decs, exp) -> get_type short decs.symtab exp
     | SRandom -> Sast.Int
-		| SPrint(e) -> get_type symtab e
-		| SCall(f, args) -> print_string ("===========making an SCall===============\n");
+		| SPrint(e) -> get_type short symtab e
+		| SCall(f, args) -> (*print_string ("===========making an SCall " ^ 
+            f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");*)
+            if(short) then let f_vars = find_func_entry symtab f in 
+                try (List.hd (List.rev ((List.hd f_vars).v_type)))
+                    with _ -> Unknown
+            else 
 			let poly_map = StringMap.empty in  
 				let f_vars = find_func_entry symtab f in
 				let f_entrys = (*print_string ((string_of_symbol_table symtab)^"\n");*) match_args symtab [] f_vars args in
-				let f_entry = print_string ((string_of_int (List.length f_entrys)) ^ "\n");
-					if List.length f_entrys = 1 then List.hd f_entrys
+				let f_entry = if(List.length f_entrys)>0 then(*print_string ((string_of_int (List.length f_entrys)) ^ "\n");*)
+					if (List.length f_entrys) = 1 then List.hd f_entrys
 					else (let st = try
 					List.find (fun t -> (List.length t.v_type)>0) f_entrys with 
 						_ ->raise (Type_error ("function not found " ^ f)) in 
-						{name = st.name; pats = []; v_type = st.v_type; v_expr=None}) in 
+						{name = st.name; pats = []; v_type = st.v_type; v_expr=None})
+                 (*(try List.find (fun t -> 
+                    has_pattern (Patconst(0)) t.pats|| 
+                    has_pattern (Patbool(true)) t.pats||
+                    has_pattern (Patcomma([])) t.pats) f_entrys with _ ->
+                    (try List.find (fun t -> 
+                    has_pattern (Patcomma([Patconst(0)])) t.pats ||
+                    has_pattern (Patcons(Patconst(0),Patconst(0))) t.pats ) f_entrys with _ ->
+                        (try List.find (fun t -> 
+                        has_pattern (Patvar("a")) t.pats) f_entrys with _ ->
+                            (try List.find(fun t -> 
+                            has_pattern Patwild t.pats) f_entrys with _ -> 
+                                raise (Type_error ("you have to have some pattern")))))) *)
+                else raise (Type_error ("function not found " ^ f))
+                     in 
 				let ts_id = try List.find (fun t-> (List.length t.v_type)>0) f_entrys with 
 					_ -> raise (Type_error ("function not found " ^ f)) in 
 				let tsig = List.hd (List.rev ts_id.v_type) in 
 				let pm = StringMap.add "print" Unknown poly_map in 
-				(*let return_type = (match f_entry.v_expr with 
-					Some(e) -> (try (get_type symtab e) with _ -> Unknown)  
-					| None -> Unknown) in *) let return_type = Unknown in 
-				let polymap = map_return pm 
+				let return_type = (match f_entry.v_expr with 
+					Some(e) -> if not (is_recursive f e) then (
+                    try(get_type false symtab e) with _-> Unknown)
+                    else Unknown | None -> Unknown ) in  
+				let polymap = map_return f pm 
 											tsig
 											 return_type in
 				let full_map = check_arg_types f symtab polymap args f_entry.v_type in 
-				try_get_type full_map tsig return_type
+				try_get_type  full_map tsig return_type
 			(* check all args against f type sig *)
 			(* check expr matches last type *)
 
-and map_return pm ts ret = match ts with 
+and is_recursive func = function
+    SBeat(e,i) -> is_recursive func e
+    | SNote(e1,e2,e3) -> is_recursive func e1 || is_recursive func e2 || is_recursive func e3
+    | SBinop(e1, op, e2) -> is_recursive func e1 || is_recursive func e2 
+    | SPrefix(op, e) -> is_recursive func e
+    | SIf(e1,e2,e3) -> is_recursive func e1 || is_recursive func e2 || is_recursive func e3
+    | SList(elist)
+    | SSystem(elist) 
+    | SChord(elist) -> List.fold_left (||) false (List.map (is_recursive func) elist)
+    | SCall(f, args) -> let b = f = func in 
+        (*print_string (func^" rec? -> "^(string_of_bool b)^"\n");*)b
+    | SLet(p, e) -> is_recursive func e
+    | SPrint(e) -> is_recursive func e
+    | _ -> (*print_string(func^" rec? -> "^(string_of_bool false)^"\n");*)false
+
+and has_pattern pat pat_list = 
+    List.fold_left (||) false (List.map (fun p -> match p with 
+        Patconst(i) -> (match pat with 
+            Patconst(i2) -> true
+          | _ -> false)
+      | Patbool(b) -> (match pat with
+            Patbool(b2) -> true
+          | _ -> false)
+      | Patvar(v) -> (match pat with
+            Patvar(v2) -> true
+          | _ -> false)
+      | Patwild -> (match pat with 
+            Patwild -> true
+          | _ -> false)
+      | Patcomma(l) -> (match pat with 
+            Patcomma([])-> l = []
+          | Patcomma(l) -> l <> []
+          | _ -> false)
+      | Patcons(p1,p2) -> (match pat with 
+            Patcons(p3,p4) -> true
+          | _ -> false)) pat_list)
+
+and map_return f  pm ts ret = match ts with 
 		Sast.Poly(a) -> (match ret with 
 					Unknown -> pm  (* is argument to function? *)
 				| Still_unknown -> pm
-				| Sast.Poly(b) -> map_return pm ret ret 
+				| Sast.Poly(b) -> map_return f pm ret ret 
 				| _ -> StringMap.add a ret pm)
-	| _ -> if check_type_equality ts ret 
+	| _ -> (*print_string ("map_return->"^f^(string_of_s_type ts)^ " = "^(string_of_s_type ret)^"\n");*)
+        if check_type_equality ts ret 
 			then pm 
-			else type_error "Mismatch return type" 
+			else type_error ("Mismatch return type "^f) 
 
-and get_arg_type prog a = match a with 
+and get_arg_type f prog a = match a with 
 		SArglit(i) -> Sast.Int
 	| SArgbool(b) -> Sast.Bool
-	| SArgvar(v) -> (get_type prog (SVariable(v)))
+	| SArgvar(v) -> (get_type false prog (SVariable(v)))
 	| SArgbeat(e,i) -> Sast.Beat
 	| SArgnote(e1,e2,e3) -> Sast.Note
 	| SArgchord(elist) -> Sast.Chord
 	| SArgsystem(elist) -> Sast.System
-	| SArglist(elist) -> get_type prog (SList(elist))
-	| SArgparens(e) -> (get_type prog e)
+	| SArglist(elist) -> get_type false prog (SList(elist))
+	| SArgparens(e) ->  (*print_string ((string_of_sexpr e)^"\n");*)(get_type true prog e) 
+                        
 
 and map_args_with_t name poly_map (a_t, t) = 
     match t with 
@@ -644,30 +699,31 @@ and map_args_with_t name poly_map (a_t, t) =
             let typ = StringMap.find t_n poly_map in 
                 if(check_type_equality typ a_t) 
                 then poly_map
-                else raise (Function_arguments_type_mismatch name) 
+                else raise (Function_arguments_type_mismatch ("1."^name^" "^(string_of_s_type t)) )
             else StringMap.add t_n a_t poly_map
     | Sast.List(l) -> (match a_t with 
         Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
       | Sast.Chord -> map_args_with_t name poly_map (Sast.Note, l)
       | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
       | Sast.Empty -> poly_map
-      | _ -> raise (Function_arguments_type_mismatch name))
+      | _ -> raise (Function_arguments_type_mismatch  ("2."^name^" "^(string_of_s_type t)^ " "^(string_of_s_type a_t))))
     | _ -> if check_type_equality t a_t then poly_map 
-        else raise (Function_arguments_type_mismatch name)
-
+        else raise (Function_arguments_type_mismatch  ("3."^name^" "^(string_of_s_type t)^" "^(string_of_s_type a_t)))
+    
 and map_args name prog poly_map (a,t) = 
+    (*print_string ("Arg = "^(string_of_s_arg a)^" type sig = "^(string_of_s_type t)^"\n");*)
 	 match t with 
 		Poly(t_n) -> if StringMap.mem t_n poly_map then 
 				let typ = StringMap.find t_n poly_map in 
-					if(check_type_equality typ (get_arg_type prog a)) 
+					if(check_type_equality typ (get_arg_type name prog a)) 
 					then poly_map
-					else raise (Function_arguments_type_mismatch name)
+					else raise (Function_arguments_type_mismatch (name ^ " "^(string_of_s_arg a)))
 					(* check types *)
-				else StringMap.add t_n (get_arg_type prog a) poly_map
+				else StringMap.add t_n (get_arg_type name prog a) poly_map
     | Sast.List(l) -> (match a with 
-          SArglit(i) -> raise (Function_arguments_type_mismatch name)
-        | SArgbool(b) -> raise (Function_arguments_type_mismatch name)
-        | SArglist(e) ->let typ = get_arg_type prog a in 
+          SArglit(i) -> raise (Function_arguments_type_mismatch (name ^ " "^(string_of_s_arg a)))
+        | SArgbool(b) -> raise (Function_arguments_type_mismatch (name ^ " "^(string_of_s_arg a)))
+        | SArglist(e) ->let typ = get_arg_type name prog a in 
             if(typ = Unknown) then poly_map
             else( match typ with
                 Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
@@ -675,7 +731,7 @@ and map_args name prog poly_map (a,t) =
               | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
               | Sast.Empty -> poly_map
               | _ -> poly_map)
-        | SArgparens(e) ->let typ = get_arg_type prog a in 
+        | SArgparens(e) ->let typ = get_arg_type name prog a in 
             if(typ = Unknown) then poly_map
             else( match typ with
                 Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
@@ -683,7 +739,7 @@ and map_args name prog poly_map (a,t) =
               | Sast.System -> map_args_with_t name poly_map (Sast.Chord, l)
               | Sast.Empty -> poly_map
               | _ -> poly_map)
-        | SArgvar(e) -> let typ = get_arg_type prog a in 
+        | SArgvar(e) -> let typ = get_arg_type name prog a in 
             if(typ = Unknown) then poly_map
             else( match typ with
                 Sast.List(lt) -> map_args_with_t name poly_map (lt, l)
@@ -693,11 +749,11 @@ and map_args name prog poly_map (a,t) =
               | _ -> poly_map)
         | SArgchord(elist) -> map_args_with_t name poly_map(Sast.Note, l)
         | SArgsystem(elist) -> map_args_with_t name poly_map(Sast.Chord, l)
-        | _ -> raise (Function_arguments_type_mismatch name))
+        | _ -> raise (Function_arguments_type_mismatch ("List "^name^ " "^(string_of_s_arg a))))
 	| _ -> 
-			if check_type_equality t  (get_arg_type prog a) then poly_map 
-			else raise (Function_arguments_type_mismatch name)
-
+			if check_type_equality t  (get_arg_type name prog a) then poly_map 
+			else raise (Function_arguments_type_mismatch ("Other "^name ^ " "^(string_of_s_arg a)))
+            
 
 (* If an Int is in the given list of s_exprs, make sure it's a power of two and return Beat type if so *)
 and powers_of_two program = function
@@ -713,7 +769,7 @@ and powers_of_two program = function
     | SLiteral(i) :: rest -> if beat_as_int i then powers_of_two program rest else
                                 type_error ("Non-power of 2 entity " ^ (string_of_int i) ^
                                             " in list of beat elements")
-    | x :: rest -> let tyx = get_type program x in (match tyx with
+    | x :: rest -> let tyx = get_type false program x in (match tyx with
                     Sast.Beat | Sast.Int -> powers_of_two program rest
                    | y  -> if eventual "beat" tyx || eventual "int" tyx then powers_of_two program rest
                            else type_error ("Element in list of beats and/or ints is neither a beat
@@ -724,7 +780,7 @@ and contains_beat program = function
     [] -> false
     | SList(sexpr)::rest -> if contains_beat program sexpr then true else contains_beat program rest
     | SBeat(_,_)::rest -> true
-    | x :: rest -> if eventual "beat" (get_type program x) then true else contains_beat program rest
+    | x :: rest -> if eventual "beat" (get_type false program x) then true else contains_beat program rest
 
 
 and check_arg_types name prog poly_map a_list t_list = 
@@ -736,8 +792,8 @@ and check_arg_types name prog poly_map a_list t_list =
 			let poly_map = (List.fold_left (map_args name prog) poly_map tup) in poly_map
 
 and match_pat_expr pat e_t = 
-(print_string ("\texpr check" ^(string_of_patterns pat) ^ " " ^
-(string_of_s_type e_t)^ "\n"));
+(*(print_string ("\texpr check" ^(string_of_patterns pat) ^ " " ^
+(string_of_s_type e_t)^ "\n"));*)
 match pat with 
 	Patconst(i1) -> (match e_t with 
 			Sast.Int -> true
@@ -778,35 +834,35 @@ match pat with
 		| _ -> false)
 
 and match_arg prog (pat, arg) = 
-(print_string ((string_of_patterns pat) ^" "^
-(string_of_s_arg arg)^"\n"));
+(*(print_string ((string_of_patterns pat) ^" "^
+(string_of_s_arg arg)^"\n"));*)
 match pat with 
 		Patconst(i1) -> (match arg with 
 				SArglit(i2) -> i1 = i2
-			| SArgvar(s) -> let typ = (get_type prog (SVariable(s))) in 
+			| SArgvar(s) -> let typ = (get_type false prog (SVariable(s))) in 
 				check_type_equality typ Sast.Int
-			| SArgparens(e1) -> check_type_equality (get_type prog e1) Sast.Int
+			| SArgparens(e1) -> check_type_equality (get_type false prog e1) Sast.Int
 			| _ -> false )
 	| Patbool(b1) -> (match arg with
 				SArgbool(b2) -> b1 = b2 
-			| SArgvar(s) -> check_type_equality (get_type prog (SVariable(s))) Sast.Bool
-			| SArgparens(e1) ->check_type_equality (get_type prog e1 ) Sast.Bool
+			| SArgvar(s) -> check_type_equality (get_type false prog (SVariable(s))) Sast.Bool
+			| SArgparens(e1) ->check_type_equality (get_type false prog e1 ) Sast.Bool
 			| _ -> false)
 	| Patvar(v1) -> true  
 	| Patwild -> true
 	| Patcomma(pat_list) -> (match arg with 
 				SArgchord(el) -> match_pat_expr pat Sast.Chord
 			| SArgsystem(el) -> match_pat_expr pat Sast.System
-			| SArglist(el) -> match_pat_expr pat (get_type prog (SList(el)))
-			| SArgparens(s_expr) -> match_pat_expr pat (get_type prog s_expr)
-			| SArgvar(s) -> match_pat_expr pat (get_type prog (SVariable(s)))
+			| SArglist(el) -> match_pat_expr pat (get_type false prog (SList(el)))
+			| SArgparens(s_expr) -> match_pat_expr pat (get_type false prog s_expr)
+			| SArgvar(s) -> match_pat_expr pat (get_type false prog (SVariable(s)))
 			| _ -> false)
 	| Patcons(pat1,pat2) -> (match arg with 
-			SArglist(el) -> match_pat_expr pat (get_type prog (SList(el)))
+			SArglist(el) -> match_pat_expr pat (get_type false prog (SList(el)))
 		| SArgchord(el) -> match_pat_expr pat Sast.Chord
 		| SArgsystem(el) -> match_pat_expr pat Sast.System
-		| SArgparens(e) -> match_pat_expr pat (get_type prog e)
-		| SArgvar(s) -> match_pat_expr pat (get_type prog (SVariable(s)))
+		| SArgparens(e) -> match_pat_expr pat (get_type false prog e)
+		| SArgvar(s) -> match_pat_expr pat (get_type false prog (SVariable(s)))
 		| _ -> false ) 
 		
 
@@ -815,7 +871,7 @@ and match_args prog l id_list args = let args = List.rev args in match id_list w
 	|(a::b) -> 
 		let comb = (try List.combine a.pats args with _ -> []) in 
 		let is_match = List.fold_left (&&) true 
-			(List.map (match_arg prog) comb) in (print_string ("="^(string_of_bool is_match)^"\n"));
+			(List.map (match_arg prog) comb) in (*(print_string ("="^(string_of_bool is_match)^"\n"));*)
 			if(is_match) then a :: (match_args prog l b (List.rev args))
 			else match_args prog l b (List.rev args)
 	
@@ -825,6 +881,8 @@ let rec type_is_equal t1 t2 =
 	else match t1 with 
 		  Sast.List(a) -> (match t2 with
 				  Sast.List(b) -> type_is_equal a b
+                | Sast.Chord -> type_is_equal a Sast.Note
+                | Sast.System -> type_is_equal a Sast.Chord
 				| Sast.Poly(b) -> true
 				| Empty -> true 
 				| _ -> false )
@@ -838,7 +896,10 @@ let rec type_is_equal t1 t2 =
 
 let check_ret_type program types info = 
 	(* Check that function value has correct type *)
-    if not( type_is_equal (List.hd (List.rev types)) (get_type program.symtab info.s_value))
+    let typ_sig = (List.hd (List.rev types)) in 
+    let get_t_typ = (get_type false program.symtab info.s_value) in 
+    (*print_string ("Function Decl -> "^(string_of_s_type typ_sig)^" = "^(string_of_s_type get_t_typ)^"\n");*)
+    if not( type_is_equal typ_sig get_t_typ )
     then raise (Type_mismatch ("Expression of function " ^ info.s_fname ^
                     " " ^ String.concat " " (List.map string_of_patterns info.s_args)))	
 		else program.symtab
@@ -968,7 +1029,7 @@ and walk_decl_second program = function
         let new_sexpr = (match s_expr with
           SLet(prog, exp) -> SLet(List.fold_left walk_decl_second prog prog.decls, exp)
           | x -> x) in 
-        let texpr = [get_type program.symtab new_sexpr] in
+        let texpr = [get_type false program.symtab new_sexpr] in
         if (s_id.v_type = [Unknown]) then
             let new_type = if (exists_typesig s_id.name program.symtab.identifiers) then
                                let set_type = get_typesig s_id.name program.symtab.identifiers in
@@ -1006,7 +1067,7 @@ and walk_decl_second program = function
                                      scope = newscope;}) in
              replace_funcdec program newfunc oldfunc
   | SMain(expr) -> 
-      let e_type = get_type program.symtab expr in 
+      let e_type = get_type false program.symtab expr in 
 				let new_main = {name = "main"; pats = []; v_type = [e_type]; v_expr = Some(expr)} in
 				let program = replace_main program new_main in 
 				if main_type_check e_type then program else 

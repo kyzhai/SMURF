@@ -22,7 +22,12 @@ type configruation = {
     mutable bytecode_name : string;
     mutable midi_name : string;
     mutable lib_path : string;
+    mutable std_lib_path : string;
 }
+
+let rec string_of_charlist = function
+    | [] -> " "
+    | lst -> String.make 1 (List.hd lst) ^ (string_of_charlist (List.tl lst))
 
 let string_of_position {pos_fname=fn; pos_lnum=ln; pos_bol=bol; pos_cnum=cn} =
   let c = cn - bol in

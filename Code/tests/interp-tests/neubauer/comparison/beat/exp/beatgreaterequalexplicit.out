@@ -9,6 +9,108 @@ Track 0:
  tick 4, channel 1: note D4 on velocity: 0
  tick 4, end of track
 Program: 
+	SFuncdec: 
+		makeNotes ([]) (_) (_) :: [Int] -> [Int] -> [Beat] -> [Note] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		makeNotes (_) ([]) (_) :: [Int] -> [Int] -> [Beat] -> [Note] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		makeNotes (_) (_) ([]) :: [Int] -> [Int] -> [Beat] -> [Note] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		makeNotes (pc : pcs) (reg : regs) (bt : bts) :: [Int] -> [Int] -> [Beat] -> [Note] =  (pc, reg)$bt : makeNotes bts regs pcs
+	New Scope: 
+		ID: pc  :: Int
+		ID: pcs  :: [Int]
+		ID: reg  :: Int
+		ID: regs  :: [Int]
+		ID: bt  :: Beat
+		ID: bts  :: [Beat]
+
+	
+	SFuncdec: 
+		tail (hd : tl) :: [a] -> [a] = tl
+	New Scope: 
+		ID: hd  :: a
+		ID: tl  :: [a]
+
+	
+	SFuncdec: 
+		head (hd : tl) :: [a] -> a = hd
+	New Scope: 
+		ID: hd  :: a
+		ID: tl  :: [a]
+
+	
+	SFuncdec: 
+		reverse ([]) :: [a] -> [a] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		reverse (a : rest) :: [a] -> [a] = reverse rest ++ [a]
+	New Scope: 
+		ID: a  :: a
+		ID: rest  :: [a]
+
+	
+	SFuncdec: 
+		last (a : []) :: [a] -> a = a
+	New Scope: 
+		ID: a  :: a
+
+	
+	SFuncdec: 
+		last (a : rest) :: [a] -> a = last rest
+	New Scope: 
+		ID: a  :: a
+		ID: rest  :: [a]
+
+	
+	SFuncdec: 
+		drop (0) (x) :: Int -> [Note] -> [Note] = x
+	New Scope: 
+		ID: x  :: [Note]
+
+	
+	SFuncdec: 
+		drop (_) ([]) :: Int -> [Note] -> [Note] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		drop (x) (l : rest) :: Int -> [Note] -> [Note] = drop rest (x - 1)
+	New Scope: 
+		ID: x  :: Int
+		ID: l  :: Note
+		ID: rest  :: [Note]
+
+	
+	SFuncdec: 
+		take (0) (_) :: Int -> [Note] -> [Note] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		take (_) ([]) :: Int -> [Note] -> [Note] = []
+	New Scope: 
+		
+	
+	SFuncdec: 
+		take (x) (l : rest) :: Int -> [Note] -> [Note] = l : take rest (x - 1)
+	New Scope: 
+		ID: x  :: Int
+		ID: l  :: Note
+		ID: rest  :: [Note]
+
+	
 	SVardef: 
 		ID: a  :: Beat
 
@@ -20,12 +122,26 @@ Program:
 	SMain: b
 Global Scope: 
 	ID: main  :: Note
+	ID: makeNotes [] _ _ :: [Int] -> [Int] -> [Beat] -> [Note]
+	ID: makeNotes _ [] _ :: [Int] -> [Int] -> [Beat] -> [Note]
+	ID: makeNotes _ _ [] :: [Int] -> [Int] -> [Beat] -> [Note]
+	ID: makeNotes pc : pcs reg : regs bt : bts :: [Int] -> [Int] -> [Beat] -> [Note]
+	ID: tail hd : tl :: [a] -> [a]
+	ID: head hd : tl :: [a] -> a
+	ID: reverse [] :: [a] -> [a]
+	ID: reverse a : rest :: [a] -> [a]
+	ID: last a : [] :: [a] -> a
+	ID: last a : rest :: [a] -> a
+	ID: drop 0 x :: Int -> [Note] -> [Note]
+	ID: drop _ [] :: Int -> [Note] -> [Note]
+	ID: drop x l : rest :: Int -> [Note] -> [Note]
+	ID: take 0 _ :: Int -> [Note] -> [Note]
+	ID: take _ [] :: Int -> [Note] -> [Note]
+	ID: take x l : rest :: Int -> [Note] -> [Note]
 	ID: a  :: Beat
 	ID: b  :: Note
 	ID: print x :: a -> a
 	ID: random  :: Int
-	ID: head h : t :: [a] -> a
-	ID: tail h : t :: [a] -> [a]
 
 java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
 ===== Program Successfully Finished =====

@@ -1,3 +1,4 @@
+Function Decl -> Int = Int
 Program: 
 	SVardef: 
 		ID: y  :: Int
@@ -21,6 +22,4 @@ Global Scope:
 	ID: z  :: Int
 	ID: print x :: a -> a
 	ID: random  :: Int
-	ID: head h : t :: [a] -> a
-	ID: tail h : t :: [a] -> [a]
 
