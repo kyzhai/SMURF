@@ -21,8 +21,8 @@ let r_max = 1000000
  *)
 (* Values.environment -> Sast.symbol_table -> Values.environment' *)
 let st_to_env par st = 
-    let newmap = List.fold_left (fun mp {name=nm; v_expr=ve} -> 
-            NameMap.add nm {nm_expr=ve; nm_value=VUnknown} mp) 
+    let newmap = List.fold_left (fun mp {v_expr=ve; name=nm; pats=pl} -> 
+			NameMap.add nm {nm_expr=ve; nm_value=VUnknown} mp)
         NameMap.empty st.identifiers 
     in {parent=par; ids=newmap}
 
@@ -48,30 +48,30 @@ let rec update_env env name v =
 
 (* searching for the definition of a name, returns its value *)
 (* environment -> string -> value,environment' *)
-let rec resolve_name env name =
+let rec resolve_name env symtab name =
     match NameMap.mem name env.ids with
           true -> let id=(NameMap.find name env.ids) in 
             (match id.nm_expr with
-                  Some expr -> let (v,env1)=(eval env expr) in 
+                  Some expr -> let (v,env1)=(eval env symtab expr) in 
                     let env2 = update_env env1 name v in v,env2
                 | None -> id.nm_value,env)
         | false -> match env.parent with
               None -> interp_error ("Can't find binding to " ^ name)
-            | Some par -> resolve_name par name
+            | Some par -> resolve_name par symtab name
 
 (* eval : env -> Sast.expression -> (value, env') *)
 (* evaluate the expression, return the result and the updated 
  * environment, the environment updated includes the 
  * current and all the outer environments that modified
  *)
-(* environment -> Sast.s_expr -> (value, environment') *)
-and eval env = function
+(* environment -> symbol_table -> Sast.s_expr -> (value, environment') *)
+and eval env symtab = function
       Sast.SLiteral(x) -> (VInt(x), env)
     | Sast.SBoolean(x) -> (VBool(x), env)
     | Sast.SVariable(str) -> 
-        let v,env' = resolve_name env str in v,env'
+        let v,env' = resolve_name env symtab str in v,env'
     | Sast.SBeat(e, n) -> if n < 0 then interp_error ("Somehow we have a negative number of dots on a beat!")
-        else let (ve,env1) = eval env e in
+        else let (ve,env1) = eval env symtab e in
         (match ve with
             | VInt(x) -> (match x with
                 1 -> if n > 4 then interp_error ("A whole Beat may only have up to 4 dots")
@@ -88,12 +88,12 @@ and eval env = function
 
             | _ -> interp_error ("Not expected Beat values"))
     | Sast.SNote(pc, reg, beat) ->
-        (let (vpc,env1) = eval env pc in
-         let (vreg,env2) = eval env1 reg in
-         let (vbeat,env3) = eval env2 beat in VNote(vpc,vreg,vbeat),env3)
+        (let (vpc,env1) = eval env symtab pc in
+         let (vreg,env2) = eval env1 symtab reg in
+         let (vbeat,env3) = eval env2 symtab beat in VNote(vpc,vreg,vbeat),env3)
     | Sast.SBinop(e1, op, e2) -> (*Incomplete*)
-        (let (v1,env1) = eval env e1 in
-         let (v2,env2) = eval env1 e2 in
+        (let (v1,env1) = eval env symtab e1 in
+         let (v2,env2) = eval env1 symtab e2 in
          (match v1, v2 with
             | VInt(x), VInt(y) ->
                 (match op with
@@ -352,7 +352,7 @@ and eval env = function
                     | _ -> interp_error ((string_of_value y) ^ ": Not expected operands")))
          )
     | Sast.SPrefix(op, e) -> (*Incomplete*)
-        (let (v1,env1) = eval env e in
+        (let (v1,env1) = eval env symtab e in
          match v1 with
             | VBool(x) -> (match op with
                 | Not -> VBool(not x),env1
@@ -369,29 +369,29 @@ and eval env = function
             | _ -> interp_error ("Unexpected operand for prefix op")
          )
     | Sast.SIf(e1, e2, e3) -> 
-        (match eval env e1 with
-            | VBool(true), env -> eval env e2 
-            | VBool(false), env -> eval env e3
+        (match eval env symtab e1 with
+            | VBool(true), env -> eval env symtab e2 
+            | VBool(false), env -> eval env symtab e3
             | _ -> interp_error ("error in If expr"))
     | Sast.SList(el) -> if el = [] then  (VList([]), env) else  (*updating evironment after eval every expression*)
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
-                    let v, env' = eval env e in (env',v::lst)) 
+                    let v, env' = eval env symtab e in (env',v::lst)) 
                 (env,[]) el) in VList(List.rev lst), env')
     | Sast.SChord(el) -> 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
-                    let v, env' = eval env e in (env',v::lst)) 
+                    let v, env' = eval env symtab e in (env',v::lst)) 
                 (env,[]) el) in VChord(List.rev lst), env')
     | Sast.SSystem(el) -> 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
-                    let v, env' = eval env e in (env',v::lst)) 
+                    let v, env' = eval env symtab e in (env',v::lst)) 
                 (env,[]) el) in VSystem(List.rev lst), env')
-    | Sast.SCall(e1, e2) -> trace "TODO" (VUnknown, env)
+    | Sast.SCall(e1, e2) -> trace "TODO" (*VUnknown, env*)
     | Sast.SLet(s_prog,e) -> (* reutrn the original env *)
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
-        show_env local_env1; let v,local_env2 = (eval local_env1 e) in v,env
+        show_env local_env1; let v,local_env2 = (eval local_env1 symtab e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
-    | Sast.SPrint(e1) -> print_string (string_of_value (fst (eval env e1))) ; eval env e1 
+    | Sast.SPrint(e1) -> print_string (string_of_value (fst (eval env symtab e1))) ; eval env symtab e1 
         
 
 (* exec_decl : env -> decl -> env' *)
@@ -428,7 +428,7 @@ let exec_main symtab config =
     let main_expr = (match main_entry.nm_expr with 
               None -> interp_error "main has no definition!"
             | Some expr -> expr) in
-    let v, env' = eval globalE main_expr in 
+    let v, env' = eval globalE symtab main_expr in 
     let _ = write_to_file config.bytecode_name v; update_env env' "main" v in
     let cmd = ("java -jar " ^ config.lib_path ^ " " ^ config.bytecode_name ^ " " ^ config.midi_name) in
     print_string (cmd ^ "\n"); 
@@ -448,7 +448,7 @@ let run program s_prog =
 let decls = program in 
 let globalE = {parent = None; 
         ids = List.fold_left (fun mp lst -> 
-        NameMap.add lst.name {nm_value=VUnknown;nm_expr=None} mp) 
+        NameMap.add lst.name {nm_value=VUnknown; nm_expr=None} mp) 
         NameMap.empty s_prog.symtab.identifiers}
 in let _ = show_env globalE in
 
