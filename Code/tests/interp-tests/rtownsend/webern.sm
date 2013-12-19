@@ -64,8 +64,8 @@ secrows = crossOver 5 tempt3 tempt4
 t3 = tail (head secrows) /*First note of this row is last note of previous row! */
 t4 = tail (head (tail secrows)) /* Same for this row */
 durations2	= [16,4,16,16,8,8,8,8,8,8,8]
-newsection1 = section1 ++ [subChord 4 6 (makeNotes t3 (tail reg) durations2)]
-newsection2 = section2 ++ [subChord 4 6 (makeNotes t4 (tail (<>reg)) durations2)]
+newsection1 = section1 ++ (subChord 4 6 (makeNotes t3 (tail reg) durations2))
+newsection2 = section2 ++ (subChord 4 6 (makeNotes t4 (tail (<>reg)) durations2))
 
 /* This should be everything before the first repeat */
 firstRepeat1 = newsection1 ++ newsection1
@@ -87,8 +87,8 @@ fourthrows = crossOver 2 tempt7 tempt8
 t7 = tail (head fourthrows)
 t8 = tail (head (tail fourthrows))
 durations4 = [16,16,16,8,8,8,8,8,16,16,8]
-newsection3 = section1 ++ [subChord 4 6 (makeNotes t7 (tail reg) durations4)]
-newsection4 = section2 ++ [subChord 4 6 (makeNotes t8 (tail (<>reg)) durations4)]	
+newsection3 = section1 ++ (subChord 4 6 (makeNotes t7 (tail reg) durations4))
+newsection4 = section2 ++ (subChord 4 6 (makeNotes t8 (tail (<>reg)) durations4))	
 
 /* This should be everything after the first repeat */
 secRepeat1 = newsection3 ++ newsection3
