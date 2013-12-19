@@ -338,6 +338,12 @@ and eval env symtab = function
         show_env local_env1; let v,local_env2 = (eval local_env1 symtab e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
     | Sast.SPrint(e1) -> print_string ("\n"^(string_of_value (fst (eval env symtab e1)))^"\n") ; eval env symtab e1 
+		| Sast.SHead(e) -> let exp = (eval env symtab e) in (match exp with 
+												VList(vl), _ -> (List.hd vl,  env)
+												| _ , _-> interp_error ("Tried to take the head of something not a list"))
+		| Sast.STail(e) -> let exp = eval env symtab e in (match exp with 
+													VList(vl), _ -> (VList(List.tl vl), env) 
+													| _ , _-> interp_error ("Tried to take the tail of something not a list"))
 
 
 (* environment -> pattern list -> arg list -> (Bool,environment') *)
@@ -451,7 +457,7 @@ and exec_decl env = function
 (* environment -> configuration -> unit *)
 let exec_main symtab config = 
     let globalE=(st_to_env None symtab) in 
-    let main_entry = NameMap.find "main" globalE.ids in
+    let main_entry =NameMap.find "main" globalE.ids in
     let main_expr = (match main_entry.nm_expr with 
               None -> interp_error "main has no definition!"
             | Some expr -> expr) in
