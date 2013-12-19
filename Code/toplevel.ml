@@ -37,7 +37,7 @@ let exec_file config =
     let symtab = Semanalyze.second_pass program in
         (exec_main symtab config)
     with 
-        Parsing.Parse_error -> print_string "HELLO"; fatal_error ("Syntax Error: " ^ string_of_position lexbuf.lex_curr_p)
+        Parsing.Parse_error -> fatal_error ("Syntax Error: " ^ string_of_position lexbuf.lex_curr_p)
 
 let _ =
     let interactive = ref false in
