@@ -25,6 +25,7 @@ type expr =                                 (* Expressions *)
     | System of expr list                   (* [ [(11,3)$4.,(5,2)$4.], [(-1,0)$2] ]*)
     | Call of string * fargs list           (* foo a *)
     | Let of dec list * expr                (* let x = 4 in x + 2 *)
+		| Print of expr													(* print 3 *)
 
 and dec =                                   (* Declarations *)
     Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)

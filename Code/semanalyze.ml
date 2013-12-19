@@ -1040,6 +1040,7 @@ and to_sexpr symbol = function
     | Ast.Let(decs, e) -> let sym = {parent=Some(symbol); identifiers=[]} in                                
                              let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs      
                              in SLet(nested_prog, to_sexpr sym e)
+		| Ast.Print(e) 			-> SPrint(to_sexpr symbol e)
 
 and to_sarg symbol = function
     | Ast.Arglit(i)           -> SArglit(i)

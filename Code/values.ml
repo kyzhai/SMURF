@@ -40,7 +40,7 @@ type enviroment = {
 let rec string_of_value = function
     | VInt(x) -> string_of_int x
     | VBool(x) -> string_of_bool x
-    | VBeat(x) -> string_of_int x ^ " ticks"
+    | VBeat(x) -> string_of_int x 
         (*
         string_of_value i1 ^ 
         let rec repeat n s = 
