@@ -337,10 +337,10 @@ match t1 with
 
 let rec try_get_type pm ts tr = match ts with 
 		Sast.Poly(a) -> if StringMap.mem a pm then StringMap.find a pm 
-						else tr 
+						else ts 
 	| Sast.List(a) -> (match tr with 
 			Sast.List(b) -> Sast.List(try_get_type pm a b)
-		| _ ->tr)
+		| _ ->ts)
 	| _ -> ts
 
 (* Returns a type from an expression*)
@@ -606,9 +606,9 @@ let rec get_type  symtab = function
 					_ -> raise (Type_error ("function not found " ^ f)) in 
 				let tsig = List.hd (List.rev ts_id.v_type) in 
 				let pm = StringMap.add "print" Unknown poly_map in 
-				let return_type = (match f_entry.v_expr with 
+				(*let return_type = (match f_entry.v_expr with 
 					Some(e) -> (try (get_type symtab e) with _ -> Unknown)  
-					| None -> Unknown) in 
+					| None -> Unknown) in *) let return_type = Unknown in 
 				let polymap = map_return pm 
 											tsig
 											 return_type in
