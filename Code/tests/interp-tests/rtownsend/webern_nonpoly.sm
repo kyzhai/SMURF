@@ -14,8 +14,10 @@ For typetrans=0 we get P
 findRowStartsWith :: [Int] -> Int -> Int -> [Int]
 findRowStartsWith [] _ _ = []
 findRowStartsWith l x typetrans = if x < 0 || typetrans > 12 then [] else \
-						  if head (checkTrans typetrans l) == x then (checkTrans typetrans l) else \
-																	-1 * ((head (checkTrans typetrans l)) - x) ^^ (checkTrans typetrans l)
+																	let row = checkTrans typetrans l
+																	in if head row == x then row else \
+																	-1 * ((head row) - x) ^^ row
+																	
 checkTrans :: Int -> [Int] -> [Int]
 checkTrans typetrans l = if typetrans == 0 then l else getTransRow l typetrans
 
