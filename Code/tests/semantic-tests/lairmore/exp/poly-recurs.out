@@ -1,8 +1,3 @@
-[1, 2, 3, 4, 5]
- (1, 1)$1
-[]
-Function Decl -> b = b
-Function Decl -> b = b
 Program: 
 	SFuncdec: 
 		f ([]) (var) :: [a] -> b -> b = var
@@ -11,10 +6,10 @@ Program:
 
 	
 	SFuncdec: 
-		f (h : t) (var) :: [a] -> b -> b = f var t
+		f (a : b) (var) :: [a] -> b -> b = f var b
 	New Scope: 
-		ID: h  :: a
-		ID: t  :: [a]
+		ID: a  :: a
+		ID: b  :: [a]
 		ID: var  :: b
 
 	
@@ -30,7 +25,7 @@ Program:
 Global Scope: 
 	ID: main  :: []
 	ID: f [] var :: [a] -> b -> b
-	ID: f h : t var :: [a] -> b -> b
+	ID: f a : b var :: [a] -> b -> b
 	ID: q  :: Int
 	ID: r  :: Note
 	ID: print x :: a -> a

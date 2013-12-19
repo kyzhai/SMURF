@@ -128,4 +128,4 @@ Global Scope:
 	ID: print x :: a -> a
 	ID: random  :: Int
 
-Fatal error: exception Values.Interp_error("Ints used in Beat operation must be power of 2 between 1 & 16")
+Fatal error: exception Values.Interp_error("Must divide Beat by positive Int")

@@ -6,20 +6,20 @@ Instrument set to 48 on channel 0
 Track 0:
  tick 0, channel 1: program change 48
  tick 0, channel 1: note C#4 on velocity: 90
- tick 2, channel 1: note C#4 on velocity: 0
- tick 2, channel 1: note C#2 on velocity: 90
- tick 4, channel 1: note C#2 on velocity: 0
- tick 4, channel 1: note C#4 on velocity: 90
- tick 6, channel 1: note C#4 on velocity: 0
- tick 6, channel 1: note C#2 on velocity: 90
- tick 8, channel 1: note C#2 on velocity: 0
- tick 8, channel 1: note C#4 on velocity: 90
- tick 10, channel 1: note C#4 on velocity: 0
- tick 10, channel 1: note C#2 on velocity: 90
+ tick 3, channel 1: note C#4 on velocity: 0
+ tick 3, channel 1: note C#2 on velocity: 90
+ tick 6, channel 1: note C#2 on velocity: 0
+ tick 6, channel 1: note C#4 on velocity: 90
+ tick 9, channel 1: note C#4 on velocity: 0
+ tick 9, channel 1: note C#2 on velocity: 90
  tick 12, channel 1: note C#2 on velocity: 0
  tick 12, channel 1: note C#4 on velocity: 90
- tick 14, channel 1: note C#4 on velocity: 0
- tick 14, end of track
+ tick 15, channel 1: note C#4 on velocity: 0
+ tick 15, channel 1: note C#2 on velocity: 90
+ tick 18, channel 1: note C#2 on velocity: 0
+ tick 18, channel 1: note C#4 on velocity: 90
+ tick 21, channel 1: note C#4 on velocity: 0
+ tick 21, end of track
 Program: 
 	SFuncdec: 
 		makeNotes ([]) (_) (_) :: [Int] -> [Int] -> [Beat] -> [Note] = []
@@ -126,7 +126,7 @@ Program:
 	SVardef: 
 		ID: a  :: Beat
 
-	2... $/ 4..
+	2... $/ 4
 	SMain: [[ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a], [ (1, 0)$a], [ (1, 2)$a]]
 Global Scope: 
 	ID: main  :: System

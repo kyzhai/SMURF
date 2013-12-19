@@ -24,7 +24,7 @@ type value =
     | VList of value list
     | VChord of value list
     | VSystem of value list
-    | VFun of string * s_ids * s_func_decl list (* name * sig * fdecl *)
+    (*| VFun of pattern list  pattern *)
     | VUnknown
 
 and nm_entry = {
