@@ -343,39 +343,56 @@ and eval env symtab = function
 (* environment -> pattern list -> arg list -> (Bool,environment') *)
 and bind_pat_arg env symtab patl argl = 
     let combl = List.combine patl (List.rev argl) in
-    let flag,nmp = List.fold_left (fun (flag,mp) (p,a) -> let b,(s,v) = is_pat_arg_matching env symtab p a in 
-            (flag&&b,NameMap.add s {nm_expr=None; nm_value=v} mp)) (true,NameMap.empty) combl 
+    let flag,nmp = List.fold_left (fun (flag,mp) (p,a) -> let b,mp' = is_pat_arg_matching env symtab p a mp in 
+            (flag&&b,mp')) (true,NameMap.empty) combl 
     in flag,{parent=Some(env); ids=nmp}
+
+and gen = function
+    _ as v -> {nm_expr = None; nm_value=v}
     
-(* pattern -> argument -> (Bool,(String,Value)) *)
-and is_pat_arg_matching env symtab pat arg = 
+(* pattern -> argument -> NameMap -> (Bool,NameMap') *)
+and is_pat_arg_matching env symtab pat arg mp = 
     match pat with 
           Patconst(pi) -> (match arg with 
-                          SArglit(ai) -> if pi = ai then true,("",VInt(0)) else false,("",VInt(0))
-                        | _ -> false,("",VInt(0)))
+                          SArglit(ai) -> if pi = ai then true,(mp) else false,mp
+                        | _ -> false,(mp))
         | Patbool(pb) -> (match arg with 
-                          SArgbool(ab) -> if pb = ab then true,("",VBool(false)) else false,("",VBool(false))
-                        | _ -> false,("",VBool(false)))
+                          SArgbool(ab) -> if pb = ab then true,(mp) else false,mp
+                        | _ -> false,mp)
         | Patvar(ps) -> (match arg with 
-                          SArglit(ai) -> true,(ps,VInt(ai))
-                        | SArgbool(ab) -> true,(ps,VBool(ab))
+                          SArglit(ai) -> true,(NameMap.add ps (gen (VInt(ai))) mp)
+                        | SArgbool(ab) -> true,(NameMap.add ps (gen (VBool(ab))) mp)
+                        | SArgvar(str) -> let v,_ = resolve_name env symtab str in true,(NameMap.add ps (gen v) mp)
                         | SArgbeat(e,i) -> 
                             (match (eval env symtab (SBeat(e,i))) with
-                               (VBeat(aa),_) -> true,(ps,VBeat(aa))
-                             | _ -> false,("",VInt(0)))
+                               (VBeat(aa),_) -> true,(NameMap.add ps (gen (VBeat(aa))) mp)
+                             | _ -> false,(mp))
                         | SArgnote(p,r,b) -> 
                             (match eval env symtab (SNote(p,r,b)) with
-                               VNote(v1,v2,v3),_ -> true,(ps,VNote(v1,v2,v3))
-                             | _ -> false,("",VInt(0)))
+                               VNote(v1,v2,v3),_ -> true,(NameMap.add ps (gen (VNote(v1,v2,v3))) mp)
+                             | _ -> false,mp)
                         | SArgchord(el) -> 
                             (let vl,env = List.fold_left (fun (l,env) e -> let res,env' = eval env symtab e in (res::l),env') ([],env) el in
-                             true,(ps,VChord(vl)))
+                             true,(NameMap.add ps (gen (VChord(vl))) mp))
                         | SArgsystem(el) -> 
                             (let vl,env = List.fold_left (fun (l,env) e -> let res,env' = eval env symtab e in (res::l),env') ([],env) el in
-                             true,(ps,VSystem(vl)))
-                        | _ -> false,("",VBool(false)))
-        | Patwild -> true,("",VInt(0))
-        | _ -> false,("",VInt(0))
+                             true,(NameMap.add ps (gen (VSystem(vl))) mp))
+                        | SArglist(el) -> 
+                            (let vl,env = List.fold_left (fun (l,env) e -> let res,env' = eval env symtab e in (res::l),env') ([],env) el in
+                             true,(NameMap.add ps (gen (VList(vl))) mp))
+                        | SArgparens(expr) -> 
+                            (let v,_ = eval env symtab expr in true,(NameMap.add ps (gen v) mp)))
+        | Patwild -> true,(mp)
+    (*
+        | Patcomma(pl) -> (match arg with 
+                        | SArglist(al) -> (if List.length pl <> List.length al then 
+                            false,mp 
+                            else
+                            let lst = List.combine pl al in 
+                            List.fold_left (fun (b,m) (p,a) -> let r1,r2 = is_pat_arg_matching env symtab p a m in (b&&r1),r2) (true,mp) lst))
+        *)
+        | _ -> false,(mp)
+
 
         
 
