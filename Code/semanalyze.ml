@@ -263,7 +263,7 @@ let rec find_var_entry symtab v =
 		with Not_found -> 
         (match symtab.parent with 
 			Some(p) -> find_var_entry p v 
-			| None -> raise (Missing_variable_definition v))
+			| None -> raise (Missing_variable_definition ("find_var"^v)))
 
 let rec find_func_entry symtab f = 
 	let func_list = List.filter (fun t -> t.name = f) symtab.identifiers
@@ -336,7 +336,7 @@ let rec try_get_type pm ts tr = match ts with
 	| _ -> ts
 
 (* Returns a type from an expression*)
-let rec get_type short  symtab = function
+let rec get_type short symtab = function
       SLiteral(l) -> Int
     | SBoolean(b) -> Bool
     | SVariable(s) -> 
@@ -350,7 +350,7 @@ let rec get_type short  symtab = function
 						Some(expr) -> 
 							let symtab = (change_type symtab var Still_unknown) in 
 							get_type short  symtab expr
-						| None -> raise (Missing_variable_definition s))
+						| None -> if(short) then Sast.Unknown else (raise (Missing_variable_definition ("SVariable "^s))))
     | SBinop(e1, o, e2) ->  (* Check type of operator *)
         let te1 = get_type short symtab e1
         and te2 = get_type short symtab e2 in
@@ -358,6 +358,8 @@ let rec get_type short  symtab = function
                 Ast.Add | Ast.Sub | Ast.Mul | Ast.Div | Ast. Mod |
                 Ast.PCAdd | Ast.PCSub ->
                 (* Arithmetic Operators *)
+                if(short) then Sast.Int 
+                else
                     if te1 <> Sast.Int && (match te1 with Poly(_) -> false | _ -> true)
                     then type_error ("First element of an arithmetic binary operation " ^
                         "must be of type Int but element was of type " ^
@@ -370,6 +372,8 @@ let rec get_type short  symtab = function
                         else Sast.Int
                 | Ast.Less | Ast.Leq | Ast.Greater | Ast.Geq ->
                   (* Comparison Operators *)
+                 if(short) then Sast.Bool
+                 else 
                     if te1 <> Sast.Int
                     then type_error ("First element of a comparison binary operation " ^
                         "must be of type Int but element was of type " ^
@@ -382,6 +386,8 @@ let rec get_type short  symtab = function
                         else Sast.Bool
                 | Ast.BeatAdd | Ast.BeatSub | Ast.BeatDiv | Ast.BeatMul ->
                   (* Beat Arithmetic Operators *)
+                if(short) then Sast.Beat
+                else 
                     if te1 <> Sast.Int && te1 <> Sast.Beat
                     then type_error ("First element of a Beat arithmetic binary " ^
                         "operation must be of types Int or Beat but element was of type " ^
@@ -394,6 +400,8 @@ let rec get_type short  symtab = function
                         else Sast.Beat
                 | Ast.BeatLess | Ast.BeatLeq | Ast.BeatGreater | Ast.BeatGeq ->
                   (* Beat Comparison Operators *)
+                 if(short) then Sast.Bool
+                 else    
                     if te1 <> Sast.Int && te1 <> Sast.Beat
                     then type_error ("First element of a Beat comparison binary " ^
                         "operation must be of types Int or Beat but element was of type " ^
@@ -405,6 +413,8 @@ let rec get_type short  symtab = function
                             Sast.string_of_s_type te2)
                         else Sast.Bool
                 | Ast.And | Ast.Or ->  (* Boolean Operators: Bool && Bool, Bool || Bool *)
+                 if(short) then Sast.Bool
+                 else        
                     if te1 <> Sast.Bool
                     then type_error ("First element of a boolean binary operation " ^
                         "must be of type Bool but element was of type " ^
@@ -416,6 +426,8 @@ let rec get_type short  symtab = function
                             Sast.string_of_s_type te2)
                         else Sast.Bool
                 | Ast.BoolEq -> (* Structural Comparision: Element == Element *)
+                 if(short) then Sast.Bool
+                else     
                     if te1 <> te2 && (match te1, te2 with Poly(_), _ | _, Poly(_) -> false | _ -> true)
                     then type_error ("Elements must be of same type for " ^
                         "structural comparison. First element has type " ^
@@ -423,6 +435,8 @@ let rec get_type short  symtab = function
                         Sast.string_of_s_type te2)
                     else Sast.Bool
                 | Ast.Concat -> (* Concat: List ++ List *)
+                if(short) then Sast.Empty (* fix *)
+                else 
                     (* Not sure this checks the correct thing *)
                     (match te1 with 
                       Sast.List(t1) -> (match te2 with
@@ -451,6 +465,8 @@ let rec get_type short  symtab = function
                     | _ -> type_error "Concat operator can only used between lists")
 
                 | Ast.Cons -> (* Cons: Element : List *)
+                if(short) then Sast.Empty (* ? *)
+                else
                     (match te2 with 
                        Sast.List(t2) -> (if diff_types [te1] [t2] && te1 <> Sast.Empty then 
                               (try
@@ -474,6 +490,8 @@ let rec get_type short  symtab = function
                      | _ -> type_error ("The second operand of a cons operator was: " 
                          ^ (Sast.string_of_s_type te2) ^ ", but a type of list was expected"))
                 | Ast.Trans -> (* Trans: Int ^^ List *)
+                if(short) then Sast.List(Sast.Int)
+                else
                     if te1 <> Sast.Int
                     then type_error ("First element in a Trans expression " ^
                         "must be of type Int but element was of type " ^
@@ -684,13 +702,14 @@ and map_return f  pm ts ret = match ts with
 and get_arg_type f prog a = match a with 
 		SArglit(i) -> Sast.Int
 	| SArgbool(b) -> Sast.Bool
-	| SArgvar(v) -> (get_type false prog (SVariable(v)))
+	| SArgvar(v) -> (try(get_type false prog (SVariable(v))) with _-> Sast.Unknown)
 	| SArgbeat(e,i) -> Sast.Beat
 	| SArgnote(e1,e2,e3) -> Sast.Note
 	| SArgchord(elist) -> Sast.Chord
 	| SArgsystem(elist) -> Sast.System
 	| SArglist(elist) -> get_type false prog (SList(elist))
-	| SArgparens(e) ->  (*print_string ((string_of_sexpr e)^"\n");*)(get_type true prog e) 
+	| SArgparens(e) ->  (*print_string ((string_of_sexpr e)^"\n");*)try (get_type true prog e) 
+        with _ -> Sast.Unknown
                         
 
 and map_args_with_t name poly_map (a_t, t) = 
@@ -839,13 +858,13 @@ and match_arg prog (pat, arg) =
 match pat with 
 		Patconst(i1) -> (match arg with 
 				SArglit(i2) -> i1 = i2
-			| SArgvar(s) -> let typ = (get_type false prog (SVariable(s))) in 
+			| SArgvar(s) -> let typ = (try(get_type false prog (SVariable(s))) with _ -> Sast.Unknown )in 
 				check_type_equality typ Sast.Int
 			| SArgparens(e1) -> check_type_equality (get_type false prog e1) Sast.Int
 			| _ -> false )
 	| Patbool(b1) -> (match arg with
 				SArgbool(b2) -> b1 = b2 
-			| SArgvar(s) -> check_type_equality (get_type false prog (SVariable(s))) Sast.Bool
+			| SArgvar(s) -> check_type_equality (try(get_type false prog (SVariable(s))) with _ -> Sast.Unknown) Sast.Bool
 			| SArgparens(e1) ->check_type_equality (get_type false prog e1 ) Sast.Bool
 			| _ -> false)
 	| Patvar(v1) -> true  
@@ -894,15 +913,16 @@ let rec type_is_equal t1 t2 =
 					Sast.Poly(b) -> true
 				| _ -> false )
 
-let check_ret_type program types info = 
+let check_ret_type symtab types info = 
+    (*print_string ((string_of_symbol_table symtab)^"\n");*)
 	(* Check that function value has correct type *)
     let typ_sig = (List.hd (List.rev types)) in 
-    let get_t_typ = (get_type false program.symtab info.s_value) in 
+    let get_t_typ = (get_type true symtab info.s_value) in 
     (*print_string ("Function Decl -> "^(string_of_s_type typ_sig)^" = "^(string_of_s_type get_t_typ)^"\n");*)
     if not( type_is_equal typ_sig get_t_typ )
     then raise (Type_mismatch ("Expression of function " ^ info.s_fname ^
                     " " ^ String.concat " " (List.map string_of_patterns info.s_args)))	
-		else program.symtab
+		else symtab
 
 let rec matching_patterns polypats expected actual = match expected, actual with
    |  ex::rest, act::rest2 -> if ex = act then matching_patterns polypats rest rest2 else
@@ -931,6 +951,9 @@ let rec check_pat_types types info =
                     | Patcomma(l), Sast.List(lty) -> 
                         let tups = List.map (fun v -> (v, lty)) l in
                         (gen_scope tups) @ gen_scope rest
+                    | Patcomma(l), Sast.Poly(s) -> 
+                        let tups = List.map (fun v -> (v, Sast.Unknown)) l in 
+                        (gen_scope tups) @ gen_scope rest
                     | Patcons(l1,l2), Sast.List(lty) ->
                         (gen_scope [(l1, lty)]) @ (match l2 with
                                                     | Patvar(s) -> [{name = s; pats = [];
@@ -938,8 +961,14 @@ let rec check_pat_types types info =
                                                                     v_expr = None}]
                                                     | _ -> (gen_scope [(l2, ty)])) 
                         @ gen_scope rest
+                    | Patcons(l1,l2), Sast.Poly(s) -> 
+                        (gen_scope [(l1, Sast.Unknown)]) @ (match l2 with 
+                                                    | Patvar(s) -> [{name = s; pats = [];
+                                                                    v_type = [ty];
+                                                                    v_expr = None}]
+                                                    | _ -> (gen_scope [(l2,ty)]))
                     | _ -> gen_scope rest) in
-         info.scope.identifiers <- gen_scope pat_pairs; info.scope
+         info.scope.identifiers <- gen_scope pat_pairs;info.scope
 
 let rec main_type_check = function
 	 Sast.Empty -> true
@@ -1060,8 +1089,8 @@ and walk_decl_second program = function
             then raise (Multiple_identical_pattern_lists 
                         (String.concat " " (List.map string_of_patterns info.s_args)))
             else 
-                let n_prog = {decls = program.decls; symtab = (check_pat_types types info) } in 
-                let newscope = check_ret_type n_prog types info in 
+                let symtab = (check_pat_types types info)  in 
+                let newscope = check_ret_type symtab types info in 
                 let newfunc = SFuncdec({s_fname = info.s_fname; type_sig = types;
                                      s_args = info.s_args; s_value = info.s_value;
                                      scope = newscope;}) in
