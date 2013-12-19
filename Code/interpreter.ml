@@ -135,6 +135,7 @@ and eval env symtab = function
                     | Leq -> VBool(x<=y),env2
                     | Greater -> VBool(x>y),env2
                     | Geq -> VBool(x>=y),env2
+                    | BoolEq -> VBool(x=y),env2
                     | BeatAdd ->
                         if List.mem x [1;2;4;8;16] && List.mem y [1;2;4;8;16]
                         then (* This is a hacky way of doing this *)
@@ -373,12 +374,6 @@ and eval env symtab = function
         show_env local_env1; let v,local_env2 = (eval local_env1 symtab e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
     | Sast.SPrint(e1) -> print_string ("\n"^(string_of_value (fst (eval env symtab e1)))^"\n") ; eval env symtab e1 
-		| Sast.SHead(e) -> let exp = (eval env symtab e) in (match exp with 
-												VList(vl), _ -> (List.hd vl,  env)
-												| _ , _-> interp_error ("Tried to take the head of something not a list"))
-		| Sast.STail(e) -> let exp = eval env symtab e in (match exp with 
-													VList(vl), _ -> (VList(List.tl vl), env) 
-													| _ , _-> interp_error ("Tried to take the tail of something not a list"))
 
 
 (* environment -> pattern list -> arg list -> (Bool,environment') *)
