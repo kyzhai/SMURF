@@ -64,50 +64,56 @@ let rec ticks_of_output value =
       VNote(pc,reg,beat) -> 
       (match beat with
           | VBeat(-1) -> 0
+          | VBeat(1) -> 2
           | VBeat(beat) -> beat
+          | VInt(beat) -> beat
           | _ -> interp_error ("Invalid Beat value")
       )
     | VChord(nlst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 nlst
-    | VSystem(slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst
-    | VList(lst) -> List.fold_left (fun m sys -> let tick = ticks_of_output sys in
-            if m < tick then tick else m) 0 lst
-    | _ -> output_error ("Error in ticks_of_output")
+    | VSystem(slst) |  VList((VSystem(_) :: _) as slst) | VList((VList(VNote(_,_,_) :: _) :: _)  as slst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 slst
+    | VList((VNote(_,_,_) :: _) as nlst) -> List.fold_left (fun acc ch -> acc + ticks_of_output ch) 0 nlst
+    | x -> print_string (string_of_value x); output_error ("Error in ticks_of_output")
 
 
 (* Write a note into an array, return the next postion to be writen, and the next tick to begin with *)
 (* Value -> Array -> Int -> Int -> Int -> (Int, Int, Int) *)
 let rec write_to_array value arr ix iy tic = 
     (match value with
-    | VNote(VInt(pc),VInt(reg),VBeat(beat)) -> if (pc = -1 && reg = -1 && beat = -1) then ix,iy,tic else
+    | VNote(VInt(pc),VInt(reg),VBeat(beat)) ->print_string ("Ticks should be " ^ (string_of_int beat)); if (pc = -1 && reg = -1 && beat = -1) then ix,iy,tic else
         let note = (match pc with
               -1 -> -1
-            | _ -> pc+12*(reg+3)) in (
+            | _ -> pc+12*(reg+3)) in print_string ("We're up to " ^ (string_of_int ix) ^ " and " ^ (string_of_int iy)^ " with tick value " ^ (string_of_int tic));
+                print_string (string_of_int arr.(0).(0));(
             arr.(ix).(iy) <- tic;                     (* tick *)
             arr.(ix).(iy+1) <- note;                  (* note *)
             arr.(ix).(iy+2) <- default_velocity;      (* velocity *)
+            if ix = 14 then print_string ("THIS IS IT\n" ^ (string_of_int (tic+beat))) else ();
             arr.(ix+1).(iy) <- tic+beat;
+            if ix = 14 then print_string ("WE JUST STU$K INTO THE ARRAY " ^ (string_of_int (arr.(ix+1).(0)))) else ();
             arr.(ix+1).(iy+1) <- note;
             arr.(ix+1).(iy+2) <- 0;
-            ix+beat,iy,tic+beat)
+            (*print_string "GOT HERE\n";*)
+            if beat = 1 then ix+beat+1,iy,tic+beat else ix+beat,iy,tic+beat)
     (* All notes in a chord should fills same set of ticks *)
-    | VChord((VNote(_,_,VBeat(ticks))::xs) as nlst) -> 
+    | VChord((VNote(_,_,VBeat(ticks))::xs) as nlst) | VList((VNote(_,_,VBeat(ticks))::xs) as nlst) -> 
         let actlst = if ticks = -1 then List.tl nlst else nlst in
         (let resx, resy, restic =
          (List.fold_left (fun (x,y,ntic) note ->
             let (nx,ny,ntic) = write_to_array note arr x y ntic
             in (nx,ny,tic)) (ix,iy,tic) actlst) in resx, resy, (if ticks = -1 then restic else restic+ticks))
-    | VSystem(clst) ->
+    | VSystem(clst) | VList((VChord(_) :: _) as clst) | VList((VList(VNote(_,_,_) :: _) :: _) as clst)->
         (let resx, resy, resz = 
         List.fold_left (fun (x,y,ntic) chord -> 
             let (nx,ny,ntic) = write_to_array chord arr x y ntic
             in (nx,ny,ntic)) (ix,iy,tic) clst in (0,resy+3,0))
     | VList((x::xs) as slst) -> (match x with
-          VSystem(_) | VChord(_) | VNote(_,_,_) -> List.fold_left (fun (x,y,ntic) sys ->
+          VSystem(_) | VChord(_) | VNote(_,_,_)  ->
+                    List.fold_left (fun (x,y,ntic) sys ->
                   let (nx,ny,ntic) = write_to_array sys arr x y ntic
                   in (nx,ny,ntic)) (ix,iy,tic) slst
         | _ -> output_error ("Error in write_to_array: Expression bound to MAIN must "
                             ^ "be the empty list, a note, or a list of systems, chords, or notes"))
-    | x -> output_error ("Error in write_to_array: Input is not a valid value")
+    | x ->print_string (string_of_value x); output_error ("Error in write_to_array: Input is not a valid value")
     )
 
 
@@ -119,9 +125,9 @@ let write_to_file filename value =
     match number_of_track with
           0 -> close_out oc; print_string ("===== main = [] Program Exits Normally =====\n"); exit 0
         | _ -> (
-    let dimx = ticks_of_output value in
+    let dimx = ticks_of_output value in 
     let dimy = number_of_track * 3 in
-    let resArr = (Array.make_matrix (dimx) (dimy) (-1)) in 
+    let resArr = (Array.make_matrix (dimx+1) (dimy) (-1)) in 
     let _ = (write_to_array value resArr 0 0 0) in 
     for i=0 to dimx-1 do
         for j=0 to (number_of_track -1) do

@@ -71,10 +71,10 @@ and eval env symtab = function
     | Sast.SBoolean(x) -> (VBool(x), env)
     | Sast.SVariable(str) -> 
         let v,env' = resolve_name env symtab str in v,env'
-    | Sast.SBeat(e, n) -> if n < 0 then interp_error ("Somehow we have a negative number of dots on a beat!")
+    | Sast.SBeat(e, n) ->  if n < 0 then interp_error ("Somehow we have a negative number of dots on a beat!")
         else let (ve,env1) = eval env symtab e in
         (match ve with
-            | VInt(x) -> (match x with
+            | VInt(x) -> print_string "Matking a beat\n";(match x with
                 1 -> if n > 4 then interp_error ("A whole Beat may only have up to 4 dots")
                      else (VBeat(ticks_1.(n)),env1)
               | 2 -> if n > 3 then interp_error ("A half Beat may only have up to 3 dots")
@@ -88,10 +88,14 @@ and eval env symtab = function
               | _ -> interp_error ("Beat must be a power of 2 between 1 & 16"))
 
             | _ -> interp_error ("Not expected Beat values"))
-    | Sast.SNote(pc, reg, beat) ->
+    | Sast.SNote(pc, reg, beat) ->print_string "HERE WE GO";
         (let (vpc,env1) = eval env symtab pc in
          let (vreg,env2) = eval env1 symtab reg in
-         let (vbeat,env3) = eval env2 symtab beat in VNote(vpc,vreg,vbeat),env3)
+         let (vbeat,env3) = eval env2 symtab beat in let vbeat =
+          (match vbeat with
+           VBeat(_) -> vbeat
+           | VInt(x) -> if List.mem x [1;2;4;8;16] then VBeat(16/x) else interp_error ("Non-power of two being used as a beat")
+           | _ -> interp_error ("We have a note with a non-int non-beat Beat value")) in print_string ("Making a note with number of ticks " ^ (string_of_value vbeat)); VNote(vpc,vreg,vbeat),env3)
     | Sast.SBinop(e1, op, e2) -> (*Incomplete*)
         (let (v1,env1) = eval env symtab e1 in
          let (v2,env2) = eval env1 symtab e2 in
@@ -277,6 +281,9 @@ and eval env symtab = function
                       Concat -> VList(lx @ ly),env2
                     | Cons -> (match (List.hd ly) with
                                 VList(_) -> VList(v1 :: ly),env2
+                               |VChord(_) -> (match (List.hd lx) with
+                                               VNote(_,_,_) -> VList(v1 :: ly)
+                                             | _ -> interp_error ("Cannot cons non-note " ^ (string_of_value v1) ^ " onto chord")),env2
                                | _ -> interp_error ("Cannot cons " ^ (string_of_value v1) ^ " onto " ^ (string_of_value v2)))
                     | _ -> interp_error ("Not expected op for Lists: " ^ (string_of_value v1) ^ " " ^ (string_of_value v2)))
             | VNote(a,b,c), (VList(lst) | VChord(lst)) -> (match op with
@@ -290,6 +297,15 @@ and eval env symtab = function
                                                    | _ -> VList(v1 :: lst)), env2
                               | _ -> interp_error ("Cannot cons a note to a list of non-notes"))
                   | _ -> interp_error ("Not expected op given a note and a list"))
+            | VChord(a), VList(lst)-> (match op with
+                    Cons -> (match (List.hd lst) with
+                        VChord(_) -> VList(v1 :: lst), env2
+                      | VList(VNote(_,_,_) :: _) -> VList(v1 :: lst), env2
+                      | _ -> interp_error ("Cannot cons a chord to a list of non-chords"))
+                   | _ -> interp_error ("Note expected op given a chord and a list"))
+            | VChord(a), VSystem(lst) -> (match op with
+                    Cons -> VSystem(v1 :: lst), env2
+                   | _ -> interp_error ("Note expected op given a chord and a system"))
             | x, y ->
                 (match op with
                       BoolEq -> VBool(x=y),env2
