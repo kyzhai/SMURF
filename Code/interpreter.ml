@@ -22,7 +22,7 @@ let r_max = 1000000
 (* Values.environment -> Sast.symbol_table -> Values.environment' *)
 let st_to_env par st = 
     let newmap = List.fold_left (fun mp {v_expr=ve; name=nm; pats=pl} -> 
-			NameMap.add nm {nm_expr=ve; nm_value=VUnknown} mp)
+            NameMap.add nm {nm_expr=ve; nm_value=VUnknown} mp)
         NameMap.empty st.identifiers 
     in {parent=par; ids=newmap}
 
@@ -285,15 +285,65 @@ and eval env symtab = function
                 (env,[]) el) in VChord(List.rev lst), env')
     | Sast.SSystem(el) -> 
         (let (env',lst)=(List.fold_left (fun (env,lst) e -> 
-                    let v, env' = eval env symtab e in (env',v::lst)) 
+                    let v, env' = eval env symtab e in (env',v::lst))
                 (env,[]) el) in VSystem(List.rev lst), env')
-    | Sast.SCall(e1, e2) -> trace "TODO" (VUnknown, env)
+
+    | Sast.SCall(e1, e2) -> 
+        let sid_lst = List.find_all (fun f -> f.name = e1) symtab.identifiers in
+        let sid = 
+        try 
+        List.find (fun sid -> let flag,_ = bind_pat_arg env symtab sid.pats e2 in flag) sid_lst 
+        with Not_found -> interp_error ("Not found matched patern!")
+        in 
+        let flag,newE = bind_pat_arg env symtab sid.pats e2 in 
+        (match sid.v_expr with
+          Some(e) -> eval newE symtab e
+        | None -> interp_error ("Function declaration without expression"))
+
     | Sast.SLet(s_prog,e) -> (* reutrn the original env *)
         let local_env = st_to_env (Some env) s_prog.symtab in 
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 symtab e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
     | Sast.SPrint(e1) -> print_string (string_of_value (fst (eval env symtab e1))) ; eval env symtab e1 
+
+
+(* environment -> pattern list -> arg list -> (Bool,environment') *)
+and bind_pat_arg env symtab patl argl = 
+    let combl = List.combine patl (List.rev argl) in
+    let flag,nmp = List.fold_left (fun (flag,mp) (p,a) -> let b,(s,v) = is_pat_arg_matching env symtab p a in 
+            (flag&&b,NameMap.add s {nm_expr=None; nm_value=v} mp)) (true,NameMap.empty) combl 
+    in flag,{parent=Some(env); ids=nmp}
+    
+(* pattern -> argument -> (Bool,(String,Value)) *)
+and is_pat_arg_matching env symtab pat arg = 
+    match pat with 
+          Patconst(pi) -> (match arg with 
+                          SArglit(ai) -> if pi = ai then true,("",VInt(0)) else false,("",VInt(0))
+                        | _ -> false,("",VInt(0)))
+        | Patbool(pb) -> (match arg with 
+                          SArgbool(ab) -> if pb = ab then true,("",VBool(false)) else false,("",VBool(false))
+                        | _ -> false,("",VBool(false)))
+        | Patvar(ps) -> (match arg with 
+                          SArglit(ai) -> true,(ps,VInt(ai))
+                        | SArgbool(ab) -> true,(ps,VBool(ab))
+                        | SArgbeat(e,i) -> 
+                            (match (eval env symtab (SBeat(e,i))) with
+                               (VBeat(aa),_) -> true,(ps,VBeat(aa))
+                             | _ -> false,("",VInt(0)))
+                        | SArgnote(p,r,b) -> 
+                            (match eval env symtab (SNote(p,r,b)) with
+                               VNote(v1,v2,v3),_ -> true,(ps,VNote(v1,v2,v3))
+                             | _ -> false,("",VInt(0)))
+                        | SArgchord(el) -> 
+                            (let vl,env = List.fold_left (fun (l,env) e -> let res,env' = eval env symtab e in (res::l),env') ([],env) el in
+                             true,(ps,VChord(vl)))
+                        | _ -> false,("",VBool(false)))
+        | Patwild -> true,("",VInt(0))
+        | _ -> false,("",VInt(0))
+
+        
+
         
 
 (* exec_decl : env -> decl -> env' *)
