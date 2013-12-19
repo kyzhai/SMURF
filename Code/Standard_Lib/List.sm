@@ -1,35 +1,30 @@
 /* Standard Library functions on general lists */
 
-
-head :: [a] -> a
-head [] = interp_error ("Calling 'head' function on empty list")
-head hd:tl = hd
-
-
-tail :: [a] -> [a]
-tail [] = interp_error ("calling 'tail' function on empty list")
-tail hd:tl = tl
-
 makeNotes :: [Int] -> [Int] -> [Beat] -> [Note]
 makeNotes [] _ _ = []
 makeNotes _ [] _ = []
 makeNotes _ _ [] = []
 makeNotes pc:pcs reg:regs bt:bts = (pc,reg)$bt : (makeNotes pcs regs bts)
 
+tail :: [a] -> [a]
+tail hd:tl = tl
+
+head :: [a] -> a
+head hd:tl = hd
 
 reverse :: [a] -> [a]
 reverse [] = []
 reverse a:rest = (reverse rest) ++ [a]
 
 //Remove first n elements from given list
-drop :: Int -> [a] -> [a]
+drop :: Int -> [Note] -> [Note]
 drop 0 x = x
 drop _ [] = []
 drop x l:rest = drop (x - 1) rest
 
 
 //Get first n elements from given list
-take :: Int -> [a] -> [a]
+take :: Int -> [Note] -> [Note]
 take 0 _ = []
 take _ [] = []
 take x l:rest = l : (take (x - 1) rest)

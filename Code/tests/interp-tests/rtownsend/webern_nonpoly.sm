@@ -5,25 +5,6 @@ getTransRow l 2 = <>l
 getTransRow l 3 = <>(~l)
 
 
-makeNotes :: [Int] -> [Int] -> [Beat] -> [Note]
-makeNotes [] _ _ = []
-makeNotes _ [] _ = []
-makeNotes _ _ [] = []
-makeNotes pc:pcs reg:regs bt:bts = (pc,reg)$bt : (makeNotes pcs regs bts)
-
-//Remove first n elements from given list
-drop :: Int -> [Note] -> [Note]
-drop 0 x = x
-drop _ [] = []
-drop x l:rest = drop (x - 1) rest
-
-
-//Get first n elements from given list
-take :: Int -> [Note] -> [Note]
-take 0 _ = []
-take _ [] = []
-take x l:rest = l : (take (x - 1) rest)
-
 /*Given a P0 and a pitch class x get the row of type 'typetrans' derived from P0
 whose first element is x
 For typetrans=0 we get P
@@ -63,11 +44,6 @@ swapAt x a:ra b:rb = a : (swapAt (x-1) ra rb)
 crossOver :: Int -> [Int] -> [Int] -> [[Int]]
 crossOver x a b = (swapAt x a b) ++ (swapAt x b a)
 
-tail :: [Int] -> [Int]
-tail hd:tl = tl
-
-head :: [Int] -> Int
-head hd:tl = hd
 
 
 headrows :: [[Int]] -> [Int]
@@ -119,7 +95,7 @@ section4 = subChord 4 6 (makeNotes t6 (tail (<>reg)) durations3)
 
 tempt7 = findRowStartsWith P0 (last t5) 3
 tempt8 = findRowStartsWith P0 (last t6) 2
-fourthrows = CorssOver 2 tempt7 tempt8
+fourthrows = crossOver 2 tempt7 tempt8
 t7 = tailrows (headrows fourthrows)
 t8 = tailrows (headrows (tailrows fourthrows))
 durations4 = [16,16,16,8,8,8,8,8,16,16,8]
