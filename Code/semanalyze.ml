@@ -284,7 +284,7 @@ let change_type symtab old_var n_type =
 	
 
 let rec check_type_equality t1 t2 = 
-(*(print_string ((string_of_s_type t1) ^" and "^(string_of_s_type t2) ^"\n"));*)
+(print_string ((string_of_s_type t1) ^" and "^(string_of_s_type t2) ^"\n"));
 match t1 with 
 	  Sast.Chord -> (match t2 with 
 		  Sast.List(b) ->  b = Sast.Note 
@@ -306,23 +306,23 @@ match t1 with
 		| Sast.Empty -> true
 		| Unknown -> true
 		| _ -> false )
-	| Sast.Poly(a) ->  false (* shouldn't be used with poly types *)
+	| Sast.Poly(a) ->  true (* shouldn't be used with poly types *)
 	| Sast.Unknown -> true (* should only be used with known types *)
 	| Sast.Still_unknown -> raise (Type_error "having trouble resolving types")
 	| Sast.Int -> ( match t2 with 
 			Sast.Int -> true
 		| Sast.Unknown -> true
-		| Sast.Poly(b) -> false
+		| Sast.Poly(b) -> true
 		| Sast.Beat -> true
 	 	| _ -> false)
 	| Sast.Beat -> ( match t2 with 
 			Sast.Beat -> true
 		| Sast.Unknown -> true
-		| Sast.Poly(b) -> false
+		| Sast.Poly(b) -> true
 		| Sast.Int -> true
 	 	| _ -> false)
 	| _ -> (match t2 with 
-			Sast.Poly(b) -> false (* shouldn't be used with poly types *)
+			Sast.Poly(b) -> true (* shouldn't be used with poly types *)
 		| Sast.Unknown -> true (* should only be used with known types *)
 		| Sast.Still_unknown -> raise (Type_error "having trouble resolving types")
 		| _ -> t1 = t2 )
@@ -584,8 +584,8 @@ let rec get_type  symtab = function
     | SLet(decs, exp) -> get_type decs.symtab exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type symtab e
-		| SCall(f, args) -> (*print_string ("===========making an SCall " ^ 
-            f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");*)
+		| SCall(f, args) -> print_string ("===========making an SCall " ^ 
+            f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");
 			let poly_map = StringMap.empty in  
 				let f_vars = find_func_entry symtab f in
 				let f_entrys = (*print_string ((string_of_symbol_table symtab)^"\n");*) match_args symtab [] f_vars args in
@@ -647,9 +647,9 @@ and map_args_with_t name poly_map (a_t, t) =
       | _ -> raise (Function_arguments_type_mismatch  ("2."^name^" "^(string_of_s_type t)^ " "^(string_of_s_type a_t))))
     | _ -> if check_type_equality t a_t then poly_map 
         else raise (Function_arguments_type_mismatch  ("3."^name^" "^(string_of_s_type t)))
-
+    
 and map_args name prog poly_map (a,t) = 
-    (*print_string ("Arg = "^(string_of_s_arg a)^" type sig = "^(string_of_s_type t)^"\n");*)
+    print_string ("Arg = "^(string_of_s_arg a)^" type sig = "^(string_of_s_type t)^"\n");
 	 match t with 
 		Poly(t_n) -> if StringMap.mem t_n poly_map then 
 				let typ = StringMap.find t_n poly_map in 
@@ -687,11 +687,11 @@ and map_args name prog poly_map (a,t) =
               | _ -> poly_map)
         | SArgchord(elist) -> map_args_with_t name poly_map(Sast.Note, l)
         | SArgsystem(elist) -> map_args_with_t name poly_map(Sast.Chord, l)
-        | _ -> raise (Function_arguments_type_mismatch name))
+        | _ -> raise (Function_arguments_type_mismatch ("List "^name^ " "^(string_of_s_arg a))))
 	| _ -> 
 			if check_type_equality t  (get_arg_type prog a) then poly_map 
-			else raise (Function_arguments_type_mismatch name)
-
+			else raise (Function_arguments_type_mismatch ("Other "^name ^ " "^(string_of_s_arg a)))
+            
 
 (* If an Int is in the given list of s_exprs, make sure it's a power of two and return Beat type if so *)
 and powers_of_two program = function
