@@ -370,6 +370,9 @@ and is_pat_arg_matching env symtab pat arg =
                         | SArgchord(el) -> 
                             (let vl,env = List.fold_left (fun (l,env) e -> let res,env' = eval env symtab e in (res::l),env') ([],env) el in
                              true,(ps,VChord(vl)))
+                        | SArgsystem(el) -> 
+                            (let vl,env = List.fold_left (fun (l,env) e -> let res,env' = eval env symtab e in (res::l),env') ([],env) el in
+                             true,(ps,VSystem(vl)))
                         | _ -> false,("",VBool(false)))
         | Patwild -> true,("",VInt(0))
         | _ -> false,("",VInt(0))
