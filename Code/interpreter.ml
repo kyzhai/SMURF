@@ -337,7 +337,7 @@ and eval env symtab = function
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 symtab e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
-    | Sast.SPrint(e1) -> print_string (string_of_value (fst (eval env symtab e1))) ; eval env symtab e1 
+    | Sast.SPrint(e1) -> print_string ("\n"^(string_of_value (fst (eval env symtab e1)))^"\n") ; eval env symtab e1 
 
 
 (* environment -> pattern list -> arg list -> (Bool,environment') *)

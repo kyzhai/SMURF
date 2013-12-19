@@ -154,6 +154,7 @@ expr:
 |   LET program IN expr     { Let($2, $4) }
 
 |   VARIABLE args           { Call($1,$2) }
+| 	PRINT expr 							{ Print($2) }
 
 args:
     arg                     { [$1] }
