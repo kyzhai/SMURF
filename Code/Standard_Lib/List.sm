@@ -16,6 +16,11 @@ reverse :: [a] -> [a]
 reverse [] = []
 reverse a:rest = (reverse rest) ++ [a]
 
+//Get last int from list
+last :: [a] -> a
+last a:[] = a
+last a:rest = last rest
+
 //Remove first n elements from given list
 drop :: Int -> [Note] -> [Note]
 drop 0 x = x

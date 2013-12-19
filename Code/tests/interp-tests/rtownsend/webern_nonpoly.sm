@@ -52,10 +52,10 @@ headrows hd:tl = hd
 tailrows :: [[Int]] -> [[Int]]
 tailrows hd:tl = tl
 
-//Get last int from list
-last :: [Int] -> Int
-last a:[] = a
-last a:rest = last rest
+//Get last1 int from list
+last1 :: [Int] -> Int
+last1 a:[] = a
+last1 a:rest = last1 rest
 
 P0 = [0,8,7,11,10,9,3,1,4,2,6,5]
 RP3 = <>(3 ^^ P0)
@@ -70,10 +70,10 @@ durations1 = [8,8,4,16,16,8,8,8,8,8,8,16]
 section1 = subChord 5 7 (makeNotes t1 reg durations1)
 section2 = subChord 5 7 (makeNotes t2 (<>reg) durations1)
 
-tempt3 = findRowStartsWith P0 (last t1) 2
-tempt4 = findRowStartsWith P0 (last t2) 3
+tempt3 = findRowStartsWith P0 (last1 t1) 2
+tempt4 = findRowStartsWith P0 (last1 t2) 3
 secrows = crossOver 5 tempt3 tempt4
-t3 = tailrows (headrows secrows) /*First note of this row is last note of previous row! */
+t3 = tailrows (headrows secrows) /*First note of this row is last1 note of previous row! */
 t4 = tailrows (headrows (tailrows secrows)) /* Same for this row */
 durations2	= [16,4,16,16,8,8,8,8,8,8,8]
 newsection1 = section1 ++ [subChord 4 6 (makeNotes t3 (tail reg) durations2)]
@@ -84,8 +84,8 @@ firstRepeat1 = newsection1 ++ newsection1
 firstRepeat2 = newsection2 ++ newsection2
 
 /* Second part of composition */
-tempt5 = findRowStartsWith P0 (last t3) 3
-tempt6 = findRowStartsWith P0 (last t4) 2
+tempt5 = findRowStartsWith P0 (last1 t3) 3
+tempt6 = findRowStartsWith P0 (last1 t4) 2
 thirdrows = crossOver 11 tempt5 tempt6
 t5 = tailrows (headrows thirdrows)
 t6 = tailrows (headrows (tailrows thirdrows))
@@ -93,8 +93,8 @@ durations3 = [8,8,8,4,8,8,8,8,8,8,16]
 section3 = subChord 4 6 (makeNotes t5 (tail reg) durations3)
 section4 = subChord 4 6 (makeNotes t6 (tail (<>reg)) durations3)
 
-tempt7 = findRowStartsWith P0 (last t5) 3
-tempt8 = findRowStartsWith P0 (last t6) 2
+tempt7 = findRowStartsWith P0 (last1 t5) 3
+tempt8 = findRowStartsWith P0 (last1 t6) 2
 fourthrows = crossOver 2 tempt7 tempt8
 t7 = tailrows (headrows fourthrows)
 t8 = tailrows (headrows (tailrows fourthrows))
