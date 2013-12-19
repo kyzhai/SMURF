@@ -1,0 +1,12 @@
+Program: 
+	SVardef: 
+		ID: x  :: [Int]
+
+	~ [0, 8, 7, 11, 10, 9, 3, 1, 4, 2, 6, 5]
+	SMain: []
+Global Scope: 
+	ID: main  :: []
+	ID: x  :: [Int]
+	ID: print x :: a -> a
+	ID: random  :: Int
+
