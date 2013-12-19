@@ -180,15 +180,7 @@ let random_var = { name = "random";
                    pats = [];  
                    v_type = [Int]; 
                    v_expr = Some(SRandom) }
-let head_var = { name = "head"; 
-                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
-                 v_type = [Sast.List(Poly("a"));Poly("a")]; 
-                 v_expr = Some(SVariable("h"))}
-let tail_var = { name = "tail"; 
-                 pats = [Patcons(Patvar("h"), Patvar("t"))]; 
-                 v_type = [Sast.List(Poly("a"));Sast.List(Poly("a"))]; 
-                 v_expr = Some(SVariable("t"))}
-let global_env = { identifiers = [print_var; random_var; head_var; tail_var]; parent = None } 
+let global_env = { identifiers = [print_var; random_var]; parent = None } 
 
 (* So far, just used to check for pattern errors in collect_pat_vars *)
 let rec get_pat_type = function

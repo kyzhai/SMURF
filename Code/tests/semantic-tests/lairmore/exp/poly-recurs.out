@@ -1,0 +1,33 @@
+Program: 
+	SFuncdec: 
+		f ([]) (var) :: [a] -> b -> b = var
+	New Scope: 
+		ID: var  :: b
+
+	
+	SFuncdec: 
+		f (a : b) (var) :: [a] -> b -> b = f var b
+	New Scope: 
+		ID: a  :: a
+		ID: b  :: [a]
+		ID: var  :: b
+
+	
+	SVardef: 
+		ID: q  :: Int
+
+	f 1 ([])
+	SVardef: 
+		ID: r  :: Note
+
+	f ( (1, 1)$1) ([1, 2, 3, 4, 5])
+	SMain: []
+Global Scope: 
+	ID: main  :: []
+	ID: f [] var :: [a] -> b -> b
+	ID: f a : b var :: [a] -> b -> b
+	ID: q  :: Int
+	ID: r  :: Note
+	ID: print x :: a -> a
+	ID: random  :: Int
+
