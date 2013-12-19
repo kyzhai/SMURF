@@ -1,4 +1,3 @@
-Function Decl -> Int = Int
 Program: 
 	SVardef: 
 		ID: y  :: Int

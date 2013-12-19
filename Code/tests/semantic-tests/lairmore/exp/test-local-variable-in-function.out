@@ -1,4 +1,3 @@
-Function Decl -> Int = Int
 Program: 
 	SFuncdec: 
 		f (x) :: Int -> Int = x

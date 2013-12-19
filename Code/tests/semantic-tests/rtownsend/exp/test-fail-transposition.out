@@ -1,0 +1,1 @@
+Fatal error: exception Sast.Type_error("First element in a Trans expression must be of type Int but element was of type Beat")
