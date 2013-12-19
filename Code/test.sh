@@ -1,7 +1,13 @@
 #!/bin/bash
 
-SMURF="./toplevel.byte"
-TESTDIR="./tests/interp-tests"
+SMURFPARSE="./parser_test.byte"
+SMURFTOP="./toplevel.byte"
+SMURFSEM="./semantic_test.byte"
+PARSEDIR="./tests/parser-tests"
+TOPDIR="./tests/interp-tests"
+SEMDIR="./tests/semantic-tests"
+SMURF=
+TESTDIR=
 
 # Set time limit for all operations
 ulimit -t 30
@@ -14,9 +20,18 @@ numtests=0
 numpass=0
 keep=0
 delete=0
+parser=0
+sem=0
+interp=1
+phase="top level"
 
 Usage() {
-    echo "Usage: test-toplevel.sh [options] [.sm files]"
+    echo "Usage: test-parser.sh [options] [.sm files]"
+    echo "   -k keep intermediate files"
+    echo "   -h help"
+    echo "   -d delete intermediate files even on failure"
+    echo "   -p test parser"
+    echo "   -s test semantic analyzer"
     exit 1
 }
 
@@ -63,6 +78,16 @@ Check() {
     echo 1>&2
     echo "Testing $basename:" 1>&2
 
+    if [ $sem -eq 1 ]; then
+        SMURF=$SMURFSEM
+    else
+    if [ $parser -eq 1 ]; then
+        SMURF=$SMURFPARSE
+    else
+        SMURF=$SMURFTOP
+    fi
+    fi
+
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basedir}/${basename}.out" &&
@@ -102,6 +127,12 @@ while getopts kdpsh c; do
     d) # delete intermediate files on fail
         delete=1 
         ;;
+    p) # test the parser
+        parser=1
+        ;;
+    s) # test semantic analyzer
+        sem=1
+        ;;
     esac
 done
 
@@ -111,6 +142,18 @@ if [ $# -ge 1 ]
 then
     files=$@
 else
+    if [ $sem -eq 1 ]; then
+        TESTDIR=$SEMDIR
+        phase="semantic analyzer"
+    else
+    if [ $parser -eq 1 ]; then
+        TESTDIR=$PARSEDIR
+        phase="parser"
+    else
+        TESTDIR=$TOPDIR
+    fi
+    fi
+    
     files=`find $TESTDIR -name "*.sm" | sort`
 fi
 
@@ -123,6 +166,6 @@ do
     esac
 done
     echo "$*\n"
-    echo "\033[1mNumber of top-level tests ran: \033[0m $numtests" 1>&2
-    echo "\033[1mNumber of top-level tests pass: \033[0m $numpass" 1>&2
+    echo "\033[1mNumber of $phase tests ran: \033[0m $numtests" 1>&2
+    echo "\033[1mNumber of $phase tests pass: \033[0m $numpass" 1>&2
 exit $globalerror
