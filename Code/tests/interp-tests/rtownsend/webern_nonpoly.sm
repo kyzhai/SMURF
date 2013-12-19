@@ -100,7 +100,7 @@ t7 = tailrows (headrows fourthrows)
 t8 = tailrows (headrows (tailrows fourthrows))
 durations4 = [16,16,16,8,8,8,8,8,16,16,8]
 newsection3 = section1 ++ [subChord 4 6 (makeNotes t7 (tail reg) durations4)]
-newsection4 = section2 ++ [subChord 4 6 (makeNotes t8 (tail (<>reg)) duration4)]	
+newsection4 = section2 ++ [subChord 4 6 (makeNotes t8 (tail (<>reg)) durations4)]	
 
 /* This should be everything after the first repeat */
 secRepeat1 = newsection3 ++ newsection3
