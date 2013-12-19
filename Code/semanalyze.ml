@@ -929,7 +929,8 @@ let check_ret_type symtab types info =
     if not( type_is_equal typ_sig get_t_typ )
     then raise (Type_mismatch ("Expression of function " ^ info.s_fname ^
                     " " ^ String.concat " " (List.map string_of_patterns info.s_args)))	
-		else symtab
+		else symtab.identifiers <- {name = info.s_fname; pats = info.s_args; v_type = info.type_sig; v_expr = Some(info.s_value)} :: symtab.identifiers;
+             symtab
 
 let rec matching_patterns polypats expected actual = match expected, actual with
    |  ex::rest, act::rest2 -> if ex = act then matching_patterns polypats rest rest2 else
