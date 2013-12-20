@@ -1108,4 +1108,4 @@ let first_pass list_decs =
 let second_pass list_decs = 
     let program = first_pass list_decs in 
         let real_program = List.fold_left walk_decl_second (has_main program) program.decls in
-    (print_string "PASSED SEMANTIC CHECKS"); real_program.symtab
+    (print_string "PASSED SEMANTIC CHECKS\n"); real_program.symtab
