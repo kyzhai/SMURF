@@ -96,13 +96,18 @@ Check() {
     fi &&
 
     if [ $SMURF == "./toplevel.native" ]; then
-        Run "$SMURF" $1 "-o ${basedir}/${basename}.midi >& ${basedir}/${basename}.out" 2>&1
+
+           Run "$SMURF" $1 "-o ${basedir}/${basename}.midi >& ${basedir}/${basename}.out" 2>&1
     else 
         Run "$SMURF" "<" $1 ">& ${basedir}/${basename}.out" 2>&1
     fi 
 
     if [ $SMURF == "./toplevel.native" ]; then
-	Compare "${basedir}/${basename}.midi" "${basedir}/exp/${basename}.midi" "${basedir}/${basename}.diff"
+       if [ -e "${basedir}/${basename}.midi" ]; then
+	 Compare "${basedir}/${basename}.midi" "${basedir}/exp/${basename}.midi" "${basedir}/${basename}.diff"
+       else 
+         Compare "${basedir}/${basename}.out" "${basedir}/exp/${basename}.out" "${basedir}/${basename}.diff"
+       fi
     else
 	Compare "${basedir}/${basename}.out" "${basedir}/exp/${basename}.out" "${basedir}/${basename}.diff"
     fi
