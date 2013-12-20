@@ -16,9 +16,9 @@ SOURCES = scanner.mll \
 OCAMLBUILD = ocamlbuild
 
 all: 
-	$(OCAMLBUILD) parser_test.byte semantic_test.byte toplevel.byte
+	$(OCAMLBUILD) parser_test.native semantic_test.native toplevel.native
 
 clean:
 	$(OCAMLBUILD) -clean
-	rm -f parser_testout.*
+	rm -f a.csv a.midi
 

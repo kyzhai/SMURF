@@ -1,10 +1,14 @@
+(* File: util.ml
+ * defines some useful stuffs that might be used by other modules
+ *)
+
 open Printf
 open Lexing
 
 (* If you doing want to see the annoy debug information, 
  * simply set debug to be false, the world will be peace
  *)
-let debug = true
+let debug = false
 
 let trace s = function 
     a -> if debug then 

@@ -1,3 +1,5 @@
+# For those machine doesn't have ocamlbuild, build the project with this makefile
+
 OBJ=ast.cmo \
 	sast.cmo \
 	semanalyze.cmo \

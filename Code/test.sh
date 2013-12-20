@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SMURFPARSE="./parser_test.byte"
-SMURFTOP="./toplevel.byte"
-SMURFSEM="./semantic_test.byte"
+SMURFPARSE="./parser_test.native"
+SMURFTOP="./toplevel.native"
+SMURFSEM="./semantic_test.native"
 PARSEDIR="./tests/parser-tests"
 TOPDIR="./tests/interp-tests"
 SEMDIR="./tests/semantic-tests"
@@ -91,7 +91,7 @@ Check() {
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basedir}/${basename}.out" &&
-    if [ $SMURF == "./toplevel.byte" ]; then
+    if [ $SMURF == "./toplevel.native" ]; then
         Run "$SMURF" $1 ">& ${basedir}/${basename}.out" 2>&1
     else 
         Run "$SMURF" "<" $1 ">& ${basedir}/${basename}.out" 2>&1
