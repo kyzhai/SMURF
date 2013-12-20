@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SMURF="./toplevel.native"
-TESTDIR="./tests/interp-tests/vbui"
+TESTDIR="./tests/interp-tests/neubauer/music"
 
 # Set time limit for all operations
 ulimit -t 30
@@ -44,7 +44,8 @@ Check() {
 
     generatedfiles="$generatedfiles ${basename}.out" &&
     if [ $SMURF == "./toplevel.native" ]; then
-        Run "$SMURF" $1 "-o ${basedir}/exp/${basename}.midi >& ${basedir}/${basename}.out" 2>&1
+#        Run "$SMURF" $1 "-o ${basedir}/exp/${basename}.midi >& ${basedir}/${basename}.out" 2>&1
+        Run "$SMURF" $1 "-o ${basedir}/exp/${basename}.midi" 2>&1
     else 
         Run "$SMURF" "<" $1 ">& ${basedir}/exp/${basename}.out" 2>&1
     fi 
