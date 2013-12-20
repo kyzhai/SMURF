@@ -2,11 +2,11 @@
    open Util
 %}
 
-%token NL LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
+%token NL LET IN IF THEN ELSE INT BOOL EOF
 %token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT
 %token PERIOD DOLLAR
 %token LPAREN RPAREN LLIST RLIST COMMA
-%token TYPE FUNC GUARD
+%token TYPE FUNC 
 %token PLUS MINUS TIMES DIV MOD BTIMES BDIV BPLUS BMINUS PCPLUS PCMINUS
 %token EQ NOT AND OR LT GT LE GE BLT BGT BLE BGE
 %token CONCAT CONS BIND
@@ -16,7 +16,7 @@
 %token <bool> BOOLEAN
 %token <string> VARIABLE
 
-%nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT LET IN
+%nonassoc IF THEN ELSE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT LET IN
 %nonassoc LLIST RLIST COMMA
 %nonassoc TYPE FUNC
 %right BIND
@@ -170,8 +170,6 @@ arg:
                                     Note(_,_,_) -> Argchord($2)
                                   | Chord(_) -> Argsystem($2)
                                   | _ -> Arglist($2)) }
-
-/*|   LLIST expr_list RLIST   { Arglist($2) } */
 |   LPAREN expr RPAREN      { Argparens($2) }
 
 dots:

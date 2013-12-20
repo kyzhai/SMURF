@@ -284,7 +284,6 @@ let change_type symtab old_var n_type =
 	
 
 let rec check_type_equality t1 t2 = 
-(*(print_string ((string_of_s_type t1) ^" and "^(string_of_s_type t2) ^"\n"));*)
 match t1 with 
 	  Sast.Chord -> (match t2 with 
 		  Sast.List(b) ->  b = Sast.Note 
@@ -606,16 +605,15 @@ let rec get_type short symtab = function
     | SLet(decs, exp) -> get_type short decs.symtab exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type short symtab e
-		| SCall(f, args) -> (*print_string ("===========making an SCall " ^ 
-            f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");*)
+		| SCall(f, args) ->   
             if(short) then let f_vars = find_func_entry symtab f in 
                 try (List.hd (List.rev ((List.hd f_vars).v_type)))
                     with _ -> Unknown
             else 
 			let poly_map = StringMap.empty in  
 				let f_vars = find_func_entry symtab f in
-				let f_entrys = (*print_string ((string_of_symbol_table symtab)^"\n");*) match_args symtab [] f_vars args in
-				let f_entry = if(List.length f_entrys)>0 then(*print_string ((string_of_int (List.length f_entrys)) ^ "\n");*)
+				let f_entrys = match_args symtab [] f_vars args in
+				let f_entry = if(List.length f_entrys)>0 then
 					if (List.length f_entrys) = 1 then List.hd f_entrys
 					else (let st = try
 					List.find (fun t -> (List.length t.v_type)>0) f_entrys with 
@@ -660,11 +658,10 @@ and is_recursive func = function
     | SList(elist)
     | SSystem(elist) 
     | SChord(elist) -> List.fold_left (||) false (List.map (is_recursive func) elist)
-    | SCall(f, args) -> let b = f = func in 
-        (*print_string (func^" rec? -> "^(string_of_bool b)^"\n");*)b
+    | SCall(f, args) -> let b = f = func in b
     | SLet(p, e) -> is_recursive func e
     | SPrint(e) -> is_recursive func e
-    | _ -> (*print_string(func^" rec? -> "^(string_of_bool false)^"\n");*)false
+    | _ -> false
 
 and has_pattern pat pat_list = 
     List.fold_left (||) false (List.map (fun p -> match p with 
@@ -694,7 +691,7 @@ and map_return f  pm ts ret = match ts with
 				| Still_unknown -> pm
 				| Sast.Poly(b) -> map_return f pm ret ret 
 				| _ -> StringMap.add a ret pm)
-	| _ -> (*print_string ("map_return->"^f^(string_of_s_type ts)^ " = "^(string_of_s_type ret)^"\n");*)
+	| _ -> 
         if check_type_equality ts ret 
 			then pm 
 			else type_error ("Mismatch return type "^f) 
@@ -708,7 +705,7 @@ and get_arg_type f prog a = match a with
 	| SArgchord(elist) -> Sast.Chord
 	| SArgsystem(elist) -> Sast.System
 	| SArglist(elist) -> get_type false prog (SList(elist))
-	| SArgparens(e) ->  (*print_string ((string_of_sexpr e)^"\n");*)try (get_type true prog e) 
+	| SArgparens(e) ->  try (get_type true prog e) 
         with _ -> Sast.Unknown
                         
 
@@ -729,8 +726,7 @@ and map_args_with_t name poly_map (a_t, t) =
     | _ -> if check_type_equality t a_t then poly_map 
         else raise (Function_arguments_type_mismatch  ("3."^name^" "^(string_of_s_type t)^" "^(string_of_s_type a_t)))
     
-and map_args name prog poly_map (a,t) = 
-    (*print_string ("Arg = "^(string_of_s_arg a)^" type sig = "^(string_of_s_type t)^"\n");*)
+and map_args name prog poly_map (a,t) =  
 	 match t with 
 		Poly(t_n) -> if StringMap.mem t_n poly_map then 
 				let typ = StringMap.find t_n poly_map in 
@@ -811,8 +807,6 @@ and check_arg_types name prog poly_map a_list t_list =
 			let poly_map = (List.fold_left (map_args name prog) poly_map tup) in poly_map
 
 and match_pat_expr pat e_t = 
-(*(print_string ("\texpr check" ^(string_of_patterns pat) ^ " " ^
-(string_of_s_type e_t)^ "\n"));*)
 match pat with 
 	Patconst(i1) -> (match e_t with 
 			Sast.Int -> true
@@ -853,8 +847,6 @@ match pat with
 		| _ -> false)
 
 and match_arg prog (pat, arg) = 
-(*(print_string ((string_of_patterns pat) ^" "^
-(string_of_s_arg arg)^"\n"));*)
 match pat with 
 		Patconst(i1) -> (match arg with 
 				SArglit(i2) -> i1 = i2
@@ -890,7 +882,7 @@ and match_args prog l id_list args = let args = List.rev args in match id_list w
 	|(a::b) -> 
 		let comb = (try List.combine a.pats args with _ -> []) in 
 		let is_match = List.fold_left (&&) true 
-			(List.map (match_arg prog) comb) in (*(print_string ("="^(string_of_bool is_match)^"\n"));*)
+			(List.map (match_arg prog) comb) in 
 			if(is_match) then a :: (match_args prog l b (List.rev args))
 			else match_args prog l b (List.rev args)
 	
@@ -914,11 +906,9 @@ let rec type_is_equal t1 t2 =
 				| _ -> false )
 
 let check_ret_type symtab types info = 
-    (*print_string ((string_of_symbol_table symtab)^"\n");*)
 	(* Check that function value has correct type *)
     let typ_sig = (List.hd (List.rev types)) in 
     let get_t_typ = (get_type true symtab info.s_value) in 
-    (*print_string ("Function Decl -> "^(string_of_s_type typ_sig)^" = "^(string_of_s_type get_t_typ)^"\n");*)
     if not( type_is_equal typ_sig get_t_typ )
     then raise (Type_mismatch ("Expression of function " ^ info.s_fname ^
                     " " ^ String.concat " " (List.map string_of_patterns info.s_args)))	
@@ -1056,7 +1046,7 @@ and to_sarg symbol = function
 
 (* Second pass -> use symbol table to resolve all semantic checks *)
 and walk_decl_second program = function
-    | SVardef(s_id, s_expr) as oldvar -> (*(print_string (string_of_s_program program));*)
+    | SVardef(s_id, s_expr) as oldvar -> 
         let new_sexpr = (match s_expr with
           SLet(prog, exp) -> SLet(List.fold_left walk_decl_second prog prog.decls, exp)
           | x -> x) in 
