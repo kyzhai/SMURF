@@ -48,7 +48,6 @@ whitespace                      { token lexbuf } (* White space *)
 | ':'                           { CONS }
 | "::"                          { TYPE }
 | "->"                          { FUNC }
-| '|'                           { GUARD }
 | '='                           { BIND }
 | "^^"                          { TRANS }
 | '~'                           { INV }
@@ -66,7 +65,6 @@ whitespace                      { token lexbuf } (* White space *)
 | "else"                        { ELSE }
 | "True"                        { BOOLEAN(true) }
 | "False"                       { BOOLEAN(false) } 
-| "otherwise"                   { OTHERWISE } 
 | "Int"                         { INT }
 | "Bool"                        { BOOL }
 | "Beat"                        { BEAT }
