@@ -89,8 +89,12 @@ Check() {
     fi
 
     generatedfiles=""
+    if [ $SMURF == "./toplevel.native" ]; then
+        generatedfiles="$generatedfiles ${basedir}/${basename}.out ${basedir}/${basename}.midi" 
+    else
+        generatedfiles="$generatedfiles ${basedir}/${basename}.out" 
+    fi &&
 
-    generatedfiles="$generatedfiles ${basedir}/${basename}.out" &&
     if [ $SMURF == "./toplevel.native" ]; then
         Run "$SMURF" $1 "-o ${basedir}/${basename}.midi >& ${basedir}/${basename}.out" 2>&1
     else 

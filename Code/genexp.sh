@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SMURF="./toplevel.native"
-TESTDIR="./tests/interp-tests/neubauer/music"
+TESTDIR="./tests/interp-tests/rtownsend"
 
 # Set time limit for all operations
 ulimit -t 30
