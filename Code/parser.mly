@@ -170,8 +170,6 @@ arg:
                                     Note(_,_,_) -> Argchord($2)
                                   | Chord(_) -> Argsystem($2)
                                   | _ -> Arglist($2)) }
-
-/*|   LLIST expr_list RLIST   { Arglist($2) } */
 |   LPAREN expr RPAREN      { Argparens($2) }
 
 dots:
