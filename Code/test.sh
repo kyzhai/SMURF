@@ -97,7 +97,7 @@ Check() {
         Run "$SMURF" "<" $1 ">& ${basedir}/${basename}.out" 2>&1
     fi 
 
-    if [ $interp -eq 1 ]; then
+    if [ $SMURF == "./toplevel.native" ]; then
 	Compare "${basedir}/${basename}.midi" "${basedir}/exp/${basename}.midi" "${basedir}/${basename}.diff"
     else
 	Compare "${basedir}/${basename}.out" "${basedir}/exp/${basename}.out" "${basedir}/${basename}.diff"
