@@ -1,7 +1,1 @@
-Program: 
-	SMain:  (1, 1)$2
-Global Scope: 
-	ID: main  :: Note
-	ID: print x :: a -> a
-	ID: random  :: Int
-
+PASSED SEMANTIC CHECKS

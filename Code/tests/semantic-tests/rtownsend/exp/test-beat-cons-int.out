@@ -1,12 +1,1 @@
-Program: 
-	SVardef: 
-		ID: x  :: [Beat]
-
-	4. : [2]
-	SMain: []
-Global Scope: 
-	ID: main  :: []
-	ID: x  :: [Beat]
-	ID: print x :: a -> a
-	ID: random  :: Int
-
+PASSED SEMANTIC CHECKS

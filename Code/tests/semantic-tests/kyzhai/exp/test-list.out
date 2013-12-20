@@ -1,12 +1,1 @@
-Program: 
-	SVardef: 
-		ID: a  :: [Bool]
-
-	[true, false, true, false]
-	SMain: []
-Global Scope: 
-	ID: main  :: []
-	ID: a  :: [Bool]
-	ID: print x :: a -> a
-	ID: random  :: Int
-
+PASSED SEMANTIC CHECKS
