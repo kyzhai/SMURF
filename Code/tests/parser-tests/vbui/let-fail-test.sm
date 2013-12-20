@@ -1,0 +1,10 @@
+/* This test fails because there is no new line between declarations in let expression */
+
+getQuarterNote :: Int -> Int -> Note
+getQuarterNote p r = (p,r)$4
+
+x = let p=0 r=2 
+    in getQuarterNote p r
+
+main = x
+

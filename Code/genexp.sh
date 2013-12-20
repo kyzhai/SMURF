@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SMURF="./test.byte"
-TESTDIR="./tests/parser-tests/kyzhai"
+SMURF="./toplevel.native"
+TESTDIR="./tests/interp-tests/vbui"
 
 # Set time limit for all operations
 ulimit -t 30
@@ -43,10 +43,10 @@ Check() {
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basename}.out" &&
-    if [ $SMURF == "./toplevel.byte" ]; then
-        Run "$SMURF" $1 ">& ${basedir}/${basename}.out" 2>&1
+    if [ $SMURF == "./toplevel.native" ]; then
+        Run "$SMURF" $1 "-o ${basedir}/exp/${basename}.midi >& ${basedir}/${basename}.out" 2>&1
     else 
-        Run "$SMURF" "<" $1 ">& ${basedir}/${basename}.out" 2>&1
+        Run "$SMURF" "<" $1 ">& ${basedir}/exp/${basename}.out" 2>&1
     fi 
 
     # Report the status and clean up the generated files

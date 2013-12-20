@@ -1,0 +1,99 @@
+getTransRow :: [Int] -> Int -> [Int]
+getTransRow [] _ = []
+getTransRow l 1 = ~l
+getTransRow l 2 = <>l
+getTransRow l 3 = <>(~l)
+
+
+/*Given a P0 and a pitch class x get the row of type 'typetrans' derived from P0
+whose first element is x
+For typetrans=0 we get P
+							1 we get I
+							2 we get R
+							3 we get RI */
+findRowStartsWith :: [Int] -> Int -> Int -> [Int]
+findRowStartsWith [] _ _ = []
+findRowStartsWith l x typetrans = if x < 0 || typetrans > 12 then [] else \
+						  if head (checkTrans typetrans l) == x then (checkTrans typetrans l) else \
+																	(12 - ((head (checkTrans typetrans l)) - x)) ^^ (checkTrans typetrans l)
+checkTrans :: Int -> [Int] -> [Int]
+checkTrans typetrans l = if typetrans == 0 then l else getTransRow l typetrans
+
+singleChords :: [Note] -> [Chord]
+singleChords [] = []
+singleChords n:rest = [n] : (singleChords rest)
+
+//Converts single note chords from index x to y-1 into a chord composed of the notes,
+//where x is 1st arg and y is 2nd arg
+subChord :: Int -> Int -> [Note] -> [Chord]
+subChord _ _ [] = []
+subChord 0 y l  = (take y l) : (singleChords (drop y l))
+subChord x y c:rest = [c] : (subChord (x - 1) (y - 1) rest)
+
+interweaveRest :: Int -> [Chord] -> [Chord]
+interweaveRest _ [] = []
+interweaveRest 1 l:rest = l : [(-1,0)$8] : (interweaveRest 1 rest)
+interweaveRest 2 l:rest =  [(-1,0)$8] : l :  (interweaveRest 2 rest)
+
+
+swapAt :: Int -> [Int] -> [Int] -> [Int]
+swapAt 0 _ b = b
+swapAt _ [] b = b
+swapAt _ _ [] = []
+swapAt x a:ra b:rb = a : (swapAt (x-1) ra rb)
+
+
+crossOver :: Int -> [Int] -> [Int] -> [[Int]]
+crossOver x a b = (swapAt x a b) : ((swapAt x b a) : [])
+
+
+P0 = [0,8,7,11,10,9,3,1,4,2,6,5]
+RP3 = <>(3 ^^ P0)
+RI3 = <>(3 ^^ ~P0)
+
+/* First two tone rows */
+firstrows = crossOver 9 RP3 RI3 
+ t1 = head firstrows
+t2 = head (tail firstrows)
+reg = [0,1,2,3,2,1,0,1,2,3,2,1]
+durations1 = [8,8,4,16,16,8,8,8,8,8,8,16]
+section1 = subChord 5 8 (makeNotes t1 reg durations1)
+section2 = subChord 5 8 (makeNotes t2 (<>reg) durations1)
+
+tempt3 = findRowStartsWith P0 (last t1) 2
+tempt4 = findRowStartsWith P0 (last t2) 3
+secrows = crossOver 5 tempt3 tempt4
+t3 = tail (head secrows) /*First note of this row is last note of previous row! */
+t4 = tail (head (tail secrows)) /* Same for this row */
+durations2	= [16,4,16,16,8,8,8,8,8,8,8]
+newsection1 = section1 ++ (subChord 4 6 (makeNotes t3 (tail reg) durations2))
+newsection2 = section2 ++ (subChord 4 6 (makeNotes t4 (tail (<>reg)) durations2))
+
+/* This should be everything before the first repeat */
+firstRepeat1 = newsection1 ++ newsection1
+firstRepeat2 = newsection2 ++ newsection2
+
+/* Second part of composition */
+tempt5 = findRowStartsWith P0 (last t3) 3
+tempt6 = findRowStartsWith P0 (last t4) 2
+thirdrows = crossOver 11 tempt5 tempt6
+t5 = tail (head thirdrows)
+t6 = tail (head (tail thirdrows))
+durations3 = [8,8,8,4,8,8,8,8,8,8,16]
+section3 = subChord 4 6 (makeNotes t5 (tail reg) durations3)
+section4 = subChord 4 6 (makeNotes t6 (tail (<>reg)) durations3)
+
+tempt7 = findRowStartsWith P0 (last t5) 3
+tempt8 = findRowStartsWith P0 (last t6) 2
+fourthrows = crossOver 2 tempt7 tempt8
+t7 = tail (head fourthrows)
+t8 = tail (head (tail fourthrows))
+durations4 = [16,16,16,8,8,8,8,8,16,16,8]
+newsection3 = section1 ++ (subChord 4 6 (makeNotes t7 (tail reg) durations4))
+newsection4 = section2 ++ (subChord 4 6 (makeNotes t8 (tail (<>reg)) durations4))	
+
+/* This should be everything after the first repeat */
+secRepeat1 = newsection3 ++ newsection3
+secRepeat2 = newsection4 ++ newsection4
+
+main = [interweaveRest 1 firstRepeat1, interweaveRest 2 firstRepeat2]
