@@ -1,1 +1,121 @@
 \section{Project Plan}
+
+	\subsection{Processes}
+		
+		\subsubsection{Planning}
+		We had a 2 hour meeting every Wednesday that everyone attended. In these meetings, organized by Richard (our benevolent dictator), we discussed project milestones, delegated responsibilities to each member of the group, designed and updated our design of SMURF, and eventually coded in meetings to allow for discussion of tricky parts of our implementation. We chose milestones based on a review of previous semesters team projects that were successful. 
+				
+		\subsubsection{Specification}
+		Both our Proposal and LRM were completely outlined in our group meetings. Lindsay took notes for the group and pushed them to GitHub so all members had access.  We divided the outlines into equal sections to divide the writing and proof-reading responsibilities: Each group member had a portion to write and a different portion to proofread. Once we started coding, any updates that needed to be made were done by the person coding that portion of the language (regardless of who originally wrote that section of the LRM). 
+		
+		\subsubsection{Development}
+		Each member of our group was given a slice of our language to implement from start to finish. By doing this, we minimized the issues that arise from having to wait for another group member's section of the code to be implemented before being able to start your own. We each followed a similar development process, implementing in the same order the scanner (first), parser, abstract syntax tree, semantic abstract syntax tree, and code generation (last). We used GitHub to track our code but did not utilize its branching features for coding. This was a decision we made to force our code to always be in a compilable/runnable form and to avoid large merging issues at the end of development. Because we divided the language into pieces and had complete ownership of our slice, using the LRM (which we worked on together) as the ultimate reference on how to implement our section was crucial. In the few cases where the LRM specification was unable to be implemented in the way we planned, the owner of that section chose how to most appropriately implement it and then updated the LRM and the rest of the group with the changes.
+		
+		\subsubsection{Testing}
+		At the end of each stage of development, every group member wrote unit tests to ensure their slice of the code worked as anticipated. Our integration testing took the form of several "Hello World" style programs. Any failed tests were addressed as soon as the failure was discovered.
+		
+	\subsection{Style Guide}
+	We conformed to the following coding conventions:
+		\begin{itemize}
+		\item Indentation: 4 spaces, with multiple indents to differentiate between nested blocks of code 
+		\item Maximum Characters per Line: 100 (including indentation)
+		\end{itemize}
+	
+	\subsection{Project Timeline}
+	Our project timeline includes \emph{class deadlines} and self imposed deadlines.
+		\begin{table}[htdp]
+		\begin{tabular}{|l|l|}
+		\hline
+		Date & Milestone \\ \hline
+		09-25-13 & \emph{Proposal due} \\
+		10-07-13 & Initial LRM section written \\
+		10-09-13 & Initial LRM section proofread \\
+		10-27-13 & Full proofread of LRM  completed \\
+		10-28-13 & \emph{LRM due} \\
+		10-28-13 & Scanner and Parser completed  \\
+		11-06-13 & Scanner and Parser tests completed \\
+		11-20-13 & Semantic Analyzer completed \\
+		11-27-13 & Semantic Analyzer tests completed \\
+		12-04-13 & End-to-end "Hello World" compilation succeeds \\
+		12-20-13& \emph{Final report due} \\ 
+		\hline
+		\end{tabular}
+		\end{table}
+		
+	\subsection{Roles and Responsibilities}
+		\begin{table}[htdp]
+		\begin{tabular}{|l|l|}
+		\hline
+		Team Member & Responsibilities \\ 
+		\hline
+		Van Bui & Proposal: Examples \\
+					& LRM: Write Parenthetical Expressions, Let Expressions, Type Signatures, \\
+					& Pattern Matching \\
+					& LRM: Proofread  Description of Precedence, Syntax Notation, Library Functions, \\ 
+					& Declarations and Bindings \\
+					& Code: Function Application \\
+		Lianne Lairmore & Proposal: Motivation \\
+									& LRM: Write Description of Precedence, Syntax Notation, Library Functions, \\
+									& Declarations and Bindings \\
+									& LRM: Proofread Lexical Conventions, Primary Expressions, Meaning of Identifiers \\
+									& Code: Literals, Main/Print/Random, Symbol Table/Environment, Polymorphism \\
+		Lindsay Neubauer & Note Taker \\
+										& Proposal: Language Description\\
+										& LRM: Write Curried Applications, Operator Application, Conditionals, Lists, \\
+										& Tuples \\
+										& LRM: Proofread Parenthetical Expressions, Let Expressions, Type Signatures, \\ 
+										& Pattern Matching \\
+										& Code: Non-music operators, Notes, Beats, Music operators \\
+		Richard Townsend & Group Leader \\
+										& Proposal: Background \\
+										& LRM:  Write Declarations and Bindings \\
+										& LRM: Proofread Curried Applications, Operator Application, Conditionals, Lists, \\
+										& Tuples \\
+										& Code: Pattern Matching, Bindings, Function Application \\
+		Kuangya Zhai & GitHub and LaTeX Go-To Person \\ 
+								& Proposal: Generate Latex \\
+								& LRM: Write Lexical Conventions, Primary Expressions, Meaning of Identifiers \\
+								& LRM:  Proofread Declarations and Bindings \\
+								& Code: MIDI generation, List operators, Conditionals, Function Application \\
+		\hline
+		\end{tabular}
+		\end{table} 
+		
+	\subsection{Software Development Environment}
+		We used the following tools and languages:
+		\begin{itemize}
+		\item Compiler Implementation: OCaml, version 4.01.0
+		\item Musical Interface: MIDI
+		\item Testing Environment: Shell Scripts
+		\item Version Control System: GitHub
+		\end{itemize}
+	
+	\subsection{Project Log}
+		\begin{table}[htdp]
+		\begin{tabular}{|l|l|}
+		\hline
+		Date & Milestone \\ 
+		\hline
+		09-18-13 & Proposal writing sections assigned \\
+						& GitHub repository setup \\
+		09-25-13 & LRM timeline established \\
+		10-02-13 & LRM writing and proofreading sections assigned \\
+		10-11-13 & Switch from OpenGL musical score to MIDI music \\
+		10-16-13 & Decided on top-level description of SMURF program \\
+						& Outlined all acceptable inputs and outputs to a SMURF program \\
+						& Assigned vertical slices to team members \\
+		10-23-13 & Divided backend into semantic analyzer and translator modules  instead of single "compiler" \\
+						& module \\
+		11-06-13 & Decided to add polymorphism back into language \\
+	   					& Discussed structure of Semantic Analyzer modules \\
+		11-08-13 & Semantic analyzer started \\
+		11-13-13 & Parser completed \\ 
+		11-20-13 & Interpreter Started, changed output of semantic analyzer from sast to beefed up symbol table \\
+		11-27-13 & Hello World end-to-end compilation succeeds \\
+		12-04-13 & Semantic Analyzer with tests completed \\
+		12-20-13 & Interpreters with all tests passing completed \\
+		 				& Interesting SMURF program end-to-end compilation succeeds \\
+		\hline
+		\end{tabular}
+		\end{table}
+	
