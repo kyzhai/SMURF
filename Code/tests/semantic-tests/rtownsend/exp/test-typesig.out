@@ -1,16 +1,1 @@
-Program: 
-	SMain: []
-Global Scope: 
-	ID: main  :: []
-	ID: i  :: a -> a -> b
-	ID: h  :: [Int] -> [[Int]] -> Bool
-	ID: g  :: [Int]
-	ID: f  :: System
-	ID: e  :: Chord
-	ID: d  :: Beat
-	ID: c  :: Note
-	ID: b  :: Bool
-	ID: a  :: Int
-	ID: print x :: a -> a
-	ID: random  :: Int
-
+PASSED SEMANTIC CHECKS

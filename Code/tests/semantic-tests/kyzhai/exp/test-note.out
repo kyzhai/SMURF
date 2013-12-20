@@ -1,12 +1,1 @@
-Program: 
-	SVardef: 
-		ID: a  :: Note
-
-	 (1, 2)$4...
-	SMain: []
-Global Scope: 
-	ID: main  :: []
-	ID: a  :: Note
-	ID: print x :: a -> a
-	ID: random  :: Int
-
+PASSED SEMANTIC CHECKS
