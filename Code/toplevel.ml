@@ -27,10 +27,9 @@ let exec_file config =
             close_in chan;
             List.rev !lines) in
     let fh = read_file config.smurf_name in
-    (*let stdlib = read_file config.std_lib_path in
+    let stdlib = read_file config.std_lib_path in
     let linkedprog = string_of_charlist (stdlib @ fh) in 
-    let lexbuf = Lexing.from_string linkedprog in *)
-		let lexbuf = Lexing.from_string (string_of_charlist fh) in 
+    let lexbuf = Lexing.from_string linkedprog in 
     let pos = lexbuf.lex_curr_p in
     lexbuf.lex_curr_p <- {pos with pos_fname = config.smurf_name};
     try

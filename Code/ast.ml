@@ -26,8 +26,6 @@ type expr =                                 (* Expressions *)
     | Call of string * fargs list           (* foo a *)
     | Let of dec list * expr                (* let x = 4 in x + 2 *)
 		| Print of expr													(* print 3 *)
-		| Head of expr
-		| Tail of expr
 
 and dec =                                   (* Declarations *)
     Tysig of string * types list            (* f :: Int -> [Note] -> Bool *)
@@ -95,8 +93,6 @@ let rec string_of_expr = function
   | Let(decl, exp) -> "let " ^ (String.concat " " (List.map string_of_dec decl)) ^ 
                       " in " ^ string_of_expr exp
 	| Print(e) -> "print ("^(string_of_expr e)^")"
-	| Head(e) -> "head ("^(string_of_expr e)^")"
-	| Tail(e) -> "tail ("^(string_of_expr e)^")"
 
 and string_of_fdec = function
     {fname;args;value} -> fname ^ " " ^  String.concat " " 

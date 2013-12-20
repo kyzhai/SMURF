@@ -3,7 +3,7 @@
 %}
 
 %token NL LET IN IF THEN ELSE OTHERWISE INT BOOL EOF
-%token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT HEAD TAIL
+%token BEAT NOTE CHORD SYSTEM MAIN RANDOM PRINT
 %token PERIOD DOLLAR
 %token LPAREN RPAREN LLIST RLIST COMMA
 %token TYPE FUNC GUARD
@@ -16,7 +16,7 @@
 %token <bool> BOOLEAN
 %token <string> VARIABLE
 
-%nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT LET IN HEAD TAIL
+%nonassoc IF THEN ELSE OTHERWISE INT BOOL NOTE BEAT CHORD SYSTEM MAIN RANDOM PRINT LET IN
 %nonassoc LLIST RLIST COMMA
 %nonassoc TYPE FUNC
 %right BIND
@@ -155,8 +155,6 @@ expr:
 
 |   VARIABLE args           { Call($1,$2) }
 | 	PRINT expr 							{ Print($2) }
-| 	HEAD expr								{ Head($2) }
-| 	TAIL expr								{ Tail($2) }
 
 args:
     arg                     { [$1] }

@@ -606,13 +606,6 @@ let rec get_type short symtab = function
     | SLet(decs, exp) -> get_type short decs.symtab exp
     | SRandom -> Sast.Int
 		| SPrint(e) -> get_type short symtab e
-		| SHead(e) ->let t = (get_type short symtab e) in 
-						if( check_type_equality (Sast.List(Poly("a"))) t)then (match t with 
-							Sast.List(t1) -> t1 
-						 	| Sast.Chord -> Sast.Note
-							| Sast.System -> Sast.Chord 
-							| _ -> raise (Type_error "head"))  else raise (Type_error "head")
-		| STail(e) ->let t = (get_type short symtab e) in if( check_type_equality (Sast.List(Poly("a"))) t)then t else raise (Type_error "tail")
 		| SCall(f, args) -> (*print_string ("===========making an SCall " ^ 
             f ^ " " ^ (string_of_s_arg (List.hd args)) ^ "===============\n");*)
             if(short) then let f_vars = find_func_entry symtab f in 
@@ -1049,8 +1042,6 @@ and to_sexpr symbol = function
                              let nested_prog = List.fold_left walk_decl {decls=[]; symtab=sym} decs      
                              in SLet(nested_prog, to_sexpr sym e)
 		| Ast.Print(e) 			-> SPrint(to_sexpr symbol e)
-		| Ast.Head(e) 			-> SHead(to_sexpr symbol e)
-		| Ast.Tail(e) 			-> STail(to_sexpr symbol e)
 
 and to_sarg symbol = function
     | Ast.Arglit(i)           -> SArglit(i)
