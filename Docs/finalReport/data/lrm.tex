@@ -120,11 +120,11 @@ will replace all \texttt{\&} characters with newlines. The
 may be used to splice two lines. E.g.
 \begin{lstlisting}
 genAltChords (x:y:ys) = [(x,Time 4,1)]   \
-                        :[(y,Time 4,-1)]:genAltChords ys
+                        :[(y,Time 4,-1)]:(genAltChords ys)
 \end{lstlisting}
 is the same as 
 \begin{lstlisting}
-genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:genAltChords ys
+genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:(genAltChords ys)
 \end{lstlisting}
 
 The \texttt{\&} and \texttt{\textbackslash} tokens are syntactic sugar and exist solely for code formatting when writing a SMURF program.
@@ -577,7 +577,9 @@ declarations, a compile-time error would be raised.
 A function gets called by invoking its name and supplying any necessary arguments. 
 Functions can only be called if they have been declared in the same scope where the call occurs,
 or in a higher scope. Functions may be called recursively. Function application associates 
-from left to right. Parentheses can be used to change the precedence from the default.
+from left to right. Parentheses can be used to change the precedence from the default. Furthermore,
+parentheses must be used when passing the result of a complex expression to a function. Here, complex expression
+refers to any expression that uses an operator or itself is a function call.
 The following evaluates function \emph{funct1} with argument \emph{b} then evaluates function
 \emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
     
@@ -830,4 +832,50 @@ makeNotes [] _ _ = []
 makeNotes _ [] _ = []
 makeNotes _ _ [] = []
 makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)$h3:(makeNotes tl1 tl2 tl3)
+\end{verbatim}
+
+
+\noindent \textbf{reverse}
+
+The function \texttt{reverse} takes a list as an argument and returns the same list in reverse.
+
+\begin{verbatim}
+reverse :: [a] -> [a]
+reverse [] = []
+reverse a:rest = (reverse rest) ++ [a]
+\end{verbatim}
+
+
+\noindent \textbf{last}
+
+The function \texttt{last} takes a list as an argument and returns the last element in the list.
+
+\begin{verbatim}
+last :: [a] -> a
+last a:[] = a
+last a:rest = last rest
+\end{verbatim}
+
+\noindent \textbf{drop}
+
+The function \texttt{drop} takes an integer $n$ and a list as arguments, and returns the same list
+with the first $n$ elements removed.
+
+\begin{verbatim}
+drop :: Int -> [a] -> [a]
+drop 0 x = x
+drop _ [] = []
+drop x l:rest = drop (x - 1) rest
+\end{verbatim}
+
+\noindent \textbf{take}
+
+The function \texttt{take} takes an integer $n$ and a list as arguments, and returns a list composed
+of the first $n$ elements of the original list.
+
+\begin{verbatim}
+take :: Int -> [a] -> [a]
+take 0 _ = []
+take _ [] = []
+take x l:rest = l : (take (x - 1) rest)
 \end{verbatim}
