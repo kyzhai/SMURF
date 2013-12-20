@@ -15,7 +15,7 @@ findRowStartsWith :: [Int] -> Int -> Int -> [Int]
 findRowStartsWith [] _ _ = []
 findRowStartsWith l x typetrans = if x < 0 || typetrans > 12 then [] else \
 						  if head (checkTrans typetrans l) == x then (checkTrans typetrans l) else \
-																	-1 * ((head (checkTrans typetrans l)) - x) ^^ (checkTrans typetrans l)
+																	(12 - ((head (checkTrans typetrans l)) - x)) ^^ (checkTrans typetrans l)
 checkTrans :: Int -> [Int] -> [Int]
 checkTrans typetrans l = if typetrans == 0 then l else getTransRow l typetrans
 
@@ -30,9 +30,11 @@ subChord _ _ [] = []
 subChord 0 y l  = (take y l) : (singleChords (drop y l))
 subChord x y c:rest = [c] : (subChord (x - 1) (y - 1) rest)
 
-interweaveRest :: [Chord] -> [Chord]
-interweaveRest [] = []
-interweaveRest l:rest = l : [(-1,0)$8] : (interweaveRest rest)
+interweaveRest :: Int -> [Chord] -> [Chord]
+interweaveRest _ [] = []
+interweaveRest 1 l:rest = l : [(-1,0)$8] : (interweaveRest 1 rest)
+interweaveRest 2 l:rest =  [(-1,0)$8] : l :  (interweaveRest 2 rest)
+
 
 swapAt :: Int -> [Int] -> [Int] -> [Int]
 swapAt 0 _ b = b
@@ -42,7 +44,7 @@ swapAt x a:ra b:rb = a : (swapAt (x-1) ra rb)
 
 
 crossOver :: Int -> [Int] -> [Int] -> [[Int]]
-crossOver x a b = (swapAt x a b) : (swapAt x b a) : []
+crossOver x a b = (swapAt x a b) : ((swapAt x b a) : [])
 
 
 P0 = [0,8,7,11,10,9,3,1,4,2,6,5]
@@ -51,12 +53,12 @@ RI3 = <>(3 ^^ ~P0)
 
 /* First two tone rows */
 firstrows = crossOver 9 RP3 RI3 
-t1 = head firstrows
+ t1 = head firstrows
 t2 = head (tail firstrows)
 reg = [0,1,2,3,2,1,0,1,2,3,2,1]
 durations1 = [8,8,4,16,16,8,8,8,8,8,8,16]
-section1 = subChord 5 7 (makeNotes t1 reg durations1)
-section2 = subChord 5 7 (makeNotes t2 (<>reg) durations1)
+section1 = subChord 5 8 (makeNotes t1 reg durations1)
+section2 = subChord 5 8 (makeNotes t2 (<>reg) durations1)
 
 tempt3 = findRowStartsWith P0 (last t1) 2
 tempt4 = findRowStartsWith P0 (last t2) 3
@@ -95,4 +97,8 @@ secRepeat1 = newsection3 ++ newsection3
 secRepeat2 = newsection4 ++ newsection4
 
 
+/*
 main = [interweaveRest (firstRepeat1 ++ secRepeat1), interweaveRest (firstRepeat2 ++ secRepeat2)]
+*/
+
+main = [interweaveRest 1 firstRepeat1, interweaveRest 2 firstRepeat2]

@@ -39,23 +39,23 @@ let st_to_env par st =
 let rec update_env env name v = 
     match NameMap.mem name env.ids with
           true -> let newE = {parent=env.parent; 
-              ids=NameMap.add name {nm_value=v;nm_expr=None} env.ids} in show_env newE; newE
+              ids=NameMap.add name {nm_value=v;nm_expr=None} env.ids} in (*show_env newE;*) newE
         | false -> match env.parent with
               None -> let newE = {parent=env.parent; 
-                  ids=NameMap.add name {nm_value=v;nm_expr=None} env.ids} in show_env newE; newE
+                  ids=NameMap.add name {nm_value=v;nm_expr=None} env.ids} in (*show_env newE;*) newE
             | Some par -> let newE  = {parent=Some (update_env par name v); 
-                ids=env.ids} in show_env newE; newE
+                ids=env.ids} in (*show_env newE;*) newE
 
 
 (* searching for the definition of a name, returns its value *)
 (* environment -> string -> value,environment' *)
 let rec resolve_name env symtab name =
     match NameMap.mem name env.ids with
-          true -> let id=(NameMap.find name env.ids) in print_string ("In resolve_name we found the name " ^ name);
+          true -> let id=(NameMap.find name env.ids) in (*print_string ("In resolve_name we found the name " ^ name);*)
             (match id.nm_expr with
-                  Some expr -> print_string ("We found an expr for " ^name ^ "and it is: " ^(string_of_sexpr expr) ^ "\n");let (v,env1)=(eval env symtab expr) in 
+                  Some expr -> (*print_string ("We found an expr for " ^name ^ "and it is: " ^(string_of_sexpr expr) ^ "\n");*)let (v,env1)=(eval env symtab expr) in 
                     let env2 = update_env env1 name v in v,env2
-                | None -> print_string ("No expr for " ^ name ^ " but we have a value of: " ^ (string_of_value id.nm_value) ^ "\n"); id.nm_value,env)
+                | None -> (*print_string ("No expr for " ^ name ^ " but we have a value of: " ^ (string_of_value id.nm_value) ^ "\n");*) id.nm_value,env)
         | false -> match env.parent with
               None -> interp_error ("Can't find binding to " ^ name)
             | Some par -> resolve_name par symtab name
@@ -74,7 +74,7 @@ and eval env symtab = function
     | Sast.SBeat(e, n) ->  if n < 0 then interp_error ("Somehow we have a negative number of dots on a beat!")
         else let (ve,env1) = eval env symtab e in
         (match ve with
-            | VInt(x) -> print_string "Matking a beat\n";(match x with
+            | VInt(x) -> (match x with
                 1 -> if n > 4 then interp_error ("A whole Beat may only have up to 4 dots")
                      else (VBeat(ticks_1.(n)),env1)
               | 2 -> if n > 3 then interp_error ("A half Beat may only have up to 3 dots")
@@ -88,14 +88,14 @@ and eval env symtab = function
               | _ -> interp_error ("Beat must be a power of 2 between 1 & 16"))
 
             | _ -> interp_error ("Not expected Beat values"))
-    | Sast.SNote(pc, reg, beat) ->print_string "HERE WE GO";
+    | Sast.SNote(pc, reg, beat) ->(*print_string "HERE WE GO";*)
         (let (vpc,env1) = eval env symtab pc in
          let (vreg,env2) = eval env1 symtab reg in
          let (vbeat,env3) = eval env2 symtab beat in let vbeat =
           (match vbeat with
            VBeat(_) -> vbeat
            | VInt(x) -> if List.mem x [1;2;4;8;16] then VBeat(16/x) else interp_error ("Non-power of two being used as a beat")
-           | _ -> interp_error ("We have a note with a non-int non-beat Beat value")) in print_string ("Making a note with number of ticks " ^ (string_of_value vbeat)); VNote(vpc,vreg,vbeat),env3)
+           | _ -> interp_error ("We have a note with a non-int non-beat Beat value")) in (*print_string ("Making a note with number of ticks " ^ (string_of_value vbeat));*) VNote(vpc,vreg,vbeat),env3)
     | Sast.SBinop(e1, op, e2) -> (*Incomplete*)
         (let (v1,env1) = eval env symtab e1 in
          let (v2,env2) = eval env1 symtab e2 in
@@ -114,7 +114,7 @@ and eval env symtab = function
                    | Cons -> (match (List.hd lst) with
                        VInt(_) -> VList(v1 :: lst), env2
                        |_ -> interp_error ("Trying to cons an int onto a list of non-ints"))
-                   | _ -> print_string ("Problem expression: " ^ (string_of_sexpr (Sast.SBinop(e1,op,e2))) ^ "\n"); interp_error ("The only op that can be used between an int
+                   | _ -> (*print_string ("Problem expression: " ^ (string_of_sexpr (Sast.SBinop(e1,op,e2))) ^ "\n");*) interp_error ("The only op that can be used between an int
                         and a list is the transposition operator"))
             | VInt(x), VInt(y) ->
                 (match op with
@@ -360,11 +360,12 @@ and eval env symtab = function
         let sid = 
         try 
         List.find (fun sid -> let flag,_ = bind_pat_arg env symtab sid.pats e2 in flag) sid_lst 
-        with Not_found -> interp_error ("Matched patern not found!")
+        with Type_error x -> type_error x
+            | Not_found -> interp_error ("Matched patern not found!")
         in 
         let flag,newE = bind_pat_arg env symtab sid.pats e2 in 
         (match sid.v_expr with
-          Some(e) -> print_string ("The expression we ended up with is: "^(string_of_sexpr e)^"\n"); 
+          Some(e) -> (*print_string ("The expression we ended up with is: "^(string_of_sexpr e)^"\n"); *)
                     (match (eval newE symtab e) with v, _ -> v,env )
         | None -> (*print_string "WE GOT NONE\n"; *)interp_error ("Function declaration without expression"))
 
@@ -373,17 +374,20 @@ and eval env symtab = function
         let local_env1 = List.fold_left exec_decl local_env s_prog.decls in
         show_env local_env1; let v,local_env2 = (eval local_env1 symtab e) in v,env
     | Sast.SRandom -> Random.self_init (); (VInt(Random.int r_max), env)
-    | Sast.SPrint(e1) -> print_string ("\n"^(string_of_value (fst (eval env symtab e1)))^"\n") ; eval env symtab e1 
+    | Sast.SPrint(e1) -> (*print_string ("\n"^(string_of_value (fst (eval env symtab e1)))^"\n") ;*) eval env symtab e1 
 
 
 (* environment -> pattern list -> arg list -> (Bool,environment') *)
 and bind_pat_arg env symtab patl argl = 
-    print_string (String.concat " " (List.map string_of_patterns patl));
-    print_string ("\n" ^ String.concat " and " (List.map string_of_sfargs (List.rev argl)) ^ "\n");
+    if (List.length patl) <> (List.length argl) then 
+         type_error ("number of arguments does not match number of patterns")
+    else
+    (*print_string (String.concat " " (List.map string_of_patterns patl));
+    print_string ("\n" ^ String.concat " and " (List.map string_of_sfargs (List.rev argl)) ^ "\n");*)
     let combl = List.combine patl (List.rev argl) in
-    let flag,nmp = List.fold_left (fun (flag,mp) (p,a) -> let b,mp' = is_pat_arg_matching env symtab p a mp in print_string (string_of_bool b); 
+    let flag,nmp = List.fold_left (fun (flag,mp) (p,a) -> let b,mp' = is_pat_arg_matching env symtab p a mp in (*print_string (string_of_bool b); *)
             (flag&&b,mp')) (true,NameMap.empty) combl 
-    in print_string "RETURNING FROM BIND_PAT\n"; flag,{parent=Some(env); ids=nmp}
+    in (*print_string "RETURNING FROM BIND_PAT\n";*) flag,{parent=Some(env); ids=nmp}
 
 and gen = function
     _ as v -> {nm_expr = None; nm_value=v}
@@ -405,12 +409,12 @@ and is_pat_val_matching env symtab pat value mp =
                         | _ -> interp_error ("We have an unknown value in the interpreter...\n"))
         | Patwild -> true,(mp)
         | Patcomma(pl) -> (match value with 
-                        | VList(al) -> (if List.length pl <> List.length al then 
+                        | VList(al) | VChord(al) | VSystem(al) -> (if List.length pl <> List.length al then 
                             false,mp 
                             else
                             let lst = List.combine pl al in 
                             List.fold_left (fun (b,m) (p,a) -> let r1,r2 = match_pat_value env symtab p a m in (b&&r1),r2) (true,mp) lst)
-                        | _ -> false,mp)
+                        | _ ->  false,mp)
         | Patcons(p1,p2) -> (match value with
                         | VList(al) -> (if List.length al = 0 then 
                             false,mp 
@@ -431,6 +435,9 @@ and is_pat_arg_matching env symtab pat arg mp =
                                                 (match v with 
                                                  VInt(ai) -> if pi = ai then true, (mp) else false,mp
                                                 | _ -> false,mp))
+                        | SArgvar(id) -> let v,_ = resolve_name env symtab id in if (match v with
+                                                    VInt(ai) -> pi = ai
+                                                   | _ -> false) then true, (mp) else false,mp
                         | _ -> false,(mp))
         | Patbool(pb) -> (match arg with 
                           SArgbool(ab) -> if pb = ab then true,(mp) else false,mp
@@ -460,13 +467,13 @@ and is_pat_arg_matching env symtab pat arg mp =
                         | SArgparens(expr) -> (*print_string ("Dealing with parens expr: " ^ (string_of_sexpr expr) ^ "\n");*)
                             (let v,_ = eval env symtab expr in true,(NameMap.add ps (gen v) mp)))
         | Patwild -> true,(mp)
-        | Patcomma(pl) -> print_string "Patcomma\n";(match arg with 
+        | Patcomma(pl) -> (*print_string "Patcomma\n";*)(match arg with 
                         | SArglist(al) -> (if List.length pl <> List.length al then 
                             false,mp 
                             else
                             let lst = List.combine pl al in 
                             List.fold_left (fun (b,m) (p,a) -> let r1,r2 = match_pat_expr env symtab p a m in (b&&r1),r2) (true,mp) lst)
-                        | SArgvar(id) -> print_string ("For patcomma, we have an argument var named " ^ id ^ "\n");
+                        | SArgvar(id) -> (*print_string ("For patcomma, we have an argument var named " ^ id ^ "\n");*)
                                          let v,_ = resolve_name env symtab id in (match v with
                                              VList(lst) -> (match lst with
                                                            | [] -> if pl = [] then true,(mp) else false,(mp)
@@ -476,20 +483,31 @@ and is_pat_arg_matching env symtab pat arg mp =
                                            | _ -> interp_error ("Not working right now"))
                         | _ -> false,mp)
         | Patcons(p1,p2) -> (match arg with
-                        | SArglist(al) -> (if List.length al = 0 then 
+                        | SArglist(al) | SArgchord(al) | SArgsystem(al)-> (if List.length al = 0 then 
                             false,mp 
                             else
                             (match al with 
                               h::tl -> 
                                 (let r1,r2 = match_pat_expr env symtab p1 h mp in
-                                 let r3,r4 = is_pat_arg_matching env symtab p2 (SArglist(tl)) r2 in (r1&&r3),r4)
+                                 let r3,r4 = is_pat_arg_matching env symtab p2 
+                                 (match arg with
+                                  SArglist(_) -> SArglist(tl)
+                                 |SArgchord(_) -> SArgchord(tl)
+                                 |SArgsystem(_) -> SArgsystem(tl)
+                                 | _ -> interp_error("Not acceptable")) r2 in (r1&&r3),r4)
                             | _ -> false,mp))
-                        | SArgvar(id) -> print_string ("For patcons, we have an argument var named " ^ id  ^ "\n");
+                        | SArgvar(id) -> (*print_string ("For patcons, we have an argument var named " ^ id  ^ "\n");*)
                                          let v,_ = resolve_name env symtab id in (match v with
-                                             VList(lst) -> (match lst with
+                                             VList(lst) | VChord(lst) | VSystem(lst) -> (match lst with
                                                             h::tl ->
                                                                 (let r1,r2 = match_pat_value env symtab p1 h mp in
-                                                                 let r3,r4 = is_pat_val_matching env symtab p2 (VList(tl)) r2 in (r1 &&r3),r4)
+                                                                 let r3,r4 = is_pat_val_matching env symtab p2 
+                                                                 (match v with
+                                                                  VList(_) -> VList(tl)
+                                                                 |VChord(_) -> VChord(tl)
+                                                                 |VSystem(_) -> VSystem(tl)
+                                                                 | _-> interp_error("Not acceptable"))
+                                                                  r2 in (r1 &&r3),r4)
                                                            | _ -> false, mp)
                                              | _ ->  false, mp)
                         | SArgparens(exp) -> let r1,r2 =match_pat_expr env symtab pat exp mp in r1,r2 
@@ -499,7 +517,7 @@ and is_pat_arg_matching env symtab pat arg mp =
 
 
 and match_pat_expr env symtab pat expr mp = 
-    let arg,env = eval env symtab expr in print_string (string_of_value arg);
+    let arg,env = eval env symtab expr in (*print_string (string_of_value arg);*)
     match pat with
           Patconst(pi) -> (match arg with 
                           VInt(ai) -> if pi = ai then true,(mp) else false,mp
@@ -529,7 +547,7 @@ and match_pat_value env symtab pat value mp =
     | Patbool(pb) -> (match value with 
                       VBool(ab) -> if pb = ab then true,(mp) else false,mp
                     | _ -> false,mp)
-    | Patvar(ps) -> true,(NameMap.add ps (gen value) mp)
+    | Patvar(ps) -> (*print_string "TRUE!";*)true,(NameMap.add ps (gen value) mp)
     | Patwild -> true,(mp)
     | _ -> false,mp
 
