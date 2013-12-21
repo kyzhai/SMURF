@@ -835,7 +835,7 @@ makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)$h3:(makeNotes tl1 tl2 tl3)
 \end{verbatim}
 
 
-\noindent \textbf{reverse}
+\noindent \textbf{Reverse}
 
 The function \texttt{reverse} takes a list as an argument and returns the same list in reverse.
 
@@ -846,7 +846,7 @@ reverse a:rest = (reverse rest) ++ [a]
 \end{verbatim}
 
 
-\noindent \textbf{last}
+\noindent \textbf{Last}
 
 The function \texttt{last} takes a list as an argument and returns the last element in the list.
 
@@ -856,7 +856,7 @@ last a:[] = a
 last a:rest = last rest
 \end{verbatim}
 
-\noindent \textbf{drop}
+\noindent \textbf{Drop}
 
 The function \texttt{drop} takes an integer $n$ and a list as arguments, and returns the same list
 with the first $n$ elements removed.
@@ -868,7 +868,7 @@ drop _ [] = []
 drop x l:rest = drop (x - 1) rest
 \end{verbatim}
 
-\noindent \textbf{take}
+\noindent \textbf{Take}
 
 The function \texttt{take} takes an integer $n$ and a list as arguments, and returns a list composed
 of the first $n$ elements of the original list.

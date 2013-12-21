@@ -1,5 +1,24 @@
 \section{Project Plan}
 
+\subsection{Example Programs}
+
+The first sample program constructs a little tune. First an ascending scale is heard, followed by a descending scale being played in four tracks, with each
+track suspending the second note it plays in the descending scale. Finally, we hear a half-diminished chord, a fully diminished chord, and a major seventh chord,
+with the chords being interleaved with quarter rests.
+
+\lstinputlisting[title=cascade.sm]{../../Code/examples/cascade.sm}
+\lstinputlisting[title=cascade.out]{../../Code/tests/interp-tests/rtownsend/exp/cascade.out}
+
+Our second sample program constructs the first half of Webern's Op. 27 second movement, with some liberties taken with respect to the durations of the notes and the
+rests (we don't have grace notes in our language which feature prominently in the actual composition). This piece has a number of interesting features, focusing
+on symmetry throughout the piece. For example, the tone row that starts in the right hand is completed by the left hand and vice versa for the tone row starting 
+in the left hand. Furthermore, the next two tone rows are selected by looking at the last note in the first two tone rows, and selecting rows that start with
+those last notes. A number of other interesting features can be found in the composition, see Solomon's analysis ~\cite{webern} for a fuller description and
+the original score.
+
+\lstinputlisting[title=webern.sm]{../../Code/examples/webern.sm}
+\lstinputlisting[title=weber.out]{../../Code/tests/interp-tests/rtownsend/exp/webern.out}
+
 	\subsection{Processes}
 		
 		\subsubsection{Planning}
@@ -41,7 +60,7 @@
 		\hline
 		\end{tabular}
 		\end{table}
-		
+	\newpage	
 	\subsection{Roles and Responsibilities}
 		\begin{table}[htdp]
 		\begin{tabular}{|l|l|}
@@ -49,33 +68,31 @@
 		Team Member & Responsibilities \\ 
 		\hline
 		Van Bui & Proposal: Examples \\
-					& LRM: Write Parenthetical Expressions, Let Expressions, Type Signatures, \\
-					& Pattern Matching \\
-					& LRM: Proofread  Description of Precedence, Syntax Notation, Library Functions, \\ 
+					& Rough Draft of LRM: Write Parenthetical Expressions, Let Expressions \\
+					& Rough Draft of LRM: Proofread  Description of Precedence, Syntax Notation, Library Functions, \\ 
 					& Declarations and Bindings \\
 					& Code: Function Application, Let Expressions, test scripts  \\
 		Lianne Lairmore & Proposal: Motivation \\
-									& LRM: Write Description of Precedence, Syntax Notation, Library Functions, \\
-									& Declarations and Bindings \\
-									& LRM: Proofread Lexical Conventions, Primary Expressions, Meaning of Identifiers \\
+									& Rough Draft of LRM: Write Description of Precedence, Syntax Notation, Library Functions \\
+									& Rough Draft of LRM: Proofread Lexical Conventions, Primary Expressions, Meaning of Identifiers \\
 									& Code: Literals, Main/Print/Random, Symbol Table/Environment, Polymorphism \\
 		Lindsay Neubauer & Note Taker \\
 										& Proposal: Language Description\\
-										& LRM: Write Curried Applications, Operator Application, Conditionals, Lists, \\
+										& Rough Draft of LRM: Write Curried Applications, Operator Application, Conditionals, Lists, \\
 										& Tuples \\
-										& LRM: Proofread Parenthetical Expressions, Let Expressions, Type Signatures, \\ 
+										& Rough Draft of LRM: Proofread Parenthetical Expressions, Let Expressions, Type Signatures, \\ 
 										& Pattern Matching \\
 										& Code: Non-music operators, Notes, Beats, Music operators \\
 		Richard Townsend & Group Leader \\
 										& Proposal: Background \\
-										& LRM:  Write Declarations and Bindings \\
-										& LRM: Proofread Curried Applications, Operator Application, Conditionals, Lists, \\
+										& Rough Draft of LRM:  Write Declarations and Bindings \\
+										& Rough Draft of LRM: Proofread Curried Applications, Operator Application, Conditionals, Lists, \\
 										& Tuples \\
 										& Code: Pattern Matching, Bindings, Function Application \\
 		Kuangya Zhai & GitHub and LaTeX Go-To Person \\ 
 								& Proposal: Generate Latex \\
-								& LRM: Write Lexical Conventions, Primary Expressions, Meaning of Identifiers \\
-								& LRM:  Proofread Declarations and Bindings \\
+								& Rough Draft of LRM: Write Lexical Conventions, Primary Expressions, Meaning of Identifiers \\
+								& Rough Draft of LRM:  Proofread Declarations and Bindings \\
 								& Code: MIDI generation, List operators, Conditionals, Function Application \\
 		\hline
 		\end{tabular}
@@ -89,7 +106,7 @@
 		\item Testing Environment: Shell Scripts
 		\item Version Control System: GitHub
 		\end{itemize}
-	
+\newpage	
 	\subsection{Project Log}
 		\begin{table}[htdp]
 		\begin{tabular}{|l|l|}
