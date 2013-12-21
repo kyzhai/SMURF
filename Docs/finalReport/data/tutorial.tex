@@ -18,4 +18,10 @@ A basic SMURF program can generate a midi file that plays a note. The following 
 
 The identifier \texttt{main} must be set in every SMURF program. In simplenote.sm, main is set to a note.  A note in SMURF consists of a pitch class or rest, the register, and the beat. In simplenote.sm, the pitch class is set to 0, the register is 2, and the 4 indicates a single beat, which turns the note into a quarter note.
 
-Another example TBD.
+As a second example, consider the following program that plays a series of decreasing notes:\\
+
+\lstinputlisting[title=shortcascade.sm]{../../Code/examples/shortcascade.sm}
+
+In shortcascade.sm, \texttt{main} is set to a list of chords, which is defined as a system in SMURF. The \texttt{makeChords} function has as input two lists of integers and a list of beats and iterates through the respective lists using recursion to generate a list of chords. The \texttt{:} operator seen in line 8 constructs a new list by appending the single note list on the left side of the operator to the list of chords. As previously mentioned, a system is a list of chords, hence \texttt{makeChords} creates a system. In line 14, a \texttt{let} expression is used to call \texttt{makeChords} providing as input the list of pitches, beats, and registers, which are defined in the declaration section of the \texttt{let} expression. Line 16 uses the concatenate operator \texttt{++} to combine two lists. On the same line, the \texttt{\$+} operator performs rhythmic addition adding together a whole note and an eighth note. The \texttt{.} operator shown in line 21 also performs rythmic addition, but adds a half of the note on the left side of the operator. In this case, the dot operator adds a quarter note and an eighth note to the half note.   This SMURF example introduces several SMURF language features, but there are additional features that are not shown in this example. 
+
+The remainder of this document describes in more detail the SMURF language.
