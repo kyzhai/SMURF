@@ -1,0 +1,7 @@
+/* Give type signature for variable before it's defined */
+
+a :: Int
+
+a = 3
+
+main = []

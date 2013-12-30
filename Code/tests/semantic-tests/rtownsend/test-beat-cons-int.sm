@@ -1,0 +1,4 @@
+/* Consing a beat onto a list of ints is allowed if the ints are all powers of 2 */
+
+x = 4. : [2]
+main = []

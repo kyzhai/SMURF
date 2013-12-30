@@ -1,0 +1,8 @@
+/* assigning result from evaluating a let expression to a variable */
+
+x = let a = 1  
+        b = 2 
+    in 3
+
+main = []
+

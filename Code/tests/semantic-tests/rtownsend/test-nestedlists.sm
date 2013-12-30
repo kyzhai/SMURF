@@ -1,0 +1,10 @@
+/* Ensuring that extra nestings don't lead to type mismatches among
+	elements in a list, as long as total nestings are equivalent */
+
+x :: [System]
+y :: [[[Note]]]
+
+x = [[[(2,0)$4.]]]
+y = [[[(2,0)$4]]]
+
+main = [y,x]

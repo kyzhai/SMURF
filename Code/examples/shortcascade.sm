@@ -1,0 +1,28 @@
+/* Sample SMURF program that plays a shortened cascade */
+
+//[Register] -> [Pitch classses] -> [Durations] -> [Chords]
+makeChords :: [Int] -> [Int] -> [Beat] -> [Chord]
+makeChords [] _ _ = []
+makeChords _ [] _ = []
+makeChords _ _ [] = []
+makeChords r:restr p:restp d:restd = [(p,r)$d] : (makeChords restr restp restd)
+
+endBeats = [4,4,4,4,4,2]
+endReg = [0,2,2,0,2,0,2,0,2]
+reg3 = 0 : endReg		
+
+track1 = let pitches1 = [0,2,4,5,7,9,11,0,-1,0,-1,11,-1,11]
+             reg1 = [2,2,2,2,2,2,2,3,0,3,0,2,0,2]
+             beats1 = [8,8,8,8,8,8,8,(1 $+ 8)] ++ endBeats
+          in makeChords reg1 pitches1 beats1
+
+track2 = let pitches2 = [-1,11,9,-1,8,-1,8,-1,7]
+             reg2 = endReg
+             beats2 = [1,8,(2..)] ++ endBeats
+         in makeChords reg2 pitches2 beats2
+
+main = [track1,track2]
+
+
+
+

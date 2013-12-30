@@ -1,0 +1,34 @@
+/* Sample SMURF program that should play a cascade :-) */
+
+//[Register] -> [Pitch classses] -> [Durations] -> [Chords]
+makeChords :: [Int] -> [Int] -> [Beat] -> [Chord]
+makeChords [] _ _ = []
+makeChords _ [] _ = []
+makeChords _ _ [] = []
+makeChords r:restr p:restp d:restd = [(p,r)$d] : (makeChords restr restp restd)
+
+pitches1 = [0,2,4,5,7,9,11,0,-1,0,-1,11,-1,11]
+pitches2 = [-1,11,9,-1,8,-1,8,-1,7]
+pitches3 = [-1,-1,7,5,-1,5,-1,5,-1,4]
+pitches4 = [-1,-1,4,2,-1,2,-1,2,-1,0]
+endBeats = [4,4,4,4,4,2]
+beats1 = [8,8,8,8,8,8,8,(1 $+ 8)] ++ endBeats
+beats2 = [1,8,(2..)] ++ endBeats
+beats3 = [1,4,8,(2 $+ 8)] ++ endBeats
+beats4 = [1,2,8,4.] ++ endBeats
+endReg = [0,2,2,0,2,0,2,0,2]
+reg1 = [2,2,2,2,2,2,2,3,0,3,0,2,0,2]
+reg2 = endReg
+reg3 = 0 : endReg
+reg4 = reg3
+
+track1 = makeChords reg1 pitches1 beats1
+track2 = makeChords reg2 pitches2 beats2
+track3 = makeChords reg3 pitches3 beats3
+track4 = makeChords reg4 pitches4 beats4
+
+main = [track1,track2,track3,track4]
+
+
+
+

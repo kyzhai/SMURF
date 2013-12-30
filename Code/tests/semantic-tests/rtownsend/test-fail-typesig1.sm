@@ -1,0 +1,6 @@
+/* Multiple identical type signatures are not allowed in the same scope */
+
+a :: Int
+a :: a
+
+main = []

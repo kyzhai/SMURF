@@ -1,0 +1,7 @@
+/* Number of patterns must match number of types in typesig minus one */
+
+f :: Int -> Bool -> Int
+
+f x = 3
+
+main = f 0

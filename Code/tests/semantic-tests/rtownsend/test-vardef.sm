@@ -1,0 +1,8 @@
+/* Variable definitions don't require type signatures */
+
+a = 3
+
+b = a
+
+main = []
+

@@ -1,0 +1,7 @@
+/* Can't have multiple definitions for same variable */
+
+a = 3
+
+a = 6
+
+main = []

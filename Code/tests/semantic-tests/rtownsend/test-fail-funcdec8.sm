@@ -1,0 +1,7 @@
+/* Pattern lists must be unique for multiple function declarations */
+f :: [Int] -> Int -> Int
+
+f _ a = 4
+f _ m = 6
+
+main = []

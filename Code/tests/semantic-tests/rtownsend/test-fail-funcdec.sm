@@ -1,0 +1,6 @@
+/* Cannot use identifier to define variable and declare function in same scope */
+
+x = 5
+x 0 False = 2
+
+main = []

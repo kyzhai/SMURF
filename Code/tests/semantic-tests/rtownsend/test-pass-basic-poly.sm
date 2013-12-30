@@ -1,0 +1,12 @@
+/* Basic Polymorhpic tests */
+
+main = []
+
+f :: a -> a
+f 0 = 0
+
+g :: a -> b
+g 0 = True
+g True = True
+g [] = [1,2,3]
+g [[[b]]] = 3

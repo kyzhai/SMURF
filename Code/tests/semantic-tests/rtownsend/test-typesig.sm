@@ -1,0 +1,17 @@
+/* We are testing the following for success:
+	 1. Defining the type for variables
+	 2. Defining some function types
+
+	 */
+
+a :: Int
+b :: Bool
+c :: Note
+d :: Beat
+e :: Chord
+f :: System
+g :: [Int]
+h :: [Int] -> [[Int]] -> Bool
+i :: a -> a -> b
+
+main = []

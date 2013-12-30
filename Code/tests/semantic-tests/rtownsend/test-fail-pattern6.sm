@@ -1,0 +1,5 @@
+/* Cons patterns must have a list on the rhs */
+
+f a:2 = 34
+
+main = []

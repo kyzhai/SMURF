@@ -1,0 +1,5 @@
+/* All elements of pattern list must have same type */
+
+f [3, True, a] = False
+
+main = []

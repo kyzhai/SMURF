@@ -1,0 +1,6 @@
+
+double :: [Int] -> Int
+
+double [x] = 2
+
+y = double [10,12]  

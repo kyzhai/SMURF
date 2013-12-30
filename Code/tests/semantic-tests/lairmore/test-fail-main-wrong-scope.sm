@@ -1,0 +1,5 @@
+
+
+f = let main = [] & x = 4 in x
+
+

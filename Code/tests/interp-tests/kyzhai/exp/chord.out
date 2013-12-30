@@ -1,0 +1,173 @@
+GlobalE: 
+	a -> Unresolved
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval lit: 1
+*** eval lit: 2
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 2
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 3
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval lit: 10
+*** eval lit: 3
+*** eval lit: 1
+*** eval beat: 
+*** eval note: 
+*** eval Chord: 
+*** [ (1, 2)$1.., (2, 3)$1.., (3, 3)$1.., (10, 3)$1..]
+GlobalE: 
+	a -> [ (1, 2)$1.., (2, 3)$1.., (3, 3)$1.., (10, 3)$1..]
+	main -> Unresolved
+	print -> Unresolved
+	random -> Unresolved
+*** eval var: a
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+tob: 1 2
+total number of ticks is: 28
+total number of ticks is: 112
+Dim: 112	3
+*** l 138
+wta: 0 0 0 
+vchord: 
+tob: 1 2
+wta: 0 0 0 
+tob: 1 2
+nt: 28, note: 61
+cur_index: 0 0 61 
+cur_index: 1 0 61 
+cur_index: 2 0 61 
+cur_index: 3 0 61 
+cur_index: 4 0 61 
+cur_index: 5 0 61 
+cur_index: 6 0 61 
+cur_index: 7 0 61 
+cur_index: 8 0 61 
+cur_index: 9 0 61 
+cur_index: 10 0 61 
+cur_index: 11 0 61 
+cur_index: 12 0 61 
+cur_index: 13 0 61 
+cur_index: 14 0 61 
+cur_index: 15 0 61 
+cur_index: 16 0 61 
+cur_index: 17 0 61 
+cur_index: 18 0 61 
+cur_index: 19 0 61 
+cur_index: 20 0 61 
+cur_index: 21 0 61 
+cur_index: 22 0 61 
+cur_index: 23 0 61 
+cur_index: 24 0 61 
+cur_index: 25 0 61 
+cur_index: 26 0 61 
+cur_index: 27 0 61 
+wta: 28 0 0 
+tob: 1 2
+nt: 28, note: 74
+cur_index: 28 0 74 
+cur_index: 29 0 74 
+cur_index: 30 0 74 
+cur_index: 31 0 74 
+cur_index: 32 0 74 
+cur_index: 33 0 74 
+cur_index: 34 0 74 
+cur_index: 35 0 74 
+cur_index: 36 0 74 
+cur_index: 37 0 74 
+cur_index: 38 0 74 
+cur_index: 39 0 74 
+cur_index: 40 0 74 
+cur_index: 41 0 74 
+cur_index: 42 0 74 
+cur_index: 43 0 74 
+cur_index: 44 0 74 
+cur_index: 45 0 74 
+cur_index: 46 0 74 
+cur_index: 47 0 74 
+cur_index: 48 0 74 
+cur_index: 49 0 74 
+cur_index: 50 0 74 
+cur_index: 51 0 74 
+cur_index: 52 0 74 
+cur_index: 53 0 74 
+cur_index: 54 0 74 
+cur_index: 55 0 74 
+wta: 56 0 0 
+tob: 1 2
+nt: 28, note: 75
+cur_index: 56 0 75 
+cur_index: 57 0 75 
+cur_index: 58 0 75 
+cur_index: 59 0 75 
+cur_index: 60 0 75 
+cur_index: 61 0 75 
+cur_index: 62 0 75 
+cur_index: 63 0 75 
+cur_index: 64 0 75 
+cur_index: 65 0 75 
+cur_index: 66 0 75 
+cur_index: 67 0 75 
+cur_index: 68 0 75 
+cur_index: 69 0 75 
+cur_index: 70 0 75 
+cur_index: 71 0 75 
+cur_index: 72 0 75 
+cur_index: 73 0 75 
+cur_index: 74 0 75 
+cur_index: 75 0 75 
+cur_index: 76 0 75 
+cur_index: 77 0 75 
+cur_index: 78 0 75 
+cur_index: 79 0 75 
+cur_index: 80 0 75 
+cur_index: 81 0 75 
+cur_index: 82 0 75 
+cur_index: 83 0 75 
+wta: 84 0 0 
+tob: 1 2
+nt: 28, note: 82
+cur_index: 84 0 82 
+cur_index: 85 0 82 
+cur_index: 86 0 82 
+cur_index: 87 0 82 
+cur_index: 88 0 82 
+cur_index: 89 0 82 
+cur_index: 90 0 82 
+cur_index: 91 0 82 
+cur_index: 92 0 82 
+cur_index: 93 0 82 
+cur_index: 94 0 82 
+cur_index: 95 0 82 
+cur_index: 96 0 82 
+cur_index: 97 0 82 
+cur_index: 98 0 82 
+cur_index: 99 0 82 
+cur_index: 100 0 82 
+cur_index: 101 0 82 
+cur_index: 102 0 82 
+cur_index: 103 0 82 
+cur_index: 104 0 82 
+cur_index: 105 0 82 
+cur_index: 106 0 82 
+cur_index: 107 0 82 
+cur_index: 108 0 82 
+cur_index: 109 0 82 
+cur_index: 110 0 82 
+cur_index: 111 0 82 
+*** l 146*** exec smain
+*** calling run

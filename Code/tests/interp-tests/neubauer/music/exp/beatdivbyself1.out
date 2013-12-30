@@ -1,0 +1,2 @@
+PASSED SEMANTIC CHECKS
+Fatal error: exception Values.Interp_error("First operand must be greater than second in Beat division")

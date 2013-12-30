@@ -1,0 +1,880 @@
+\section{Langauge Reference Manual}
+
+\subsection{Syntax Notation}
+The syntax notation used in this manual is as follows. Syntactic 
+categories are indicated by \emph{italic} type. Literal words and 
+characters used in the SMURF language will be displayed in \texttt{typeset}. 
+Alternatives are listed on separate lines. 
+
+Regular expression notations are used to specify grammar patterns in this
+manual.  {\it r}$*$ means the pattern {\it r} may appear zero or more times,
+{\it r}$+$ means {\it r} may appear one or more times, and {\it r}$?$
+means {\it r} may appear once or not at all. {\it r1}$|${\it r2} denotes an option
+between two patterns, and {\it r1 r2} denotes {\it r1} followed by
+{\it r2}. 
+
+\subsection{Lexical Conventions}
+SMURF programs are lexically composed of three elements: comments, tokens, and whitespace.
+
+\subsubsection{Comments}
+SMURF allows nested, multiline comments in addition to single line comments.
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{lXl}
+\hline\hline
+Comment Symbols & Description & Example \\
+\hline\hline
+  \texttt{/* */} & Multiline comments, nesting allowed & \texttt{/* This /* is all */ commented */} \\ \hline
+  \texttt{//} & Single-line comment & \texttt{// This is a comment} \\ \hline
+\end{tabularx}
+\end{table}
+
+
+\subsubsection{Tokens}
+In SMURF, a token is a string of one or more characters that is significant as a group.
+SMURF has 6 kinds of tokens: {\it identifiers}, {\it keywords}, {\it constants},
+      {\it operators},
+{\it separators} and {\it newlines}.
+
+\paragraph{Identifiers}
+\label{sec:identifiers}
+An identifier consists of a letter followed by other letters, 
+digits and underscores. The letters are the ASCII characters \texttt{a}-\texttt{z} and
+\texttt{A}-\texttt{Z}. Digits are ASCII characters \texttt{0}-\texttt{9}. SMURF is case sensitive.
+
+\begin{grammar}
+<letter> $\rightarrow$ [`a'-`z' `A'-`Z'] 
+
+<digit> $\rightarrow$ [`0'-`9'] 
+
+<underscore> $\rightarrow$ {`_'} 
+
+<identifier> $\rightarrow$ <letter> (<letter> | <digit> | <underscore>)*
+\end{grammar}
+
+\paragraph{Keywords}
+\label{sec:keywords}
+Keywords in SMURF are identifiers reserved by the language. Thus, they are not available for
+re-definition or overloading by users. 
+
+\begin{table} [H]
+	\centering
+    \begin{tabular}{ll}
+    \hline\hline
+    Keywords & Descriptions \\ 
+    \hline\hline
+      \texttt{Bool} & Boolean data type \\ \hline
+      \texttt{Int} & Integer data type \\ \hline
+      \texttt{Note} & Atomic musical data type \\ \hline
+      \texttt{Beat} & Note duration data type\\ \hline
+      \texttt{Chord} & Data type equivalent to \texttt{[Note]} type \\ \hline
+      \texttt{System} & Data type equivalent to \texttt{[Chord]} type \\ \hline
+      \texttt{let, in} & Allow local bindings in expressions  \\ \hline
+      \texttt{if, then, else} & Specify conditional expression, else compulsory  \\ \hline
+      \texttt{main} & Specify the value of a SMURF program\\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{Constants}
+\label{sec:constants}
+In SMURF, constants are expressions with a fixed value. Integer literals and
+Boolean keywords are the constants of SMURF. 
+
+\setlength{\grammarindent}{6em}
+\begin{grammar}
+<digit> $\rightarrow$ [`0'-`9'] 
+
+<constant> $\rightarrow$ \texttt{-}? [`1'-`9'] <digit>* \\
+												 <digit>+ \\
+												\texttt{True} \\
+												\texttt{False}
+\end{grammar}
+
+\paragraph{Operators}
+SMURF permits arithmetic, comparison, boolean, list, declaration, and row operations, all of which
+are carried out through the use of specific operators. The syntax and semantics of all of these
+operators are described in sections \ref{sec:postfixop}, \ref{sec:prefixop}, and \ref{sec:binaryop},
+except for declaration operators, which are described in section \ref{sec:declarations}.
+
+
+\paragraph{Newlines}
+SMURF uses newlines to signify the end of a declaration, except
+when included in a comment or preceded by the \texttt{\textbackslash} token. In the latter case, the newline is ignored by the compiler 
+(see example below). If no such token precedes a newline, then the compiler will treat the newline as
+a token being used to terminate a declaration.
+
+\paragraph{Separators}
+
+\begin{grammar}
+<separator> $\rightarrow$ \texttt{,} \\
+												  \texttt{\&} \\
+													\texttt{\textbackslash}
+\end{grammar}
+
+Separators in SMURF are special tokens used to separate other tokens. 
+Commas are used to separate elements in a list.
+The \texttt{\&} symbol can be used in place of a newline. That is, the compiler
+will replace all \texttt{\&} characters with newlines. The
+\texttt{\textbackslash} token, when followed by a newline token,
+may be used to splice two lines. E.g.
+\begin{lstlisting}
+genAltChords (x:y:ys) = [(x,Time 4,1)]   \
+                        :[(y,Time 4,-1)]:(genAltChords ys)
+\end{lstlisting}
+is the same as 
+\begin{lstlisting}
+genAltChords (x:y:ys) = [(x,Time 4,1)]:[(y,Time 4,-1)]:(genAltChords ys)
+\end{lstlisting}
+
+The \texttt{\&} and \texttt{\textbackslash} tokens are syntactic sugar and exist solely for code formatting when writing a SMURF program.
+
+\subsubsection{Whitespace}
+\label{sec:whitespaces}
+Whitespace consists of any sequence of {\it blank} and {\it tab} characters.
+Whitespace is used to
+separate tokens and format programs. All whitespace is ignored by the
+SMURF compiler. As a result, indentations are not significant in SMURF.
+
+\subsection{Meaning of Identifiers}
+In SMURF, an identifier is either a keyword or a name for a variable or a function. 
+The naming rules for identifiers are defined in section~\ref{sec:identifiers}. This section outlines
+the use and possible types of non-keyword identifiers.
+
+
+\subsubsection{Purpose}
+\paragraph{Functions}
+Functions in SMURF enable users to structure programs in a more modular way. 
+Each function takes at least one argument and returns exactly one value (except the built in \texttt{random} function, see section
+~\ref{sec:random} for more details), whose types need to be 
+explicitly defined by the programmer. The function describes how to produce the return value,
+given a certain set of arguments.
+SMURF is a side effect free language, which means
+that if provided with the same arguments, a function is guaranteed to return the same value (again, this is no longer the case
+when using the \texttt{random} function). 
+
+
+\paragraph{Variables}
+In SMURF, a variable is an identifier that is bound to a constant value
+or to an expression. Any use of a variable within the scope of its definition
+refers to the value or expression to which the variable was bound.
+Each variable has a static type which can be automatically
+deduced by the SMURF compiler, or explicitly defined by users. The variables in SMURF are immutable.
+
+
+\subsubsection{Scope and Lifetime}
+The lexical scope of a top-level binding in a SMURF program is the whole program itself.
+As a result of this fact, a top-level binding can refer to any other top-level variable or function
+on its right-hand side, regardless of which bindings occur first in the program.
+Local bindings may also occur
+with the \texttt{let} \emph{declarations} \texttt{in} \emph{expression} construct, and the
+scope of a binding in \emph{declarations} is \emph{expression} and the right hand side of any other bindings in
+\emph{declarations}. A variable or function is only visible within its scope.
+An identifier becomes invalid after the ending of its scope. E.g.
+
+\begin{verbatim}
+prime = [2,0,4,6,8,10,1,3,5,7,9,11] 
+main = let prime = [0,2,4,6,8,10,1,3,5,7,9,11]
+           p3 = (head prime) + 3
+       in (p3, 0)$4
+\end{verbatim}
+
+In line 1, \texttt{prime} is bound to a list of integers in a top-level definition, so it
+has global scope.
+In line 2, the \texttt{main} identifier (a special keyword described in \ref{sec:main}) 
+is bound to a \texttt{let} expression. The \texttt{let} expression declares two local variables,
+\texttt{prime} and \texttt{p3}. In line 3, the \texttt{head} function looks for a definition
+of prime in the closest scope, and thus uses the binding in line 2. So the result
+of the expression in line 4 is \texttt{(3,0)\$4}. After line 4 and prior to line 2, 
+the locally defined \texttt{prime} and
+\texttt{p3} variables are invalid and can't be accessed.
+
+\subsubsection{Basic Types}
+\label{sec:basictype}
+There are three fundamental types in SMURF: \texttt{Int}, \texttt{Bool} and \texttt{Beat}. 
+\begin{itemize}
+\item \texttt{Int}: integer type
+\item \texttt{Bool}: boolean type
+\item \texttt{Beat}: beat type, used to represent the duration of a note. A constant of type
+			\texttt{Beat} is any power of 2 ranging from 1 to 16. These beat constants are assumed to be
+			of type \texttt{Int} until they are used in an operation that requires them to have type \texttt{Beat} e.g.
+			when used as an operand to the beat arithmetic operator \texttt{\$+}.
+\end{itemize}
+
+\subsubsection{Structured Types}
+\label{sec:structtype}
+Structured types use special syntactic constructs and other types to describe new types. 
+There are two structured types in SMURF: {\it list} types and {\it function} types.
+
+A {\it list} type has the format \texttt{[}\emph{t}\texttt{]} where \emph{t} is a type that specifies the type
+of all elements of the list. Thus, all elements of a list of type \texttt{[}\emph{t}\texttt{]}
+must themselves have type \emph{t}. Note that \emph{t} itself may be a list type.
+
+A {\it function} type has the format \emph{t$_1$} \texttt{->} \emph{t$_2$} \texttt {->}
+\dots \texttt{->} \emph {t$_n$} \texttt{->} \emph{t$_{ret}$} which specifies a function type
+that takes $n$ arguments, where the $kth$ argument has type \emph{t$_k$}, and returns an expression
+of type \emph{t$_{ret}$}. Any type may be used to define a function type, except for a function
+type itself. In other words, functions may not be passed as arguments to other functions, nor may
+a function return another function.
+
+
+\subsubsection{Derived Types}
+\label{sec:derivedtype}
+Besides the basic types, SMURF also has several derived types. 
+
+Expressions of type \texttt{Note} are used to represent musical notes in SMURF.
+The note type can be written as
+
+\vspace{1em}
+(\emph{Int}, \emph{Int})\texttt{\$}\emph{Beat}[\texttt{.}]* 
+\vspace{1em}
+
+The first expression of type \texttt{Int} must evaluate to an integer in the range from -1 to 11,
+representing a pitch class or a rest. 
+When this expression evaluates to -1, the note is treated as a rest, otherwise it represents the pitch class of 
+the note. The second expression of type \texttt{Int} must evaluate to an integer in the range of 0-3,
+representing the register of the note, where the integer values and corresponding registers are given below.
+\begin{itemize}
+    \item 1: Bass clef, B directly below middle C to first C below middle C
+    \item 0: Bass clef, next lowest B to next lowest C
+    \item 2: Treble clef, middle C to the first B above middle C
+    \item 3: Treble clef, first C above middle C to next highest B
+\end{itemize}
+The expression of type \texttt{Beat} refers to the duration of the note, and may be followed by
+optional dots. The dot is a postfix operator described in section \ref{sec:postfixop}. Ignoring the possible
+postfix operators, the expression must evaluate to an integer in the range [1,2,4,8,16].
+Using this format, a quarter note on middle C could be written as \texttt{(0,2)\$4}.
+
+The \texttt{Chord} type is used to represent several notes to be played simultaneously.
+It is equivalent to the list type \texttt{[Note]}.
+The compiler will check to make sure all the notes in a chord have the same time duration.
+
+The \texttt{System} type is used to represent a list of chords to be played sequentially.
+It is equivalent to the list type \texttt{[Chord]}.
+
+\subsubsection{Polymorphic Types}
+\label{sec:polymorphism}
+
+SMURF provides the option of specifying an identifier as having a polymorphic type by using a non-keyword identifier in place of a
+basic, structured, or derived type in that identifier's type signature. For more information on the structure of type signatures,
+see section ~\ref{sec:typesig}.
+For example, \texttt{a :: b} specifies that a variable named \texttt{a} has polymorphic type \texttt{b}, where
+\texttt{b} can be replaced with any basic, structured, or derived type. Using the same polymorphic type across different type signatures
+is permitted and each use has no bearing on another. For example, giving \texttt{a :: b} and \texttt{c :: b} merely states that \texttt{a}
+and \texttt{c} are both variables with polymorphic types and would be equivalent to giving \texttt{a :: hippo} and \texttt{c :: dinosaur}.
+However, if the same identifier is used multiple times as a type in a function's type signature, then the types assigned to those components
+of the function must be identical. For example, say we have a function \\\\ \texttt{f :: Int -> b -> [b]} \\\\ This type signature specifies that
+\texttt{f} takes two arguments, the first of type \texttt{Int} and the second of polymorphic type, and that the expression bound to \texttt{f}
+must be a list type, where the elements of the list are of the same type as the second argument passed to \texttt{f}. Thus
+\texttt{f 0 True = [False]} would be a valid function declaration (as \texttt{True} and \texttt{False} both have type \texttt{Bool}) 
+given this type signature, but \texttt{f 0 True = [1]} would result
+in a compile-time error because \texttt{1} has type \texttt{Int}.
+
+
+\subsection{Expressions}
+
+This section describes the syntax and semantics of \emph{expressions} in 
+SMURF. Some expressions in SMURF use prefix, infix, or postfix operators.
+Unless otherwise stated, all infix and postfix operators are left-associative and
+all prefix operators are right-associative. Some examples of association are given below.
+
+
+%TODO: check the correct position for this table
+\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		Expression & Association \\
+		\hline
+		\texttt{f x + g y - h z} & \texttt{((f x) + (g y)) - (h z)} \\
+		\texttt{ let \{ ... \} in x + y} & \texttt{let \{ ... \} in (x + y)} \\
+		\texttt{$\sim$ <> [0,1,2,3,4,5,6,7,8,9,10,11]} &
+					\texttt{($\sim$ (<> [0,1,2,3,4,5,6,7,8,9,10,11]))}\\
+		\hline
+	\end{tabular}
+\end{center}
+
+%
+%\subsubsection{Errors}
+%
+%Errors can only occur during compilation of a SMURF program. All generated 
+%code will run successfully. 
+%
+
+
+
+\subsubsection{Variable Expression}
+
+\begin{grammar}
+<variable-expr> $\rightarrow$ <variable> 
+
+<variable> $\rightarrow$ <identifier> 
+\end{grammar}
+A variable $x$ is an expression whose type is the same as the type of $x$.
+When we evaluate a variable, we are actually evaluating
+the expression bound to the variable in the closest lexical scope. A variable is represented with
+an \emph{identifier} as defined in section ~\ref{sec:identifiers}.
+
+\subsubsection{Constant Expression}
+\begin{grammar}
+<constant-expr> $\rightarrow$ <constant> 
+\end{grammar}
+An integer or boolean constant, as described in section \ref{sec:constants}, is an expression
+with type equivalent to the type of the constant.
+
+\subsubsection{Parenthesized Expression}
+\begin{grammar}
+<parenthesized-expr> $\rightarrow$ \texttt{(} <expression> \texttt{)}
+\end{grammar}
+An expression surrounded by parentheses is itself an expression. Parentheses can be used to force the evaluation
+of an expression before another e.g. \texttt{2 + 3 - 4 - 5} evaluates to \texttt{((2+3) - 4) - 5 = -4}\\ but
+\texttt{2 + 3 - (4 - 5)} evaluates to \texttt{(2 + 3) - (4 - 5) = 6}.
+
+\subsubsection{List Expression}
+
+\begin{grammar}
+<list-expr> $\rightarrow$ \texttt{[} \texttt{]} \\
+													\texttt{[} <expression> (\texttt{,} <expression>)* \texttt{]}
+\end{grammar}
+A list is an expression. Lists can be written as: \\
+
+\texttt{[}\emph{expression$_{1}$}\texttt{,} \emph{...}\texttt{,} \emph{expression$_{k}$}\texttt{]} \\
+
+	or \\
+
+  \emph{expression$_{1}$}\texttt{:}\emph{expression$_{2}$}\texttt{:} \emph{...} \texttt{:}\emph{expression$_{k}$}\texttt{:[]} \\ \\
+where \textit{k} $>=$ 0. These two lists are equivalent.
+The expressions in a list must all be of the same type. The empty list \texttt{[]} has a polymorphic type i.e. it can take on the
+type of any other list type depending on the context.
+
+
+\subsubsection{Notes}
+
+\begin{grammar}
+<note-expr> $\rightarrow$ \texttt{(}<expression>\texttt{,} <expression>\texttt{)\$}<expression>
+\end{grammar}
+
+A note is an expression, and is written as a tuple of expressions of type \texttt{Int} followed
+by a \texttt{\$} symbol and an expression of type \texttt{Beat}. The values of each of these
+expressions must follow the rules outlined in section \ref{sec:derivedtype}.
+
+\subsubsection{Postfix Operator Expressions}
+\label{sec:postfixop}
+
+\begin{grammar}
+<postfix-expression> $\rightarrow$ <expression>\texttt{.}
+\end{grammar}
+
+The only expression in SMURF using a postfix operator is the partial augmentation of an expression
+of type \texttt{Beat}, which uses the dot operator. This operator has higher precedence than any prefix or infix operator.
+We say ``partial augmentation" because a dot increases the durational value of
+the expression to which it is applied, but only by half of the durational value of that expression.
+That is, if \emph{expr} is an expression of type \texttt{Beat} that evaluates to a duration of $n$, 
+then \emph{expr}\texttt{.} is a postfix expression of type \texttt{Beat} 
+that evaluates to a duration of $n + n/2$. In general, a note with duration $d$ and total dots $n$ has a total
+duration of $2d - d/2^n$. The dot operator may be applied until it represents an addition of a sixteenth note
+duration, after which no more dots may be applied. For instance, \texttt{4..} is legal, as this
+is equivalent to a quarter note duration plus an eighth note duration (the first dot) plus a
+sixteenth note duration (the second dot). However, \texttt{8..} is not legal, as the second
+dot implies that a thirty-second note duration should be added to the total duration of this
+expression. Our compiler checks the number of dots and returns an error if too many are applied.
+
+\subsubsection{Prefix Operator Expressions}
+\label{sec:prefixop}
+\begin{grammar}
+<prefix-expression> $\rightarrow$ <prefix-op> <expression>
+\end{grammar}
+
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{0.9\textwidth}{llX}
+\hline\hline
+Prefix Operator & Description & Example \\
+\hline\hline
+   \texttt{$\sim$} & Tone row inversion & $\sim$ \texttt{row} (returns the inversion of \texttt{row})\\ \hline
+   \texttt{<>} & Tone row retrograde & \texttt{<>}~\texttt{row} (returns the
+           retrograde of \texttt{row})\\ \hline
+   \texttt{!} & Logical negation & \texttt{if !(a == 5) then True else False} \\ \hline
+\end{tabularx}
+\end{table}
+
+SMURF has three prefix operators: logical negation, tone row inversion, and tone row retrograde.
+There is another row transformation operator, but it takes multiple arguments and is described in
+section \ref{sec:bintonerow}. The tone row prefix operators have higher precedence than any infix operator, while the logical negation operator
+is lower in precedence than all infix operators except for the other logical operators \texttt{\&\&} and \texttt{$||$}.
+The logical negation operator can only be applied to expressions of
+type \texttt{Bool}, and the two row operators can only be applied to expressions of type
+\texttt{[Int]}. The compiler will check that all of the integers in a list are in the range $0-11$
+if the list is passed to either of the tone row operators.
+All three operators return an expression of the same type as the expression the
+operator was applied to.
+
+\subsubsection{Binary Operator Expressions}
+\label{sec:binaryop}
+\begin{grammar}
+<binary-expression> $\rightarrow$ <expression>$_1$ <binary-op> <expression>$_2$
+\end{grammar}
+The following categories of binary operators exist in SMURF, and are listed in order of decreasing
+precedence: list, arithmetic, comparison, boolean, tone row. 
+
+\paragraph{List operators}
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+List Operator & Description & Example \\
+\hline\hline
+   \texttt{++} & List Concatenation & \texttt{[1,2,3] ++ [4,5,6]} (result is \texttt{[1,2,3,4,5,6]}) \\ \hline
+   \texttt{:} & List Construction & \texttt{1 : [2,3,4]} (result is \texttt{[1,2,3,4]}) \\ \hline
+\end{tabular}
+\end{table}
+
+List operators are used to construct and concatenate lists. 
+These two operators are \texttt{:} and \texttt{++}, respectively. The \texttt{:} operator has 
+higher precedence than the \texttt{++} operator. Both of these operators are right-associative.
+The list construction operator requires that  \emph{expression$_{2}$} be an expression of type 
+\texttt{[}\emph{t}\texttt{]}, where \emph{t} is the type of \emph{expression$_{1}$}. 
+In other words, \emph{expression$_{1}$} must have the same type 
+as the other elements in \emph{expression$_{2}$} when doing list construction.
+When doing list concatenation, both
+\emph{expression$_{1}$} and \emph{expression$_{2}$} must have type \texttt{[}\emph{t}\texttt{]},
+where \emph{t} is some non-function type. 
+
+\paragraph{Arithmetic operators}
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\hline\hline
+Arithmetic Operator & Description & Example \\
+\hline\hline
+  \texttt{+} & Integer Addition  & \texttt{a + 2} \\ \hline
+  \texttt{-} & Integer Subtraction  & \texttt{5 - a} \\ \hline 
+  \texttt{*} & Integer Multiplication  & \texttt{5 * 10} \\ \hline 
+  \texttt{/} & Integer Division  & \texttt{4 / 2} \\ \hline 
+  \texttt{\%} & Integer Modulus, ignores negatives  & \texttt{14 \% 12} \\ \hline
+  \texttt{\%+} & Pitch Class Addition (addition mod 12)  & \texttt{14 \%+ 2 == 4 }\\ \hline
+  \texttt{\%-} & Pitch Class Subtraction (subtraction mod 12)  & \texttt{14 \%- 2 == 0 } \\ \hline
+  \texttt{$\$$+} & Rhythmic Addition & \texttt{2 $\$$+ 2 == 1} \\ \hline
+  \texttt{$\$$-} & Rhythmic Subtraction & \texttt{1 $\$$- 2 == 2}  \\ \hline
+  \texttt{$\$$*} & Rhythmic Augmentation & \texttt{8 $\$$* 4 == 2}  \\ \hline
+  \texttt{$\$$/} & Rhythmic Diminution & \texttt{2 $\$$/ 8 == 16}  \\ \hline
+\end{tabularx}
+\end{table}
+
+There are three types of arithmetic operators:
+basic, pitch class, and rhythmic. 
+Basic arithmetic operators are those found in most programming languages like 
+\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, and \texttt{\%}, which operate on expressions of
+type \texttt{Int}. It should be noted that the modulus operator ignores negatives e.g.
+\texttt{13 \% 12} is equal to \texttt{-13 \% 12} is equal to \texttt{1}.
+The pitch class operators are \texttt{\%+} and \texttt{\%-}. These can be read as mod 12 addition
+and mod 12 subtraction. They operate on expressions of type \texttt{Int}, but the expressions
+must evaluate to values in the range $0-11$. The built-in mod 12
+arithmetic serves for easy manipulation of pitch class integers.
+Lastly, there are rhythmic arithmetic operators (both operands must be of type \texttt{Beat}). 
+These include \texttt{\$+}, \texttt{\$-}, \texttt{\$*}, and \texttt{\$/}. If one of the operands
+of these operators is of type \texttt{Int}, it will be cast to a \texttt{Beat} type if it is an
+allowable power of 2 and generate a semantic error otherwise.
+
+In terms of precedence, \texttt{*}, \texttt{/}, \texttt{\$*}, \texttt{\$/} and \texttt{\%} are all at the same
+level of precedence, which is higher than the level of precedence shared by the rest of the arithmetic operators.
+
+\paragraph{Comparison operators}
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{XlX}
+\hline\hline
+Comparison Operator & Description & Example \\
+\hline\hline
+  \texttt{<}  & Integer Less than & \texttt{if a < 5 then True else False} \\ \hline
+  \texttt{>}  & Integer Greater than & \texttt{if a > 5 then True else False}  \\ \hline
+  \texttt{<=}  & Integer Less than or equal to & \texttt{if a <= 5 then True else False} \\ \hline
+  \texttt{>=} & Integer Greater than or equal to & \texttt{if a >= 5 then True else False} \\ \hline
+  \texttt{\$<} & Rhythmic Less than & \texttt{4 \$< 8 == False} \\ \hline
+  \texttt{\$>}  & Rhythmic Greater than &  \texttt{4 \$> 8 == True}  \\ \hline
+  \texttt{\$<=} & Rhythmic Less than or equal to & \texttt{4 \$<= 4 == True} \\ \hline
+  \texttt{\$>=} & Rhythmic Greater than or equal to &  \texttt{1 \$>= 16 == True} \\ \hline
+  \texttt{==} & Structural comparison & \texttt{if a == 5 then a = True else a = False} \\ \hline
+\end{tabularx}
+\end{table}
+
+SMURF allows comparison operations between expressions of type \texttt{Int} or \texttt{Beat}.
+Structural comparison, however, can be used to compare expressions of any type for equality.
+All of the comparison operators have the same precedence except for structural comparison, which
+has lower precedence than all of the other comparison operators.
+
+\paragraph{Boolean operators}
+
+
+\begin{table} [H]
+\centering
+\begin{tabular}{lll}
+\hline\hline
+Boolean Operator & Description & Example \\
+\hline\hline
+   \texttt{\&\&} & Logical conjunction & \texttt{if b \&\& c  then True else False} \\ \hline
+   \texttt{\textbar\textbar} & Logical disjunction & \texttt{if b \textbar\textbar\space   c  then True else False} \\ \hline
+ \end{tabular}
+\end{table}
+
+Boolean operators are used to do boolean logic on expressions of type \texttt{Bool}. Logical
+conjunction has higher precedence than logical disjunction.
+
+\paragraph{Tone row operators}
+\label{sec:bintonerow}
+The only binary tone row operator is the transposition operator, \texttt{$\wedge\wedge$}.
+\emph{expression$_1$} must have type \texttt{Int}, and \emph{expression$_2$} must be an 
+expression that evaluates to a list of pitch classes. The result of this operation is a new
+tone row where each pitch class has been transposed up by $n$ semitones, where $n$ is the result
+of evaluating \emph{expression$_2$}.
+
+\subsubsection{Conditional expressions}
+\begin{grammar}
+<conditional-expression> $\rightarrow$ \texttt{if} \emph{expression$_{boolean}$} \texttt{then}
+													\emph{expression$_{true}$} \texttt{else} 
+													\emph{expression$_{false}$}
+\end{grammar}
+When the value of \emph{expression$_{boolean}$} evaluates to true, \emph{expression$_{true}$} 
+is evaluated, otherwise \emph{expression$_{false}$} is evaluated. \emph{expression$_{boolean}$}
+must have type \texttt{Bool}.
+
+\subsubsection{Let Expressions}
+\begin{grammar}
+<let-exp> $\rightarrow$ \texttt{let} <decls>+ \texttt{in} <expression>
+\end{grammar}
+Let expressions have the form \texttt{let} \emph{decls} \texttt{in} \emph{e}, where 
+\emph{decls} is a list of one or more declarations and \emph{e} is an expression. 
+The scope of these declarations is discussed in section \ref{sec:declarations}.
+
+The declarations in a let expression must be separated by either the \texttt{\&} symbol or by the newline character. For example:
+
+\begin{verbatim}
+let x = 2 & y = 4 & z = 8 
+in x + y + z
+\end{verbatim}
+
+The previous code is equivalent to the following:
+
+\begin{verbatim}
+let x = 2
+    y = 4
+    z = 8
+in x + y + z
+\end{verbatim}
+
+If the first code snippet were written without the \& symbol and no newlines after each declaration, a compile-time error will be raised.
+
+\subsubsection{Function application expressions}
+
+\begin{grammar}
+<function-app-expression> $\rightarrow$ <identifier> <expression>+
+\end{grammar}
+
+A function gets called by invoking its name and supplying any necessary arguments. 
+Functions can only be called if they have been declared in the same scope where the call occurs,
+or in a higher scope. Functions may be called recursively. Function application associates 
+from left to right. Parentheses can be used to change the precedence from the default. Furthermore,
+parentheses must be used when passing the result of a complex expression to a function. Here, complex expression
+refers to any expression that uses an operator or itself is a function call.
+The following evaluates function \emph{funct1} with argument \emph{b} then evaluates function
+\emph{funct2} with argument \emph{a} and the result from evaluating (\emph{funct1 b}): \\
+    
+    \emph{funct2 a (funct1 b)}\\ \\
+If the parentheses were not included, a compile-time error would be generated, as it would imply
+that \emph{funct2} would be called with \emph{a} as
+its first argument and \emph{funct1} as its second argument, which is illegal based on the description
+of function types in section \ref{sec:structtype}.
+
+A function call may be used in the right-hand side of a binding just like any other expression. 
+For example:
+\begin{verbatim}
+let a = double 10 
+in a
+\end{verbatim}
+evaluates to 20, where \texttt{double} is a function that takes a single integer argument and
+returns that integer multiplied by two. 
+
+%\subsubsection{Guards}
+%\begin{grammar}
+%<guard> $\rightarrow$  let <decls> | <infixexp>          
+%\end{grammar}
+%
+%There are two kinds of guards in SMURF: local bindings and boolean guards. Local bindings have the form let $<decls>$ and introduces the declarations to the program environment. Boolean guards are expressions of type Bool. The boolean guard succeeds if the expression evaluates to True.
+%
+\subsection{Declarations and Bindings}
+\label{sec:declarations}
+\setlength{\grammarindent}{4em}
+
+This section of the LRM describes the syntax and informal semantics of
+declarations in SMURF. A program in SMURF, at its top-most level, is a series of declarations
+separated by newline tokens.
+Declarations may also occur inside of
+\texttt{let} expressions (but still must be separated with newline tokens).
+The scoping of such declarations is described 
+in this section. There are three types of declarations in SMURF: 
+type signatures, definitions, and function declarations.
+
+\begin{table} [H]
+\centering
+\begin{tabularx}{\textwidth}{lXl}
+\hline\hline
+Declaration Operator & Description & Example \\
+\hline\hline
+   \texttt{::} & Type specification & \texttt{number :: Int} \\ \hline
+   \texttt{->} & Argument and function return type specification
+     & \texttt{isPositiveNum :: Int -> Bool}  \\ \hline
+	 \texttt{=} & Variable or function binding & \texttt {x = 3} \\ \hline
+\end{tabularx}
+\end{table}
+
+\subsubsection{Type Signatures}
+\label{sec:typesig}
+
+\begin{grammar}
+
+<type-sig> $\rightarrow$ <identifier> \texttt{::} (<type>|<function-type>)
+
+<function-type> $\rightarrow$ <type> \texttt{->} <type> (\texttt{->} <type>)*
+
+<type> $\rightarrow$ \texttt{Int} \\ \texttt{Bool} \\ \texttt{Beat} \\ \texttt{Note} \\
+											\texttt{Chord} \\ \texttt{System} \\ <identifier> \\ 
+											\texttt{[} <type> \texttt{]} \\ 
+										
+
+\end{grammar}
+
+A type signature explicitly defines the type for a given identifier. The
+\texttt{::} operator can be read as ``has type of." Only one type signature
+for a given identifier can exist in a given scope. That is, two different
+type signatures for a given identifier can exist, but they must be declared
+in different scopes. There are four categories of types in SMURF: basic,  structured, derived, 
+and polymorphic types; types are described in sections~\ref{sec:basictype}-\ref{sec:polymorphism}.
+
+\subsubsection{Definitions}
+
+\begin{grammar}
+
+<definition> $\rightarrow$ <identifier> $=$ <expression>
+
+\end{grammar}
+
+A definition binds an identifier to an expression. All definitions at a given
+scope must be unique and can be mutually recursive. For example, the following
+is legal in SMURF:
+
+\begin{verbatim}
+let x = 4
+  	z = if y == 7 then x else y
+  	y = let x = 5 
+        in x + 3 
+in x + z + y
+\end{verbatim}
+
+
+The $x$ in the nested let expression is in a different scope than the $x$ in the global let expression, 
+so the two definitions do not conflict. $z$ is able to refer to $y$ even though
+$y$ is defined after $z$ in the program. In this example, the three 
+identifiers $x, y, $ and $z$ in the global \texttt{let} will evaluate to values 4, 8, and 8, respectively,
+while the identifier $x$ in the nested let expression will evaluate to 5.
+
+A type signature may be given for the identifier in a definition but is not required.
+
+\subsubsection{Function Declarations}
+
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+
+<fun-dec> $\rightarrow$ <identifier> <args> \texttt{=} <expression>
+
+<args> $\rightarrow$ <pattern> \\ <pattern> <args> 
+
+
+<pattern> $\rightarrow$ <pat> \\ <pat> \texttt{:} <pattern> \\ \texttt{[} <pattern-list>$?$ \texttt{]} \\
+												\texttt{(} <pattern> \texttt{)} 
+
+<pattern-list> $\rightarrow$ <pat> (\texttt{,} <pat>)* 
+
+<pat> $\rightarrow$ <identifier> \\ <constant> \\ \texttt{_}
+												
+\end{grammar}
+
+A function declaration defines an identifier as a function that takes
+some number of expressions as arguments and, based on which patterns are matched
+against those expressions when the function is called, returns the result
+of a given expression. Essentially, a function declaration can be seen as a 
+binding associating an expression with a function identifier and a set of patterns that will be matched
+against the function's arguments when the function is called.
+There must be at least one pattern listed
+as an argument in a function declaration. All function declarations for the same identifier
+in a given scope must have the same number of patterns given in the declaration.
+
+Unlike variable definitions, multiple function declarations for the same identifier may exist
+in the same scope, as long as no two declarations have an equivalent set of patterns. This rule does not pertain
+to multiple function declarations for an identifier across different scopes.
+
+If a function declaration for some identifier $x$ occurs in scope $n$, then
+a type signature for $x$ in scope $k>=n$ is required. That is if a function has
+been declared but its type has not been explicitly stated in the same or a higher
+scope, a compile-time error will be generated. The type of the patterns in a function declaration
+are checked at compile-time as well, and an error
+is issued if they don't match the types specified in that function's 
+type signature.
+
+A \emph{pattern} can be used in a function declaration to ``match" against arguments passed to the function. The
+arguments are evaluated and the resultant values are matched against the patterns in the same order they were given
+to the function. If the pattern
+is a constant, the argument must be the same constant or evaluate to that constant value in order for a match to
+occur. If the pattern is an identifier, the argument's value is bound to that identifier in the scope of the
+function declaration where the pattern was used. If the pattern is the wildcard character `\texttt{_}', 
+any argument will be matched and no binding will occur. If the pattern is structured, the argument must follow
+the same structure in order for a match to occur. 
+
+Below, we have defined an example function \texttt{f} that takes two arguments. 
+The value of the function call is dependent
+on which patterns are matched. The most restrictive patterns are checked against the arguments first.
+In this example, we first check if the first argument evaluates to \texttt{0} (we disregard the second
+argument using the wildcard character), and return \texttt{True} if it does. Otherwise, we check if the second argument
+evaluates to the empty list, and, if so, return \texttt{False}. Next, we check if the second argument evaluates to a list
+containing exactly two elements and, if so, the first element is bound to \texttt{x} and the second is bound to
+\texttt{y} in the expression to the right of the binding operator \texttt{=}, and that expression is evaluated and
+returned. Finally, if
+none of the previous pattern sets matched, we bind the first argument to \texttt{m}, the head of the
+second argument to \texttt{x}, and the rest of the second argument to \texttt{rest}. Note we can do this
+as we already checked if the second argument was the empty list, and, since we did not match that pattern,
+we can assume there is at least one element in the list.
+
+\begin{verbatim}
+f :: Int -> [Int] -> Bool
+f _ [] = False
+f _ [x, y] = if x then True else False
+f 0 _ = True
+f m x:rest = f m rest 
+\end{verbatim}
+
+
+\subsubsection{\texttt{main} Declaration}
+\label{sec:main}
+Every SMURF program must provide a definition for the reserved identifier \texttt{main}. This
+identifier may only be used on the left-hand side of a top-level definition. The expression
+bound to \texttt{main} is evaluated and its value is the value of the SMURF program itself.
+That is, when a SMURF program is compiled and run, the expression bound to \texttt{main} is
+evaluated and the result is converted to our bytecode representation of a MIDI file. As a result,
+this expression must evaluate to a value of type \texttt{[]}, \texttt{Note}, \texttt{Chord}, 
+\texttt{System}, or \texttt{[System]} (or any type that is equivalent to one of these). If a definition for \texttt{main} is not included in a 
+SMURF program or if the expression bound to it does not have one of the types outlined above,
+a compile-time error will occur.
+
+\subsection{Library Functions}
+
+Below are the library functions that can be used in the SMURF language. 
+While some of these functions are implemented using SMURF, others (such as print) are special cases that provide
+helpful services but cannot explicitly be defined in our language. These special cases are implemented in the translation
+section of the compielr. Each library function will include a description 
+and its SMURF definition (if it can be defined using SMURF). Users are not permitted to redefine any of these functions. \newline
+
+\noindent\textbf{Print}
+
+The function \texttt{print} takes an argument of any type, evaluates it, and prints the result to standard output.
+The result of calling the \texttt{print}
+function is the result of evaluating its argument i.e. \texttt{print(x+1)} evaluates to \texttt{x+1}.\\
+
+\noindent\textbf{Random}
+\label{sec:random}
+
+The function \texttt{random} is the only SMURF function that takes no parameters. It is another example of a function that cannot
+be explicitly defined using the SMURF language. The result of a call to \texttt{random} is a pseudo-random integer between 1 and 1000000, inclusive.
+For example, \texttt{random $\%$ 12 } will return some number between 0 and 11.
+Every time \texttt{random} is called, a new pseudo-random seed is used to initialize the random number generator used by the compiler, allowing for
+different results on each run of a program where random is used. There is no capability for the user to set their own initializing seed. \\
+
+\noindent\textbf{Head}
+
+The function \texttt{head} takes a list as an argument and returns the first element. 
+This function is commonly used when working with lists.
+
+\begin{verbatim}
+head :: [a] -> a
+head (h:tl) = h
+\end{verbatim} 
+
+
+\noindent\textbf{Tail}
+
+The function \texttt{tail} takes a list as an argument and returns the same list with
+the first element removed.
+This function is commonly used when working with lists. 
+
+\begin{verbatim}
+tail :: [a] -> [a]
+tail (h:tl) = tl
+\end{verbatim} 
+
+
+\noindent\textbf{MakeNotes}
+
+The function \texttt{makeNotes} takes in three lists and returns a list 
+of notes. The first list consists of expressions of type \texttt{Int} representing 
+pitches and/or rests. The second list consists of expressions of type \texttt{Int}
+representing the register that the pitch will be played in. The third list is a list 
+of expressions of type \texttt{Beat} representing a set of durations.  This function allows the user 
+to manipulate tone rows independently of beats and registers, then combine the three components
+into a list of notes. If the lengths of the three arguments are not equivalent, this function
+will only return the list of notes generated from the first $n$ elements of each list, where $n$ is the
+length of the shortest list given as an argument.
+
+\begin{verbatim}
+makeNotes :: [Int] -> [Int] -> [Beat] -> [Note]
+makeNotes [] _ _ = []
+makeNotes _ [] _ = []
+makeNotes _ _ [] = []
+makeNotes (h1:tl1) (h2:tl2) (h3:tl3) = (h1,h2)$h3:(makeNotes tl1 tl2 tl3)
+\end{verbatim}
+
+
+\noindent \textbf{Reverse}
+
+The function \texttt{reverse} takes a list as an argument and returns the same list in reverse.
+
+\begin{verbatim}
+reverse :: [a] -> [a]
+reverse [] = []
+reverse a:rest = (reverse rest) ++ [a]
+\end{verbatim}
+
+
+\noindent \textbf{Last}
+
+The function \texttt{last} takes a list as an argument and returns the last element in the list.
+
+\begin{verbatim}
+last :: [a] -> a
+last a:[] = a
+last a:rest = last rest
+\end{verbatim}
+
+\noindent \textbf{Drop}
+
+The function \texttt{drop} takes an integer $n$ and a list as arguments, and returns the same list
+with the first $n$ elements removed.
+
+\begin{verbatim}
+drop :: Int -> [a] -> [a]
+drop 0 x = x
+drop _ [] = []
+drop x l:rest = drop (x - 1) rest
+\end{verbatim}
+
+\noindent \textbf{Take}
+
+The function \texttt{take} takes an integer $n$ and a list as arguments, and returns a list composed
+of the first $n$ elements of the original list.
+
+\begin{verbatim}
+take :: Int -> [a] -> [a]
+take 0 _ = []
+take _ [] = []
+take x l:rest = l : (take (x - 1) rest)
+\end{verbatim}

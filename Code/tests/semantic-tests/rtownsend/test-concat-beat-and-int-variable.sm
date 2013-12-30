@@ -1,0 +1,5 @@
+/* Testing concatenation of beats to acceptable ints through a variable */
+
+x = [8,8,4]
+y = [2,2,2,1..] ++ x
+main = []

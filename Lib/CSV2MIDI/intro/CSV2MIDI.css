@@ -1,0 +1,65 @@
+
+/* ::::: http://www.penguinpeepshow.com/style/mainStyle.css ::::: */
+
+* html .wrapper { height: 0.1%; }
+@media tty {
+  i { content: "\\";/*\" \"*/}} * html #container { height: 1%; } /*"; }
+}
+#g_title p, #g_footer p, #g_description p { margin: 0px; }
+#threecolumn {  }
+#container { text-align: left; min-width: 600px; max-width: 800px; }
+#header { position: relative; text-align: center; padding: 15px 0px 0px; }
+#middle { float: left; position: relative; width: 100%; }
+#left { float: left; width: 0px; position: relative; }
+#left .left-content { position: relative; }
+#right { float: right; width: 0px; position: relative; }
+#footer { clear: both; position: relative; }
+h1, h2, h3, h4, h5, h6, pre, code, p { font-size: 1em; }
+dl, li, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, body, html, p, blockquote, fieldset, input { margin: 0px; padding: 0px; }
+a img, :link img, :visited img { border: medium none; }
+address { font-style: normal; }
+body { font: 76% Verdana,sans-serif; text-align: center; }
+h1, h2, h3, h4, h5, h6, p.description { font-family: "Trebuchet MS",Trebuchet,sans-serif; }
+h1 { font-size: 3em; font-weight: bold; letter-spacing: 2px; }
+h2 { font-size: 2em; font-weight: normal; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.2em; letter-spacing: 0.2em; }
+h5 { font-size: 1.2em; }
+h6 { font-size: 1em; font-weight: bold; }
+p, td { line-height: 1.8em; }
+code, kbd { font-size: 1.25em; }
+img { border: 0px none; }
+* html #left a { height: 1px; }
+a:link { font-weight: bold; margin: -1px -2px -2px; padding: 1px 2px 2px; }
+a:visited { font-weight: bold; margin: -1px -2px -2px; padding: 1px 2px 2px; }
+body { font: 85% "Lucida Grande","Lucida Sans",Verdana,Arial,sans-serif; color: rgb(0, 0, 0); margin: 10px; padding: 0px; }
+blockquote { margin: 1em 2em; color: rgb(102, 102, 102); }
+blockquote p { line-height: 1.2; }
+caption { font-weight: bold; background: none repeat scroll 0% 0% rgb(204, 204, 204); padding: 0.5em; }
+dd { margin: 1em 2em; }
+dt { font-weight: bold; }
+hr { margin: 0em; border-right: 0px none; border-width: 1px 0px 0px; border-style: dotted none none; border-color: rgb(135, 135, 135) -moz-use-text-color -moz-use-text-color; -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; border-image: none; }
+table { border: 0px solid rgb(204, 204, 204); }
+td { vertical-align: top; padding: 0.5em; }
+th { text-align: left; padding: 0.5em; }
+ol li { margin-left: 2em; list-style-type: decimal; }
+ol, ul { margin: 1em 0px; padding-left: 1.7em; }
+ul li { list-style-type: disc; }
+p { margin: 1em 0px; line-height: 1.8em; }
+h1 { font-family: "Palatino","Palatino Linotype",serif; font-size: 2.75em; font-weight: normal; letter-spacing: 3px; text-shadow: 2px 2px 2px rgb(153, 153, 153); }
+h2 { margin: 0.9em 0px 0.5em; font-family: "Palatino","Palatino Linotype",serif; font-size: 1.8em; font-weight: normal; text-shadow: 2px 2px 2px rgb(153, 153, 153); }
+h3 { font-family: "Palatino","Palatino Linotype",serif; font-size: 1.5em; font-weight: normal; margin-top: 1em; }
+h4 { font-size: 1.2em; }
+h5 { font-size: 1em; }
+h6 { font-size: 1em; font-weight: normal; color: rgb(81, 81, 81); }
+#left li a:link, #left li a:visited { background: none repeat scroll 0% 0% transparent; font-weight: normal; display: block; border-bottom: 1px solid rgb(255, 255, 255); padding: 0.5em 1em; }
+#left li a:hover { background: none repeat scroll 0% 0% rgb(255, 255, 255); }
+#left h3, #right h3 { margin: 1em 0px; font-family: "Lucida Grande","Lucida Sans",Verdana,Arial,sans-serif; line-height: 1; font-size: 1em; padding: 6px 0px; border-top: 1px dotted rgb(135, 135, 135); border-bottom: 1px dotted rgb(135, 135, 135); font-weight: normal; }
+#left h4, #right h4 { margin: 1em 0px; font-family: "Lucida Grande","Lucida Sans",Verdana,Arial,sans-serif; line-height: 1; font-size: 1em; padding: 6px 0px; color: rgb(81, 81, 81); border-top: 1px dotted rgb(135, 135, 135); border-bottom: 1px dotted rgb(135, 135, 135); font-weight: normal; }
+#left h5, #right h5 { margin: 1em 0px; font-family: "Lucida Grande","Lucida Sans",Verdana,Arial,sans-serif; line-height: 1; font-size: 0.9em; padding: 6px 0px; color: rgb(81, 81, 81); border-top: 1px dotted rgb(135, 135, 135); border-bottom: 1px dotted rgb(135, 135, 135); font-weight: normal; }
+#left h6, #right h6 { margin: 1em 0px; font-family: "Lucida Grande","Lucida Sans",Verdana,Arial,sans-serif; line-height: 1; font-size: 0.8em; padding: 6px 0px; color: rgb(81, 81, 81); border-top: 1px dotted rgb(135, 135, 135); border-bottom: 1px dotted rgb(135, 135, 135); font-weight: normal; }
+#adsense { margin: 30px 14px; }
+body { background: url('bg_top.png') repeat-x scroll center top rgb(239, 255, 239); }
+h1 { color: rgb(36, 53, 93); }
+h2 { color: rgb(36, 53, 93); }
+h3 { color: rgb(36, 53, 93); }

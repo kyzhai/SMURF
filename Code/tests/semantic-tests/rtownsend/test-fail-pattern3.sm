@@ -1,0 +1,5 @@
+/* Every pattern variable in a definition must be unique */
+
+f [b, c] [[b]] = b
+
+main = []

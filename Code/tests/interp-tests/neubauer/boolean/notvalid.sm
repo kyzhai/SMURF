@@ -1,0 +1,6 @@
+a = ! (True)       /* false */
+b = ! False        /* true */
+c = !(a == True)   /* true */
+d = !b            /* false */
+
+main = []

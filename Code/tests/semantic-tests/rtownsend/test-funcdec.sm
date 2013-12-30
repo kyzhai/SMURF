@@ -1,0 +1,6 @@
+f :: Int -> Int -> Int
+x = 5
+m = x + 2
+f x m = 3 + x / m
+
+main = []

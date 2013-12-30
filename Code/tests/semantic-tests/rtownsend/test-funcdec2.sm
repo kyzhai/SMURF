@@ -1,0 +1,5 @@
+f m = 3
+f 0 = 5
+f :: Int -> Int
+
+main = []

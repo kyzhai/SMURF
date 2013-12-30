@@ -1,0 +1,35 @@
+/* Standard Library functions on general lists */
+
+makeNotes :: [Int] -> [Int] -> [Beat] -> [Note]
+makeNotes [] _ _ = []
+makeNotes _ [] _ = []
+makeNotes _ _ [] = []
+makeNotes pc:pcs reg:regs bt:bts = (pc,reg)$bt : (makeNotes pcs regs bts)
+
+tail :: [a] -> [a]
+tail hd:tl = tl
+
+head :: [a] -> a
+head hd:tl = hd
+
+reverse :: [a] -> [a]
+reverse [] = []
+reverse a:rest = (reverse rest) ++ [a]
+
+//Get last item from list
+last :: [a] -> a
+last a:[] = a
+last a:rest = last rest
+
+//Remove first n elements from given list
+drop :: Int -> [a] -> [a]
+drop 0 x = x
+drop _ [] = []
+drop x l:rest = drop (x - 1) rest
+
+
+//Get first n elements from given list
+take :: Int -> [a] -> [a]
+take 0 _ = []
+take _ [] = []
+take x l:rest = l : (take (x - 1) rest)

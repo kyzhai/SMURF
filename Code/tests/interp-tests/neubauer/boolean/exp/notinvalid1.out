@@ -1,0 +1,1 @@
+Fatal error: exception Sast.Type_error("Element in Not operation must be of type Bool but element was of type Int")

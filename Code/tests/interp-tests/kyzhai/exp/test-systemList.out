@@ -1,0 +1,76 @@
+
+Timing Resolution set to 4 PPQ
+
+Instrument set to 48 on channel 0
+Instrument set to 48 on channel 1
+Instrument set to 48 on channel 2
+Instrument set to 48 on channel 3
+Instrument set to 48 on channel 4
+Instrument set to 48 on channel 5
+
+Track 0:
+ tick 0, channel 1: program change 48
+ tick 0, channel 1: note C#4 on velocity: 90
+ tick 0, channel 1: note D5 on velocity: 90
+ tick 28, channel 1: note C#4 on velocity: 0
+ tick 28, channel 1: note D5 on velocity: 0
+ tick 28, channel 1: note D#5 on velocity: 90
+ tick 28, channel 1: note A#5 on velocity: 90
+ tick 56, channel 1: note D#5 on velocity: 0
+ tick 56, channel 1: note A#5 on velocity: 0
+ tick 56, end of track
+Track 1:
+ tick 0, channel 2: program change 48
+ tick 0, channel 2: note A#4 on velocity: 90
+ tick 0, channel 2: note G#5 on velocity: 90
+ tick 14, channel 2: note A#4 on velocity: 0
+ tick 14, channel 2: note G#5 on velocity: 0
+ tick 14, channel 2: note B5 on velocity: 90
+ tick 14, channel 2: note A#5 on velocity: 90
+ tick 42, channel 2: note B5 on velocity: 0
+ tick 42, channel 2: note A#5 on velocity: 0
+ tick 42, end of track
+Track 2:
+ tick 0, channel 3: program change 48
+ tick 0, channel 3: note D5 on velocity: 90
+ tick 7, channel 3: note D5 on velocity: 0
+ tick 7, channel 3: note G#2 on velocity: 90
+ tick 7, channel 3: note A5 on velocity: 90
+ tick 35, channel 3: note G#2 on velocity: 0
+ tick 35, channel 3: note A5 on velocity: 0
+ tick 35, end of track
+Track 3:
+ tick 0, channel 4: program change 48
+ tick 0, channel 4: note C#4 on velocity: 90
+ tick 0, channel 4: note D5 on velocity: 90
+ tick 28, channel 4: note C#4 on velocity: 0
+ tick 28, channel 4: note D5 on velocity: 0
+ tick 28, channel 4: note D#5 on velocity: 90
+ tick 28, channel 4: note A#5 on velocity: 90
+ tick 56, channel 4: note D#5 on velocity: 0
+ tick 56, channel 4: note A#5 on velocity: 0
+ tick 56, end of track
+Track 4:
+ tick 0, channel 5: program change 48
+ tick 0, channel 5: note A#4 on velocity: 90
+ tick 0, channel 5: note G#5 on velocity: 90
+ tick 14, channel 5: note A#4 on velocity: 0
+ tick 14, channel 5: note G#5 on velocity: 0
+ tick 14, channel 5: note B5 on velocity: 90
+ tick 14, channel 5: note A#5 on velocity: 90
+ tick 42, channel 5: note B5 on velocity: 0
+ tick 42, channel 5: note A#5 on velocity: 0
+ tick 42, end of track
+Track 5:
+ tick 0, channel 6: program change 48
+ tick 0, channel 6: note D5 on velocity: 90
+ tick 7, channel 6: note D5 on velocity: 0
+ tick 7, channel 6: note G#2 on velocity: 90
+ tick 7, channel 6: note A5 on velocity: 90
+ tick 35, channel 6: note G#2 on velocity: 0
+ tick 35, channel 6: note A5 on velocity: 0
+ tick 35, end of track
+PASSED SEMANTIC CHECKS
+java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
+===== Program Successfully Finished =====
+===== Result Writen to a.midi =====

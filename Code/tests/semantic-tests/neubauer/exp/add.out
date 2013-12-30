@@ -1,0 +1,34 @@
+Program: 
+	SVardef: 
+		ID: a  :: Int
+
+	4 + 4
+	SVardef: 
+		ID: b  :: Int
+
+	4 - 4
+	SVardef: 
+		ID: c  :: Int
+
+	4 * 4
+	SVardef: 
+		ID: d  :: Int
+
+	4 / 4
+	SVardef: 
+		ID: e  :: Int
+
+	4 % 4
+	SMain: []
+Global Scope: 
+	ID: main  :: []
+	ID: a  :: Int
+	ID: b  :: Int
+	ID: c  :: Int
+	ID: d  :: Int
+	ID: e  :: Int
+	ID: print x :: a -> a
+	ID: random  :: Int
+	ID: head h : t :: [a] -> a
+	ID: tail h : t :: [a] -> [a]
+

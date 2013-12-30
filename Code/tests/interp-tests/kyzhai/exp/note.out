@@ -1,0 +1,14 @@
+
+Timing Resolution set to 4 PPQ
+
+Instrument set to 48 on channel 0
+
+Track 0:
+ tick 0, channel 1: program change 48
+ tick 0, channel 1: note D5 on velocity: 90
+ tick 15, channel 1: note D5 on velocity: 0
+ tick 15, end of track
+PASSED SEMANTIC CHECKS
+java -jar ./Lib/CSV2MIDI.jar a.csv a.midi
+===== Program Successfully Finished =====
+===== Result Writen to a.midi =====

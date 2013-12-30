@@ -1,0 +1,8 @@
+/* If a variable has been declared, then its type signature must match the 
+	 type of the expression bound to the variable in that declaration */
+
+x = (2,3)$4.
+
+x :: Note
+
+main = []

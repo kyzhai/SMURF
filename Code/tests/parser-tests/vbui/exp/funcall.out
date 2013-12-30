@@ -1,0 +1,3 @@
+double :: Int-> Int
+double x = x * 2
+y = double 10

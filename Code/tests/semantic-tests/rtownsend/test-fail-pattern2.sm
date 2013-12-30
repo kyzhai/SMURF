@@ -1,0 +1,5 @@
+/* Every pattern variable in a definition must be unique; even across structured patterns */
+
+f a:rest b:a = 3
+
+main = []

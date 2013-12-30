@@ -1,0 +1,2 @@
+PASSED SEMANTIC CHECKS
+Fatal error: exception Values.Interp_error("Cannot divide by zero")
